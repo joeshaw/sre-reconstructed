@@ -100,16 +100,26 @@ static int RealMain()
     }
     SetFileErrorHandler(FileErrorLog);
     DoorRead(&g_door);
+    // The terminal is the sysop's screen for the local functions and for
+    // local play; otherwise it is the remote user's.
+    g_console = g_door.port == 0;
+    static const char *const localargs[] = { "Reset", "Register", "Sysop", "Edit", "Userlist",
+                                             "Maintenance" };
+    for (const char *a : localargs)
+        if (HasCommandArg(a))
+            g_console = 1;
     CommInit();
     Resource statusbars("System.StatusBars", (int32)1);
     if (statusbars.Bool())
         StatusBar("SRE:II", "", '*');
     else
         g_statusbars = 0;
-    kout << c_number << (int32)340000 << c_normal << " bytes free";
+    // The original reports coreleft() and its overlay buffer; these are
+    // the figures it gives in a 640K DOS session.
+    kout << c_number << (int32)285520 << c_normal << " bytes free";
     Resource expanded("ExpandedSwapping", (int32)0);
     Resource extended("ExtendedSwapping", (int32)0);
-    kout << "; " << c_number << (int32)0 << c_normal
+    kout << "; " << c_number << (int32)86016 << c_normal
          << " bytes (conventional) used for swap space.\n";
     if (extended.Bool()) {
         kout << "Extended memory swapping\n";

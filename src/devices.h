@@ -3,8 +3,9 @@
 // kout is a multiplexing output stream: text is word-wrapped once (at 79
 // columns) and the resulting bytes are copied to the sysop's screen, the
 // remote user's modem and an optional log file.  In this reconstruction
-// the "modem" is the user's terminal (stdout/stdin); the sysop's local
-// screen is not reproduced.
+// the "modem" is the user's terminal (stdout/stdin).  Without a remote
+// user (local play and the sysop functions) the terminal is the sysop's
+// local screen and keyboard instead.
 #ifndef SRE_DEVICES_H
 #define SRE_DEVICES_H
 
@@ -18,6 +19,14 @@ class ModemOut : public OStream {
 public:
     ModemOut() : OStream(0) {}
     void RawWrite(const char *s, int16 n);      // 247e:10a7
+};
+
+// The sysop's local screen (vtable c099).  It is the host terminal when
+// nobody is connected remotely (g_console), and discarded otherwise.
+class LocalOut : public OStream {
+public:
+    LocalOut() : OStream(0) {}
+    void RawWrite(const char *s, int16 n);      // 247e:0fda
 };
 
 // kout (vtable c0b5, DS:d3b8).
@@ -55,7 +64,8 @@ extern MultiOut kout;           // DS:d3b8
 extern KeyIn kin;               // DS:d3a6
 extern ModemOut kmodem;         // DS:d402
 extern OFStream klog;           // DS:d422
-extern OStream klocal;          // DS:d3e2 (sysop screen; discarded)
+extern LocalOut klocal;         // DS:d3e2
+extern int16 g_console;         // the host terminal is the local console
 
 extern int16 g_timeout;         // bee4 input timeout in seconds
 extern int16 g_lastremote;      // bee6

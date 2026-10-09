@@ -85,9 +85,29 @@ class Dos:
             import collections
             self.ring = collections.deque(maxlen=int(os.environ['DOSEMU_RING']))
             uc.hook_add(UC_HOOK_BLOCK, lambda uc, a, sz, ud: self.ring.append(a))
+        # Text written to the local (sysop) screen, from the entries of the
+        # local stream's RawWrite (247e:0fda) and EmitColor (247e:0f8a).
+        # Colour changes are logged as ESC [ fg ; bg C.
+        self.local_out = bytearray()
+        uc.hook_add(UC_HOOK_CODE, self._hook_local, begin=0x247e0 + 0x0f8a, end=0x247e0 + 0x0f8a)
+        uc.hook_add(UC_HOOK_CODE, self._hook_local, begin=0x247e0 + 0x0fda, end=0x247e0 + 0x0fda)
         uc.hook_add(UC_HOOK_CODE, self._hook_stub, begin=STUB_SEG * 16, end=STUB_SEG * 16 + 0x400)
         uc.hook_add(UC_HOOK_INSN, self._hook_in, None, 1, 0, UC_X86_INS_IN)
         uc.hook_add(UC_HOOK_INSN, self._hook_out, None, 1, 0, UC_X86_INS_OUT)
+
+    def _hook_local(self, uc, addr, size, ud):
+        if self.reg(UC_X86_REG_CS) != 0x247e:
+            return
+        sp = self.reg(UC_X86_REG_SS) * 16 + self.reg(UC_X86_REG_SP)
+        st = bytes(uc.mem_read(sp, 14))
+        this_off, this_seg = struct.unpack_from('<HH', st, 4)
+        if addr == 0x247e0 + 0x0f8a:
+            fg, bg = struct.unpack('<bb', bytes(uc.mem_read(this_seg * 16 + this_off + 0x1c, 2)))
+            self.local_out += b'\x1b[%d;%dC' % (fg, bg)
+        else:
+            s_off, s_seg, n = struct.unpack_from('<HHh', st, 8)
+            if n > 0:
+                self.local_out += bytes(uc.mem_read(s_seg * 16 + s_off, n))
 
     # ------------------------------------------------------------------
     # memory helpers
@@ -1072,6 +1092,7 @@ def main():
     ap.add_argument('--local', default='')
     ap.add_argument('--trace', action='store_true')
     ap.add_argument('--out')
+    ap.add_argument('--local-out', help='write the local screen text here')
     ap.add_argument('--screen', action='store_true')
     ap.add_argument('--steps', type=int, default=0)
     ap.add_argument('--snaps', action='store_true')
@@ -1094,6 +1115,8 @@ def main():
         sys.stderr.write("".join(dos.tracebuf))
     if r == 'stopped':
         print('stopped at %04x:%04x' % (dos.reg(UC_X86_REG_CS), dos.reg(UC_X86_REG_IP)), file=sys.stderr)
+    if a.local_out:
+        open(a.local_out, 'wb').write(bytes(dos.local_out))
     if a.out:
         open(a.out, 'wb').write(bytes(dos.output))
     else:

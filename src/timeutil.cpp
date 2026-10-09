@@ -106,3 +106,150 @@ OStream &PutTime(OStream &o, int32 t)
 {
     return o << TimeStr(t);
 }
+
+// 206a:0498: enter a date as mm/dd/yyyy (or mm/dd/yy); Enter on an empty
+// field gives 0.
+void InputDate(int32 *t)
+{
+    static const char *const TEMPLATE = "mm/dd/yyyy";     // DS:bc03
+    IStream &in = kin;
+    char buf[0xf];
+    memset(buf, 0, sizeof buf);
+    int16 pos = 0;
+    in.BeginInput();
+    for (const char *s = TEMPLATE; *s; s++)
+        in.Echo(*s);
+    for (;;) {
+        char c = in.GetKey();
+        if ((c == '\r' || c == '\n' || c == 0) && (pos == 6 || pos == 8)) {
+            int16 year;
+            if (pos == 6) {
+                year = (int16)((buf[4] - '0') * 10 + buf[5] - '0');
+                year += year > 90 ? 1900 : 2000;
+            } else {
+                year = (int16)((buf[4] - '0') * 1000 + (buf[5] - '0') * 100 + (buf[6] - '0') * 10 +
+                               buf[7] - '0');
+            }
+            int16 month = (int16)((buf[0] - '0') * 10 + buf[1] - '0');
+            int16 day = (int16)((buf[2] - '0') * 10 + buf[3] - '0');
+            int32 d = MakeDate(year, month, day);
+            if (TimeYear(d) == year && TimeMonth(d) == month && TimeDay(d) == day) {
+                in.Echo('\n');
+                *t = d;
+                break;
+            }
+            // Not a date: start over.
+            for (int16 i = 0; i < pos + 2; i++) {
+                in.Echo(8);
+                in.Echo(' ');
+                in.Echo(8);
+            }
+            pos = 0;
+            for (const char *s = TEMPLATE; *s; s++)
+                in.Echo(*s);
+        }
+        if (c == 0) {
+            in.Echo('\n');
+            *t = 0;
+            break;
+        }
+        if (c == '/') {
+            if (pos == 1) {
+                buf[1] = buf[0];
+                buf[0] = '0';
+                in.Echo(8);
+                in.Echo('0');
+                in.Echo(buf[1]);
+                in.Echo('/');
+                in.Echo('d');
+                in.Echo('d');
+                pos = 2;
+                continue;
+            }
+            if (pos == 3) {
+                buf[3] = buf[2];
+                buf[2] = '0';
+                in.Echo(8);
+                in.Echo('0');
+                in.Echo(buf[3]);
+                in.Echo('/');
+                for (int16 i = 0; i < 4; i++)
+                    in.Echo('y');
+                pos = 4;
+                continue;
+            }
+        }
+        if (c >= '0' && c <= '9' && (uint16)pos <= 7) {
+            switch (pos) {
+            case 0:
+                for (const char *s = TEMPLATE; *s; s++) {
+                    in.Echo(8);
+                    in.Echo(' ');
+                    in.Echo(8);
+                }
+                buf[0] = c;
+                in.Echo(c);
+                break;
+            case 1:
+                buf[1] = c;
+                in.Echo(c);
+                in.Echo('/');
+                in.Echo('d');
+                in.Echo('d');
+                break;
+            case 2:
+                in.Echo(8);
+                in.Echo(8);
+                buf[2] = c;
+                in.Echo(c);
+                break;
+            case 3:
+                buf[3] = c;
+                in.Echo(c);
+                in.Echo('/');
+                for (int16 i = 0; i < 4; i++)
+                    in.Echo('y');
+                break;
+            case 4:
+                in.Echo(8);
+                in.Echo(8);
+                in.Echo(' ');
+                in.Echo(' ');
+                for (int16 i = 0; i < 4; i++)
+                    in.Echo(8);
+                buf[4] = c;
+                in.Echo(c);
+                break;
+            default:
+                buf[pos] = c;
+                in.Echo(c);
+                break;
+            }
+            pos++;
+        }
+        if (c == 8 && pos > 0) {
+            int16 n = 1;
+            if (pos == 2)
+                n = 4;
+            if (pos == 4)
+                n = 6;
+            for (int16 i = 0; i < n; i++) {
+                in.Echo(8);
+                in.Echo(' ');
+                in.Echo(8);
+            }
+            pos--;
+            if (pos == 0)
+                for (const char *s = TEMPLATE; *s; s++)
+                    in.Echo(*s);
+            if (pos == 2) {
+                in.Echo('d');
+                in.Echo('d');
+            }
+            if (pos == 4)
+                for (int16 i = 0; i < 4; i++)
+                    in.Echo('y');
+        }
+    }
+    in.EndInput();
+}

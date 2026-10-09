@@ -4,7 +4,7 @@
 #include "battle.h"
 
 void ShowHelpTopic(String topic);
-void InputDate(int32 *t);                       // 206a:0498
+void InputDate(int32 *t);                       // 206a:0498 (timeutil.cpp)
 int16 TradesEmpireDeleted(int16 id);            // 6e3f:2497
 void ClearTrades();                             // 6e3f:245d
 void PirateSetName(Pirate *p, const char *s);   // 4b60:01ab

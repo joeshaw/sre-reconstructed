@@ -30,7 +30,8 @@ int16 g_pushback = 0;
 
 KeyIn kin;
 MultiOut kout;
-OStream klocal(0);
+LocalOut klocal;
+int16 g_console = 0;
 ModemOut kmodem;
 OFStream klog;
 static Resource r_userbreak("UserBreak", 1);
@@ -161,6 +162,12 @@ static int RemoteCharReady()
     }
 }
 
+// The host terminal is the local keyboard when nobody is connected.
+static int LocalKeyReady()
+{
+    return g_console && !g_remote && RemoteCharReady();
+}
+
 static int RemoteGetc()
 {
     int c = TermGetc();
@@ -197,6 +204,14 @@ void ModemOut::RawWrite(const char *s, int16 n)
     }
     TermWrite(conv ? conv : s, n);
     delete[] conv;
+}
+
+// 247e:0fda: the original writes to its local screen window (or the raw
+// screen in mode 1).
+void LocalOut::RawWrite(const char *s, int16 n)
+{
+    if (g_console && !g_remote)
+        TermWrite(s, n);
 }
 
 // ---------------------------------------------------------------------
@@ -340,6 +355,8 @@ int16 KeyIn::KeyReady()
         return 0;
     if (g_remote && RemoteCharReady())
         return 1;
+    if (LocalKeyReady() && kout.localon)
+        return 1;
     return 0;
 }
 
@@ -378,6 +395,8 @@ char KeyIn::GetKey()
             klocal << Color(14) << "Hangup?\n";
             exit(1);
         }
+        if (g_console && !g_remote && !Carrier())
+            exit(1);            // the end of the host's input
         if (KeyReady() && g_remote && RemoteCharReady()) {
             g_lastremote = 1;
             int16 c = (int8)RemoteGetc();
@@ -413,6 +432,32 @@ char KeyIn::GetKey()
             }
             if (!savedraw)
                 kout << Color(7) << saved << Color(fg2, bg2);
+            if (!savedraw) {
+                kout.raw = 1;
+                kout << cursor << back;
+                kout.raw = 0;
+            }
+            continue;
+        }
+        if (LocalKeyReady()) {
+            // The local keyboard: no break prompt, and the host's DEL is
+            // the PC's backspace.  (Extended keys only reached the
+            // sysop's hot keys.)
+            g_lastremote = 0;
+            int16 c = (int8)RemoteGetc();
+            if (c == 0x7f)
+                c = 8;
+            if (!savedraw)
+                kout << " \b";
+            if (c == g_breakch)
+                Interrupt(2);
+            else if (c == g_stopch)
+                exit(0);
+            else if (kout.localon) {
+                kout.SetMode(savedmode);
+                kout << Color(savefg, savebg);
+                return (char)c;
+            }
             if (!savedraw) {
                 kout.raw = 1;
                 kout << cursor << back;
