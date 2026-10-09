@@ -8,7 +8,7 @@ void Bulletins() {}
 void MoreHelp() {}
 void ShowHelpTopic(String) {}
 void TimeCheck() {}
-void PirateInit(Pirate *p) { memset(p, 0, sizeof(*p)); }
+
 void ResearchInit() {}
 void SysopMenu() {}
 void ResetGame() {}

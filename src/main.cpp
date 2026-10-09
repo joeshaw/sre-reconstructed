@@ -214,6 +214,13 @@ int main(int argc, char **argv)
     InitTime();
     g_empires = new Empire[MAXEMPIRES];
     g_pirates = new Pirate[MAXPIRATES];
+    for (int16 i = 0; i < MAXEMPIRES; i++) {
+        memset(&g_empires[i], 0, sizeof(Empire));
+        EmpireInit(&g_empires[i]);
+    }
+    for (int16 i = 0; i < MAXPIRATES; i++)
+        PirateNew(&g_pirates[i]);
+    GalaxyInit(&g_galaxy);
     SystemLoad();
     int r = RealMain();
     exit(r);

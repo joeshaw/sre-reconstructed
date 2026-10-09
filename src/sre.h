@@ -99,6 +99,15 @@ void ClearSpending(uint8 *s);
 
 // pirates (4b60)
 void PirateInit(Pirate *p);
+void PirateNew(Pirate *p);
+int32 PiratePlanets(Pirate *p);
+int32 PirateNetWorth(Pirate *p);
+void PirateHourly(Pirate *p);
+void CreatePirates();
+int16 PirateCount();
+const char *PirateName(Pirate *p);
+uint8 PirateColor(Pirate *p);
+OStream &PutPirate(OStream &o, Pirate *p);
 
 // player (64d2)
 void PlayerReset(Player *p);
@@ -121,6 +130,11 @@ char GetChoice(const char *valid, int16 upper);
 
 // registration (68a3)
 int16 Register();
+
+// lottery (55e7)
+void PutMax(int32 max);
+int32 Jackpot(int32 tickets);
+void Lottery(Player *pl, Empire *e, Galaxy *g);
 
 // misc modules
 void Maintenance(Galaxy *g);                // 5681:0c52

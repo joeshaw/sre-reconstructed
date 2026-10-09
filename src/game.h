@@ -209,7 +209,22 @@ struct Player {
 
 // Pirate.II record (0x106 bytes).
 struct Pirate {
-    uint8 raw[0x106];
+    char name[0x20];            // 00
+    int16 level;                // 20 1..9
+    int32 lasthour;             // 22
+    uint8 u_026[0x69];          // 26
+    uint8 color;                // 8f
+    int32 money;                // 90
+    int32 d94;                  // 94
+    int32 d98;                  // 98
+    int32 d9c;                  // 9c
+    int32 da0;                  // a0
+    int32 da4;                  // a4
+    int32 da8;                  // a8
+    int32 dac;                  // ac
+    int32 db0;                  // b0
+    int16 wb4[16];              // b4
+    int16 wd4[25];              // d4
 };
 
 // DOORFILE.SR (7389, DS:d360, 0x30 bytes).
