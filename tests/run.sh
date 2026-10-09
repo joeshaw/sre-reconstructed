@@ -19,6 +19,10 @@ while IFS='|' read -r name mode template clock player edits args input; do
     else
         src=$FIX/$template
     fi
+    if [ ! -d "$src" ]; then
+        echo "SKIP $name (no $template)"
+        continue
+    fi
     w=$FIX/work/$name
     tmpl=$FIX/work/$name.template
     rm -rf "$tmpl"; cp -r "$src" "$tmpl"; rm -f "$tmpl/INUSE.SR"

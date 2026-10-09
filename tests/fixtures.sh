@@ -5,6 +5,7 @@
 #
 # usage: tests/fixtures.sh OUTDIR [sre0994b.zip]
 # Needs python3 with unicorn, and 7z (or unar) for the ARJ archive inside.
+# SRE_STATUS=path/to/STATUS.SRE adds registered games.
 set -eu
 OUT=$1
 ZIP=${2:-}
@@ -69,6 +70,15 @@ python3 "$HERE/tools/sreedit.py" "$OUT/army" empire.0.154=i32:5000 empire.0.158=
     empire.1.15c=i32:1000 empire.1.160=i32:400 empire.1.164=i32:30 empire.1.168=i32:150 \
     empire.1.2f0=i32:40 empire.1.227=i16:7 empire.1.22b=i32:100 empire.0.18c=i32:5000 \
     empire.1.18c=i32:5000 > /dev/null
+
+# Registered games, if a STATUS.SRE is given (SRE_STATUS=path): fedreg
+# and armyreg.
+if [ -n "${SRE_STATUS:-}" ]; then
+    for f in fed army; do
+        rm -rf "$OUT/${f}reg"; cp -r "$OUT/$f" "$OUT/${f}reg"
+        cp "$SRE_STATUS" "$OUT/${f}reg/STATUS.SRE"
+    done
+fi
 
 # Flavors: army, translated.
 for f in TREK DUNE MEDIEVAL WILDWEST BRE; do

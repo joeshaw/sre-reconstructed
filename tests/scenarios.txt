@@ -106,3 +106,10 @@ flavor-dune|remote|DUNE||||| 2{120*\x00\r}
 flavor-medieval|remote|MEDIEVAL||||| 2{120*\x00\r}
 flavor-wildwest|remote|WILDWEST||||| 2{120*\x00\r}
 flavor-bre|remote|BRE||||| 2{120*\x00\r}
+# Registered games (only with a STATUS.SRE given to tests/fixtures.sh).
+reg-lottery|remote|fedreg||||| 24\x00\r\x00y\x0012345\x00\r\x003\r{100*\x00\r}
+reg-bank|remote|fedreg||||| 24\x00\r\x00y\x0012345\x00\r\x003\r\x00\r\x00\r\x00v\x00d\x0010000\r\x00w\x002000\r\x00i\x002\r\x00q{100*\x00\r}
+reg-bonds|remote|armyreg|||empire.0.17c=i32:900000 empire.1.17c=i32:900000 empire.0.196=i16:4 empire.1.196=i16:4|| 24\x00\r\x00y\x0012345\x00\r\x003\r\x00\r\x00\r\x00v\x00b\x00c\x00y\x00y\x00\x08\x08\x08\x08\x08\x08\x08Ann Bonds\r\x009000\r\x0012000\r\x0012\r\x002\r\x005\r\x00s\x00\r\x00\r\x00q{100*\x00\r}
+reg-invest|remote|@reg-bonds||Joe Shaw||| 24\x00\r\x00y\x0054321\x00\r\x003\r\x00\r\x00\r\x00v\x00b\x00i\x00B\x003\r\x00y\x00s\x00\r\x00\r\x00q{100*\x00\r}
+reg-payoff|remote|@reg-invest|1995-03-09T16:00:00|Joe Shaw||| 2\x001\x00q\x00q\x00\r
+reg-maint|remote|@reg-bank|1995-03-09T13:00:00|||| 2\x001\x00q\x00q\x00\r
