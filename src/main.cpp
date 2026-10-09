@@ -218,3 +218,30 @@ int main(int argc, char **argv)
     int r = RealMain();
     exit(r);
 }
+
+// 1848:00c1 (end): write the score files named by Scores.File.*.
+void ScoreFiles()
+{
+    GalaxyOpen();
+    if (g_open) {
+        Resource r("Scores.File.ANSI", "SREScore.ANS");
+        const char *name = r.Str();
+        if (name[0]) {
+            OFStream f(name, 0);
+            f.noansi = 0;
+            int32 mask = EmpireMask();
+            ScoreList(&g_galaxy, mask, &f);
+        }
+    }
+    if (g_open) {
+        Resource r("Scores.File.Text", "SREScore.TXT");
+        const char *name = r.Str();
+        if (name[0]) {
+            OFStream f(name, 0);
+            f.noansi = 1;
+            int32 mask = EmpireMask();
+            ScoreList(&g_galaxy, mask, &f);
+        }
+    }
+    GalaxyClose();
+}

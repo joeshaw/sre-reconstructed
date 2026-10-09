@@ -13,4 +13,3 @@ void ResearchInit() {}
 void SysopMenu() {}
 void ResetGame() {}
 void TimeStart() {}
-void ScoreFiles() {}

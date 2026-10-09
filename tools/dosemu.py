@@ -180,6 +180,8 @@ class Dos:
 
     # ------------------------------------------------------------------
     def now(self):
+        if getattr(self, 'frozen', False):
+            return self.clock0
         return self.clock0 + datetime.timedelta(seconds=self.ticks / 18.2065)
 
     def advance(self, ticks=1):
@@ -1021,12 +1023,14 @@ def main():
     ap.add_argument('--steps', type=int, default=0)
     ap.add_argument('--snaps', action='store_true')
     ap.add_argument('--clock', default='1995-03-08T12:00:00')
+    ap.add_argument('--frozen', action='store_true', help='date/time services always return --clock')
     a = ap.parse_args()
     script = a.input.encode('latin-1').decode('unicode_escape').encode('latin-1')
     if a.input_file:
         script += open(a.input_file, 'rb').read()
     clock = datetime.datetime.fromisoformat(a.clock)
     dos = Dos(a.root, a.exe, a.args, script, clock=clock, trace=a.trace)
+    dos.frozen = a.frozen
     if a.snaps:
         dos.snaps = []
     dos.local_input = bytearray(a.local.encode('latin-1').decode('unicode_escape').encode('latin-1'))
