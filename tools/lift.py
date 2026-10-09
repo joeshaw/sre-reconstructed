@@ -298,12 +298,47 @@ class Lifter:
             return '%s %s 0' % (paren(e), op)
         return '%s %s 0' % (paren(a), op)
 
+    def label_slots(self, name, a):
+        # Borland builds by-value String arguments in place: the next
+        # String-producing call after "sub sp, 8" fills the newest unfilled
+        # slot (for the concat helper, its hidden result pointer does).
+        ctor = name in ('Str_ctor_cstr', 'Str_ctor_copy', 'Str_ctor_fill', 'Str_ctor',
+                        'f_273e_0a28', 'f_27eb_0003', 'f_27eb_0026', 'Str_substr')
+        if not ctor:
+            return
+        if not any(re.match(r'^&loc_[0-9a-f]+$', x) for x in a):
+            return
+        free = [sl for sl in self.slots if sl['label'] is None]
+        if not free:
+            return
+        sl = free[-1]
+        rest = [x for x in a if not re.match(r'^&loc_[0-9a-f]+$', x)] if name == 'f_273e_0a28' else a[1:]
+        if name in ('Str_ctor_cstr', 'Str_ctor_copy') and rest:
+            lab = rest[0]
+        elif name == 'f_273e_0a28' and len(rest) >= 2:
+            lab = '(%s + %s)' % (rest[1], rest[0])
+        elif name in ('f_27eb_0003', 'f_27eb_0026'):
+            lab = 'IntStr(%s)' % ', '.join(a[:-1])
+        elif name == 'Str_substr' and len(a) >= 3:
+            lab = '%s.substr(start=%s,n=%s)' % (a[0], a[2], a[1])
+        else:
+            lab = '%s(%s)' % (name, ', '.join(rest))
+        sl['label'] = lab
+
     def combine_args(self, items):
         # items in C order (first arg first), each a word
         out = []
         i = 0
         while i < len(items):
             a = items[i]
+            if a.startswith('SLOT#'):
+                j = i
+                while j < len(items) and items[j] == a:
+                    j += 1
+                lab = self.slots[int(a[5:])]['label']
+                out.append('S{%s}' % lab if lab else 'TMP')
+                i = j
+                continue
             b = items[i + 1] if i + 1 < len(items) else None
             if b is not None:
                 if b == 'ds' and isnum(a):
@@ -370,6 +405,8 @@ class Lifter:
                     v = int(mm.group(2), 0)
                     if v >= base:
                         sz = {'byte': 1, 'word': 2, 'dword': 4}.get(mm.group(1), 4 if i.mnemonic in ('les', 'lds') else 2)
+                        if i.mnemonic == 'lea':
+                            sz = 8      # address of a by-value object (String)
                         mx = max(mx, v - base + sz)
                 if i.mnemonic in ('ret', 'retf') and i.op_str:
                     pass
@@ -439,6 +476,7 @@ class Lifter:
         self.pending += n
         self.release(k)
         a = self.combine_args(args)
+        self.label_slots(name, a)
         regs = ''
         self.tcount += 1
         t = 't%d' % self.tcount
@@ -479,6 +517,9 @@ class Lifter:
                 frame = int(ins.op_str.split(', ')[1], 0)
         self.out = []
         self.carried = {}
+        self.frame = frame
+        self.saved = 0
+        self.slots = []
         self.reset()
         self.keepregs = False
         # blocks that reach a return without touching ax
@@ -553,6 +594,8 @@ class Lifter:
         if m == 'nop' or m == 'cld' or m == 'cli' or m == 'sti':
             return
         if prologue and m == 'push' and ops[0] in ('bp', 'si', 'di', 'ds'):
+            if ops[0] in ('si', 'di'):
+                self.saved += 1
             return
         if m == 'mov' and ops == ['bp', 'sp']:
             return
@@ -579,7 +622,11 @@ class Lifter:
             return
         if m == 'sub' and ops[0] == 'sp':
             n = int(ops[1], 0) // 2
-            self.stack.extend(['TMP'] * n)
+            depth = len(self.stack) + self.pending + n
+            addr = self.frame + 2 * self.saved + 2 * depth
+            sid = len(self.slots)
+            self.slots.append({'addr': addr, 'label': None})
+            self.stack.extend(['SLOT#%d' % sid] * n)
             return
         if m == 'add' and ops[0] == 'sp':
             self.release(int(ops[1], 0) // 2)
