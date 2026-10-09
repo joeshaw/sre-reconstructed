@@ -6,7 +6,7 @@
 #include <errno.h>
 
 static ClassEntry *g_classes;           // DS:43f0
-static const char *g_streamdir = "";    // DS:43ec
+static const char *g_streamext = ".II"; // DS:43ec
 
 void RegisterClass(ClassEntry *e, const char *name, CreateFn fn)
 {
@@ -211,7 +211,7 @@ void WriteObject(RawFile *f, Streamable *o)
 // 1629:07c7
 StreamFile::StreamFile(const char *name)
 {
-    path = String(g_streamdir) + name;
+    path = String(name) + g_streamext;
     in.open(path, FM_READ);
     temp = String(name) + ".$$$";
     HostRemove(temp.c_str());
@@ -243,7 +243,7 @@ void StreamFile::Keep(Streamable *o)
 // 1629:0ac6
 void AppendObject(const char *name, Streamable *o)
 {
-    String p = String(g_streamdir) + name;
+    String p = String(name) + g_streamext;
     RawFile f(p.c_str(), FM_WRITE | FM_APPEND);
     WriteObject(&f, o);
 }

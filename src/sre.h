@@ -73,6 +73,7 @@ extern Resource r_inactivetimeout, r_failedcovert, r_attackvictim, r_pirateraids
 void EmpireInit(Empire *e);
 int32 TotalPlanets(Empire *e);
 int32 NetWorth(Empire *e);
+int32 EmpireScore(Empire *e);
 PlanetSet *Planets(Empire *e, int16 type);
 void EmpireInitId(Empire *e, int16 id);
 void EmpireSetName(Empire *e, const String &s);
@@ -97,7 +98,7 @@ const char *PlanetName(int8 type);
 void InsurgencyUp(Empire *e);
 void InsurgencyDown(Empire *e);
 void ClearSpending(uint8 *s);
-void SetTreaty(Treaty &t, int16 type);
+void SetTreaty(Treaty &t, int16 type, uint8 a);
 
 // spending (1af6)
 int32 PriceSoldiers(Empire *e);

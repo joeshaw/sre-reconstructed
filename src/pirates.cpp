@@ -32,7 +32,7 @@ void PirateInit(Pirate *p)
 }
 
 // 4b60:01ab
-static void PirateSetName(Pirate *p, const char *s)
+void PirateSetName(Pirate *p, const char *s)
 {
     int16 i;
     for (i = 0; s[i] && i < 0x1f; i++)

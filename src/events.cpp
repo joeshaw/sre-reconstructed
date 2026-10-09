@@ -280,8 +280,10 @@ Event *EventCovertSetup::Execute()
         int16 sev = (int16)(-(int16)(((int32)5 * b_rand()) / 0x8000) - 1);
         AttackMessage(rv, t->name, sev);
         AttackNews(t, v, 0, sev);
-        SetTreaty(t->treaty[v->id], 0);
-        SetTreaty(v->treaty[t->id], 0);
+        SetTreaty(t->treaty[v->id], 0, 0);
+        t->treaty[v->id].setc(0);
+        SetTreaty(v->treaty[t->id], 0, 0);
+        v->treaty[t->id].setc(0);
         a->agents += 1;
     } else if (Exists(*t) && Exists(*v)) {
         CovertReport ra(a->id);

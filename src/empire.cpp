@@ -548,10 +548,10 @@ int32 GovCapacity6(Empire *e)
 }
 
 // Set a treaty's type and its default terms (inlined in the original).
-void SetTreaty(Treaty &t, int16 type)
+void SetTreaty(Treaty &t, int16 type, uint8 a)
 {
     t.settype(type);
-    t.a = 0;
+    t.a = a;
     t.sete(0);
     t.setd(0);
     if (t.type() == 3) {
@@ -566,5 +566,4 @@ void SetTreaty(Treaty &t, int16 type)
         t.sete(0x28);
         t.setd(0x28);
     }
-    t.setc(0);
 }

@@ -118,7 +118,7 @@ char NewsStream::PutRaw(char c)
     if (line.at(0) == '\\') {
         line.erase(0, 1);
     } else if (line.at(0) == '^' && line.at(1) == '\\' && line.at(4) == '\\') {
-        line.erase(0, 4);
+        line.erase(4, 1);
     } else if (line.length() > 0) {
         FormatNews(line, "^\\01\xc4^\\09\xc4^\\03\xc4^\\0B\xc4^\\07", "^\\01 \xfa  ^\\07", "", "");
     }
