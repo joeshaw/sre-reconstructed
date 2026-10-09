@@ -105,6 +105,10 @@ files, and the random number sequence.
     tests/fixtures.sh /tmp/srefix       # games made by the original itself
     tests/run.sh /tmp/srefix            # the scenarios in tests/scenarios.txt
     tests/fuzz.sh /tmp/srefix army 1 20 # random play, seeds 1 to 20
+    tests/fuzzchain.sh /tmp/srefix two 1 # two players taking turns over days
+
+With `SRE_STATUS=path/to/STATUS.SRE`, `tests/fixtures.sh` also makes
+registered games, for the scenarios of the bank, bonds and lottery.
 
 `tools/difftest.sh` and `tools/localtest.sh` compare one run; the other
 tools are the reverse engineering kit (de-overlaying the executable,

@@ -113,3 +113,6 @@ reg-bonds|remote|armyreg|||empire.0.17c=i32:900000 empire.1.17c=i32:900000 empir
 reg-invest|remote|@reg-bonds||Joe Shaw||| 24\x00\r\x00y\x0054321\x00\r\x003\r\x00\r\x00\r\x00v\x00b\x00i\x00B\x003\r\x00y\x00s\x00\r\x00\r\x00q{100*\x00\r}
 reg-payoff|remote|@reg-invest|1995-03-09T16:00:00|Joe Shaw||| 2\x001\x00q\x00q\x00\r
 reg-maint|remote|@reg-bank|1995-03-09T13:00:00|||| 2\x001\x00q\x00q\x00\r
+# Other command lines.
+userlist|local|two||||Userlist|
+register-bad|local|two||||Register|Somebody\rSome Bank\r1234567890\r\r\r
