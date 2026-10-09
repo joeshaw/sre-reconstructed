@@ -1,5 +1,6 @@
 // Players (segment 64d2): one record per BBS user in Data/Player.II.
 #include "sre.h"
+#include "conio.h"
 
 static const char *PLAYER_FILE = "Data/Player.II";      // DS:8094
 
@@ -168,4 +169,19 @@ void PlayerWhoAmI(Player *p)
 {
     kout << c_normal << "You are " << String(p->male ? "Emperor" : "Emperess").c_str();
     kout << ' ' << Color(15) << String(p->name).c_str() << c_normal << ".\n";
+}
+
+// 64d2:0835: the usernames of all the players, for the sysop's lists.
+void PlayerListNames(PickList *l)
+{
+    Player p;
+    PlayerLoad(&p, -1);
+    DataFile f(PLAYER_FILE, 0x72, 0, 1);
+    int32 n = f.numrecs();
+    for (int32 i = 0; i < n; i++) {
+        f.read(i, &p, 1);
+        if (p.name[0])
+            l->Add(p.user);
+    }
+    p.index = -1;
 }

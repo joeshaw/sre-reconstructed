@@ -127,6 +127,16 @@ int TermGetc()
     }
 }
 
+int TermPeek()
+{
+    if (g_peek == -2) {
+        if (!TermReady())
+            return -2;
+        g_peek = TermGetc();
+    }
+    return g_peek;
+}
+
 // Carrier: lost when the user's input stream ends.
 static int Carrier()
 {
@@ -332,7 +342,12 @@ void KeyIn::EndInput()
 
 // 247e:17dd / 247e:03ce: the function called while waiting for keys.
 static void (*g_idle)() = 0;             // DS:bee0
-void SetIdle(void (*fn)()) { g_idle = fn; }
+IdleFn SetIdle(IdleFn fn)
+{
+    IdleFn old = g_idle;
+    g_idle = fn;
+    return old;
+}
 static void Idle()
 {
     if (g_idle)

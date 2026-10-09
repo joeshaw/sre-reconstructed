@@ -3,7 +3,7 @@
 #include "itemlist.h"
 
 // 5fe0:0000
-static int16 ChoosePirates()
+int16 ChoosePirates()
 {
     int16 n = PirateCount();
     if (n == 0) {

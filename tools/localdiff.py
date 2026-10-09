@@ -46,7 +46,9 @@ def show(seq):
 
 def main():
     a = chars(open(sys.argv[1], 'rb').read(), False)
-    b = chars(open(sys.argv[2], 'rb').read(), True)
+    # Drop the reconstruction's conio output (bracketed in test runs).
+    port = re.sub(rb'\x1bP.*?\x1b\\', b'', open(sys.argv[2], 'rb').read(), flags=re.S)
+    b = chars(port, True)
     textdiff = None
     for i in range(min(len(a), len(b))):
         if a[i][0] != b[i][0]:

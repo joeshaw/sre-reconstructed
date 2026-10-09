@@ -2,6 +2,3 @@
 #include "sre.h"
 
 void TimeStart() {}
-void EmpireViewer() {}
-void PlayerEditor() {}
-void PirateEditor() {}

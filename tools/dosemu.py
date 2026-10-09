@@ -640,9 +640,13 @@ class Dos:
         for c in s:
             self._tty(c)
 
-    def dos_0b(self):
+    def dos_0b(self):           # kbhit(): the local keyboard
         self._poll()
-        self.uc.reg_write(UC_X86_REG_AL, 0)
+        if self.local_input:
+            self.uc.reg_write(UC_X86_REG_AL, 0xff)
+        else:
+            self.uc.reg_write(UC_X86_REG_AL, 0)
+            self._idle()
 
     def dos_0e(self):
         self.uc.reg_write(UC_X86_REG_AL, 3)

@@ -96,8 +96,11 @@ void TermFlush();
 void TermWrite(const char *s, int n);
 int TermReady();
 int TermGetc();         // -1 at end of input
+int TermPeek();         // the next TermGetc without taking it; -2 if none yet
 void TermRestore();
 
-void SetIdle(void (*fn)());
+// 247e:17dd: set the function called while waiting for keys; the old one.
+typedef void (*IdleFn)();
+IdleFn SetIdle(IdleFn fn);
 
 #endif
