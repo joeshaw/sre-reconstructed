@@ -108,22 +108,22 @@ Event *EventCovertDissension::Execute()
         rt << c_number << n << c_normal << " soldiers dissented from your army due to propaganda.";
         rt.SetTime(d.due);
         ra << "You successfully supported dissension of " << c_number << n << c_normal
-           << " soldiers of the army of " << c_empire << String(t->name) << c_normal << '.';
+           << " soldiers of the army of " << c_empire << Untr(t->name) << c_normal << '.';
         ra.SetTime(d.due);
         t->soldiers -= n;
         a->agents += 1;
     } else if (Exists(*t)) {
         ReportOut ra(a->id, 0);
         ReportOut rt(t->id, 0);
-        ra << "You failed to cause dissension in " << c_empire << String(t->name) << c_normal << '.';
+        ra << "You failed to cause dissension in " << c_empire << Untr(t->name) << c_normal << '.';
         ra.SetTime(d.due);
-        rt << "A covert agent from " << c_empire << String(a->name) << c_normal
+        rt << "A covert agent from " << c_empire << Untr(a->name) << c_normal
            << " was caught trying to support dissension and was executed!";
         rt.SetTime(d.due);
         if (r_failedcovert.Bool()) {
-            g_log2 << c_empire << String(a->name) << c_normal
+            g_log2 << c_empire << Untr(a->name) << c_normal
                    << " was caught trying to support dissension in " << Color(13)
-                   << String(t->name) << c_normal << ".\n";
+                   << Untr(t->name) << c_normal << ".\n";
         }
     }
     return 0;
@@ -145,7 +145,7 @@ Event *EventCovertDemoralize::Execute()
     if (d.success) {
         ReportOut ra(a->id, 0);
         ReportOut rt(t->id, 0);
-        ra << "You succeeded in demoralizing troops of " << c_empire << String(t->name) << c_normal
+        ra << "You succeeded in demoralizing troops of " << c_empire << Untr(t->name) << c_normal
            << '.';
         ra.SetTime(d.due);
         rt << "Mysterious shipments of alcohol demoralized your troops.";
@@ -161,15 +161,15 @@ Event *EventCovertDemoralize::Execute()
     } else if (Exists(*t)) {
         ReportOut ra(a->id, 0);
         ReportOut rt(t->id, 0);
-        ra << "You failed to demoralize troops in " << c_empire << String(t->name) << c_normal << '.';
+        ra << "You failed to demoralize troops in " << c_empire << Untr(t->name) << c_normal << '.';
         ra.SetTime(d.due);
-        rt << "A covert agent from " << c_empire << String(a->name) << c_normal
+        rt << "A covert agent from " << c_empire << Untr(a->name) << c_normal
            << " was caught trying to demoralize troops and was executed!";
         rt.SetTime(d.due);
         if (r_failedcovert.Bool()) {
-            g_log2 << c_empire << String(a->name) << c_normal
+            g_log2 << c_empire << Untr(a->name) << c_normal
                    << " was caught trying to demoralize troops of " << Color(13)
-                   << String(t->name) << c_normal << ".\n";
+                   << Untr(t->name) << c_normal << ".\n";
         }
     }
     return 0;
@@ -199,7 +199,7 @@ Event *EventCovertHostages::Execute()
            << c_normal << " credits as ransom.";
         rt.SetTime(d.due);
         ra << "Your covert agent succeeded in taking " << c_number << (int32)(m + b) << c_normal
-           << " credits from " << c_empire << String(t->name) << c_normal
+           << " credits from " << c_empire << Untr(t->name) << c_normal
            << " as ransom for hostages.";
         ra.SetTime(d.due);
         t->money.sub(m);
@@ -228,15 +228,15 @@ Event *EventCovertHostages::Execute()
     } else if (Exists(*t)) {
         ReportOut ra(a->id, 0);
         ReportOut rt(t->id, 0);
-        ra << "You failed to take hostages in " << c_empire << String(t->name) << c_normal << ".\n";
+        ra << "You failed to take hostages in " << c_empire << Untr(t->name) << c_normal << ".\n";
         ra.SetTime(d.due);
-        rt << "A covert agent from " << c_empire << String(a->name) << c_normal
+        rt << "A covert agent from " << c_empire << Untr(a->name) << c_normal
            << " was caught trying to take hostages and " << RandomPronoun(0) << " was executed!";
         rt.SetTime(d.due);
         if (r_failedcovert.Bool()) {
-            g_log2 << c_empire << String(a->name) << c_normal
+            g_log2 << c_empire << Untr(a->name) << c_normal
                    << " was caught trying to take hostages from " << Color(13)
-                   << String(t->name) << c_normal << ".\n";
+                   << Untr(t->name) << c_normal << ".\n";
         }
     }
     return 0;
@@ -274,8 +274,8 @@ Event *EventCovertSetup::Execute()
     Empire *v = &Emp(d.victim);
     if (d.success) {
         CovertReport ra(a->id);
-        ra << "Your covert agent was successful in setting up " << c_empire << String(t->name)
-           << c_normal << " and " << c_empire << String(v->name) << c_normal << '.';
+        ra << "Your covert agent was successful in setting up " << c_empire << Untr(t->name)
+           << c_normal << " and " << c_empire << Untr(v->name) << c_normal << '.';
         BattleReport rv(v->id);
         int16 sev = (int16)(-(int16)(((int32)5 * b_rand()) / 0x8000) - 1);
         AttackMessage(rv, t->name, sev);
@@ -287,23 +287,23 @@ Event *EventCovertSetup::Execute()
         a->agents += 1;
     } else if (Exists(*t) && Exists(*v)) {
         CovertReport ra(a->id);
-        ra << "Your covert agent was caught setting up " << c_empire << String(t->name) << c_normal
-           << " and " << c_empire << String(v->name) << c_normal << ", and " << RandomPronoun(0)
+        ra << "Your covert agent was caught setting up " << c_empire << Untr(t->name) << c_normal
+           << " and " << c_empire << Untr(v->name) << c_normal << ", and " << RandomPronoun(0)
            << " was executed.";
         if (t->id != a->id) {
             CovertReport r(t->id);
-            r << "A covert agent from " << c_empire << String(a->name) << c_normal
+            r << "A covert agent from " << c_empire << Untr(a->name) << c_normal
               << " was caught trying to set you up.";
         }
         if (v->id != a->id) {
             CovertReport r(v->id);
-            r << "A covert agent from " << c_empire << String(a->name) << c_normal
-              << " was caught trying to make you think " << String(t->name) << " attacked you.";
+            r << "A covert agent from " << c_empire << Untr(a->name) << c_normal
+              << " was caught trying to make you think " << Untr(t->name) << " attacked you.";
         }
         if (r_failedcovert.Bool()) {
-            g_log2 << c_empire << String(a->name) << c_normal << " attempted to set up "
-                   << Color(13) << String(t->name) << c_normal << " and " << Color(13)
-                   << String(v->name) << c_normal << ".\n";
+            g_log2 << c_empire << Untr(a->name) << c_normal << " attempted to set up "
+                   << Color(13) << Untr(t->name) << c_normal << " and " << Color(13)
+                   << Untr(v->name) << c_normal << ".\n";
         }
     }
     return 0;
@@ -546,7 +546,7 @@ int16 ListCovertOps(int16 id)
                 kout << Color(13) << setw(5) << n << setw(0) << Color(15) << ' ';
                 c->Display();
                 if (c->cv().target != -1)
-                    kout << c_normal << " to " << String(Emp(c->cv().target).name);
+                    kout << c_normal << " to " << Untr(Emp(c->cv().target).name);
                 kout << '\n';
             }
         }

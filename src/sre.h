@@ -156,6 +156,7 @@ void GalaxyMenu(Galaxy *g);                 // 62b1:0000
 void Preferences(Player *p);                // 6a9b:09a8
 void Bulletins();                           // 5543:0918
 void MoreHelp();                            // 5543:09a5
+void ShowHelpTopic(String topic);           // 5543:02c5
 void News(int16 n);                         // 5b6a:0228
 void TimeCheck();                           // 1e7b:008d
 void CheckRegistration();                   // 68a3:0124

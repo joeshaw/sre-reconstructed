@@ -59,6 +59,12 @@ public:
 
 // 14f6:03ef: write a String with the translation hook disabled.
 OStream &PutUntranslated(OStream &o, const String &s);
+// Manipulator form: o << Untr(name).
+struct Untr {
+    const char *s;
+    explicit Untr(const char *p) : s(p) {}
+};
+inline OStream &operator<<(OStream &o, const Untr &u) { return PutUntranslated(o, String(u.s)); }
 // Colour byte (bg << 4 | fg) as a manipulator.
 inline Color ByteColor(uint8 c) { return Color(c % 16, c / 16); }
 

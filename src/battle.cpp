@@ -44,7 +44,7 @@ void ClearBattleReports()
 void AttackNews(Empire *a, Empire *d, int16 success, int16 severity)
 {
     if (success) {
-        g_log2 << c_empire << String(a->name) << c_normal;
+        g_log2 << c_empire << Untr(a->name) << c_normal;
         if (Exists(*d) && TotalPlanets(d) > 0 && d->population > 0) {
             if (severity > 10)
                 g_log2 << " pulverized";
@@ -62,7 +62,7 @@ void AttackNews(Empire *a, Empire *d, int16 success, int16 severity)
         if (!r_attackvictim.Bool())
             g_log2 << " a";
     } else {
-        g_log2 << c_empire << String(a->name) << c_normal << " unsuccessfully attacked";
+        g_log2 << c_empire << Untr(a->name) << c_normal << " unsuccessfully attacked";
         if (!r_attackvictim.Bool())
             g_log2 << " a";
     }
@@ -72,7 +72,7 @@ void AttackNews(Empire *a, Empire *d, int16 success, int16 severity)
             g_log2 << Color(9);
         else
             g_log2 << Color(11);
-        g_log2 << String(d->name) << c_normal << ".\n";
+        g_log2 << Untr(d->name) << c_normal << ".\n";
         return;
     }
     if (TotalPlanets(a) > TotalPlanets(d) && NetWorth(a) > NetWorth(d))

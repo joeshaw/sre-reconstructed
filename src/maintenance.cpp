@@ -14,7 +14,7 @@ static Resource r_ptplanet("Points.PlanetMaster", (int32)1);       // 5568
 // 5681:0000
 static void Status(const char *msg)
 {
-    kout << String(msg);
+    PutUntranslated(kout, String(msg));
 }
 
 // 5681:004a: erase a status message.
@@ -117,18 +117,18 @@ static void Newspaper()
             switch (Random(4)) {
             case 0:
                 if (g_galaxy.planetmaster != -1)
-                    g_log2 << c_empire << String(g_empires[g_galaxy.planetmaster].name) << c_normal
+                    g_log2 << c_empire << Untr(g_empires[g_galaxy.planetmaster].name) << c_normal
                            << " appears to be a good military target.\n";
                 break;
             case 1:
                 if (g_galaxy.weaponsmaster != -1)
-                    g_log2 << c_empire << String(g_empires[g_galaxy.weaponsmaster].name)
+                    g_log2 << c_empire << Untr(g_empires[g_galaxy.weaponsmaster].name)
                            << c_normal << " would be a strong opponent.\n";
                 break;
             case 2:
                 if (g_galaxy.solarmaster != -1)
                     g_log2 << "Computer psychohistory models predict that " << c_empire
-                           << String(g_empires[g_galaxy.solarmaster].name) << c_normal
+                           << Untr(g_empires[g_galaxy.solarmaster].name) << c_normal
                            << " can be defeated by a united offense.\n";
                 break;
             case 3: g_log2 << "All is quiet, unfortunately.\n"; break;
@@ -213,7 +213,7 @@ static void DailyEmpire(Empire *e)
     }
     if (r_deletedead.Bool() &&
         !(Exists(*e) && TotalPlanets(e) > 0 && e->population > 0)) {
-        g_log2 << "Player " << c_empire << String(e->name) << c_normal << " has ";
+        g_log2 << "Player " << c_empire << Untr(e->name) << c_normal << " has ";
         if (TotalPlanets(e) == 0 && e->population == 0)
             g_log2 << "abdicated!\n";
         else
@@ -222,7 +222,7 @@ static void DailyEmpire(Empire *e)
         EmpireInit(e);
     } else if (r_deletedead.Bool() && e->w2a1 <= 0) {
         int32 days = r_inactivetimeout.Long();
-        g_log2 << "Empire " << c_empire << String(e->name) << c_normal << " erased - inactive for "
+        g_log2 << "Empire " << c_empire << Untr(e->name) << c_normal << " erased - inactive for "
                << days << " days.\n";
         DeleteEmpire(e);
         EmpireInit(e);
@@ -254,7 +254,7 @@ void Maintenance(Galaxy *g)
         GalaxyClose();
         return;
     }
-    kout << String("Running daily maintenance...\n");
+    PutUntranslated(kout, String("Running daily maintenance...\n"));
     msg = "Making backups...";
     Status(msg);
     HostMkdir("Backup");
@@ -371,7 +371,7 @@ void Maintenance(Galaxy *g)
             g->d3ac = 0;
         Empire *e = &g_empires[g->solarmaster];
         e->d178 += r_ptsolar.Long();
-        g_log2 << c_empire << String(e->name) << c_normal << " has been ";
+        g_log2 << c_empire << Untr(e->name) << c_normal << " has been ";
         if (g->solarmaster == oldsolar)
             g_log2 << "once again ";
         g_log2 << "chosen today's Solar Master, and has received a ";
@@ -382,7 +382,7 @@ void Maintenance(Galaxy *g)
     if (g->planetmaster != -1) {
         Empire *e = &g_empires[g->planetmaster];
         e->d178 += r_ptplanet.Long();
-        g_log2 << c_empire << String(e->name) << c_normal;
+        g_log2 << c_empire << Untr(e->name) << c_normal;
         if (g->planetmaster == oldplanet)
             g_log2 << " is still the";
         else
@@ -394,7 +394,7 @@ void Maintenance(Galaxy *g)
         Empire *e = &g_empires[g->weaponsmaster];
         e->d178 += r_ptweapons.Long();
         if (g->weaponsmaster != oldweapons)
-            g_log2 << c_empire << String(e->name) << c_normal
+            g_log2 << c_empire << Untr(e->name) << c_normal
                    << " has been chosen the new Weapons Master";
         if (TotalPlanets(e) > 500) {
             for (int16 i = 0; i < MAXEMPIRES; i++) {

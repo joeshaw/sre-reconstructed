@@ -305,10 +305,10 @@ void KeyIn::EndInput()
 // 247e:03e9
 int16 KeyIn::KeyReady()
 {
-    if (g_remote && !Carrier()) {
-        klocal << Color(14) << "Hangup?\n";
-        exit(1);
-    }
+    // Carrier loss is detected by the blocking read in GetKey; here the
+    // end of the input just means no key.
+    if (g_remote && !Carrier())
+        return 0;
     if (disabled)
         return 0;
     if (g_remote && RemoteCharReady())
@@ -343,8 +343,10 @@ char KeyIn::GetKey()
     int32 start = b_time(0);
     int32 last = b_time(0);
     while (start + g_timeout + 30 > last) {
-        if (g_remote && !Carrier())
-            start -= 1;
+        if (g_remote && !Carrier()) {
+            klocal << Color(14) << "Hangup?\n";
+            exit(1);
+        }
         if (KeyReady() && g_remote && RemoteCharReady()) {
             g_lastremote = 1;
             int16 c = (int8)RemoteGetc();
