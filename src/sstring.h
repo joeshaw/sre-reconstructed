@@ -33,6 +33,11 @@ public:
     // 273e:07cc: insert at position.
     void insert(int16 pos, const String &o);
 
+    // 27eb:053c: index of o at or after from, or -1.
+    int16 find(const String &o, int16 from = 0) const;
+    // 27eb:0492: index of c at or after from, or -1.
+    int16 findch(char c, int16 from = 0) const;
+
     bool operator==(const String &o) const { return s_ == o.s_; }
     bool operator!=(const String &o) const { return s_ != o.s_; }
     bool operator<(const String &o) const { return s_ < o.s_; }
@@ -46,5 +51,16 @@ private:
 
 // 27eb:0425: case-insensitive comparison with a C string (stricmp == 0).
 bool StrEqI(const char *a, const String &b);
+// 27eb:03e5: case-insensitive equality of two Strings.
+bool StrEqI(const String &a, const String &b);
+// 27eb:0049: decimal text of v, with thousands separators if commas.
+String NumStr(int32 v, int16 commas = 0);
+// 27eb:0003 / 27eb:0026: String(int) / String(long).
+inline String IntStr(int32 v) { return NumStr(v, 0); }
+// 27eb:0255: parse a number, ignoring commas; 0 if not all digits.
+int32 StrToLong(String s);
+// 27eb:02d4: round v to the given number of decimal digits of
+// precision (1..9).
+int32 RoundDigits(int32 v, int16 digits);
 
 #endif

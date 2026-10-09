@@ -22,12 +22,12 @@ void b_setrandseed(uint32 s);
 // 1000:48d6 unixtodos, 1000:0f03 time) with Borland's default
 // TZ = EST5EDT and its US daylight rule.
 struct b_date { int16 da_year; int8 da_day; int8 da_mon; };
-struct b_time { uint8 ti_min; uint8 ti_hour; uint8 ti_hund; uint8 ti_sec; };
-int32 b_dostounix(const b_date *d, const b_time *t);
-void b_unixtodos(int32 time, b_date *d, b_time *t);
+struct b_dostime { uint8 ti_min; uint8 ti_hour; uint8 ti_hund; uint8 ti_sec; };
+int32 b_dostounix(const b_date *d, const b_dostime *t);
+void b_unixtodos(int32 time, b_date *d, b_dostime *t);
 int32 b_time(int32 *t);
 void b_getdate(b_date *d);
-void b_gettime(b_time *t);
+void b_gettime(b_dostime *t);
 
 // The "DOS clock".  Normally the host's local time; tests may pin it.
 void b_setclock(int32 fixed_dos_seconds_since_1970, int32 rate);

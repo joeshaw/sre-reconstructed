@@ -176,7 +176,7 @@ static int16 isDST(uint16 year, uint16 month, uint16 yday, uint8 hour)
     return hour <= 1;
 }
 
-int32 b_dostounix(const b_date *d, const b_time *t)
+int32 b_dostounix(const b_date *d, const b_dostime *t)
 {
     int32 x = TIMEZONE + 315532800L;
     int16 si = d->da_year - 1980;
@@ -200,7 +200,7 @@ int32 b_dostounix(const b_date *d, const b_time *t)
     return x;
 }
 
-void b_unixtodos(int32 time, b_date *d, b_time *t)
+void b_unixtodos(int32 time, b_date *d, b_dostime *t)
 {
     time -= TIMEZONE + 315532800L;
     t->ti_hund = 0;
@@ -290,7 +290,7 @@ void b_getdate(b_date *d)
     d->da_day = (int8)tm.tm_mday;
 }
 
-void b_gettime(b_time *t)
+void b_gettime(b_dostime *t)
 {
     struct tm tm;
     wallclock(&tm);
@@ -304,7 +304,7 @@ void b_gettime(b_time *t)
 int32 b_time(int32 *t)
 {
     b_date d;
-    b_time tm;
+    b_dostime tm;
     b_getdate(&d);
     b_gettime(&tm);
     int32 v = b_dostounix(&d, &tm);

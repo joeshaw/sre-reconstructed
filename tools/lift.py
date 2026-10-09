@@ -426,6 +426,7 @@ class Lifter:
             if ins.mnemonic == 'sub' and ins.op_str.startswith('sp, '):
                 frame = int(ins.op_str.split(', ')[1], 0)
         self.out = []
+        self.carried = {}
         self.reset()
         self.keepregs = False
         # blocks that reach a return without touching ax
@@ -474,8 +475,15 @@ class Lifter:
                 if prev not in ('jmp', 'ret', 'retf'):
                     self.flush(a)
                 fl = self.flags if (prev in JCC or prev in ('js', 'jns')) else None
+                carry = None
+                if prev not in ('jmp', 'ret', 'retf') and self.stack:
+                    carry = (list(self.stack), dict(self.r), dict(self.r8), self.pending)
                 self.reset()
                 self.flags = fl
+                if a in self.carried:
+                    carry = self.carried[a]
+                if carry:
+                    self.stack, self.r, self.r8, self.pending = list(carry[0]), dict(carry[1]), dict(carry[2]), carry[3]
                 self.out.append('L_%04x:' % a)
             m, op = ins.mnemonic, ins.op_str
             ops = [o.strip() for o in op.split(', ')] if op else []
@@ -704,6 +712,8 @@ class Lifter:
                 return
             if isnum(ops[0]):
                 self.flush(int(ops[0], 16))
+            if isnum(ops[0]) and self.stack and int(ops[0], 16) not in self.carried:
+                self.carried[int(ops[0], 16)] = (list(self.stack), dict(self.r), dict(self.r8), self.pending)
             if isnum(ops[0]):
                 t = int(ops[0], 16)
                 self.out.append('    goto L_%04x;' % t)
