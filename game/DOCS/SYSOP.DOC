@@ -1,0 +1,311 @@
+                       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                        ³                         ³
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´   SOLAR REALMS ELITE   ³   Sysop Documentation   ³
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                        ³                         ³
+      ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                                                  ³
+          ÄÄÄÄÄÄÄÄÄÄÄÄÄ´ * Installation instructions                      ³
+            ÄÄÄÄÄÄÄÄÄÄÄ´                                                  ³
+              ÄÄÄÄÄÄÄÄÄ´ * Special configuration considerations           ³
+                ÄÄÄÄÄÄÄ´                                                  ³
+                  ÄÄÄÄÄ´ * Sysop options                                  ³
+                    ÄÄÄ´                                                  ³
+                      Ä´ * Configuration information                      ³
+                       ³                                                  ³
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄ
+  INTRODUCTION
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Copyright 1992-1995 by Amit J Patel
+
+Written by Amit Patel at the Solar Realms BBS, (713) 855-1665 [1:106/900]
+
+This game is an IBM version of Space Empire Elite (S.E.E.), an Atari ST
+online game.  Space Empire, S.E.E.'s ancestor, was written by Jon Radoff.
+Then S.E.E. was written by Jurgen Van Den Handle, and the newer versions of
+S.E.E. were updated and maintained by Carlis Darby and David Pence of
+HyperSpace Software. David Pence now supports S.E.E. for the Atari ST
+computers.  Carlis Darby worked on an IBM version of S.E.E.  SRE was
+originally a clone of S.E.E., written from scratch on the IBM without the
+source code to S.E.E., and from there it has evolved differently than
+S.E.E. Although S.E.E. is (and probably always will be) superior to SRE, we
+wrote SRE to give IBM users a chance to play this game.
+
+SRE is a game in which players build an empire and at the same time build a
+military to defend against other empires.  Up to 25 players can build
+empires in each Galaxy.  The Galactic Coordinator ("It"), controlled by
+computer, is the ruler of the Galaxy.  It offers protection for the empires
+to build up without fear of being destroyed by larger empires, and It sells
+soldiers, fighters, defense stations, heavy cruisers, carriers, generals, a
+command ship, planets, covert agents, lottery tickets, and food to each
+empire.  In return, the Galactic Coordinator collects taxes from each
+empire; It uses most of the taxes to distribute Galactic funding daily so
+that each empire may have spending money outside of its own profits.  Large
+empires usually make more money than the funding, but smaller empires make
+a significant amount of money from funding.  Empires can attack each other
+to capture planets for themselves, or use covert operations to cause
+internal disorder in opponent empires.  They can also attack 9 pirate
+teams, which are computer-controlled.  There is also great potential in
+peaceful relations between empires:  there are 6 treaty types to encourage
+either military or peaceful alliances.  Also, empires can trade with each
+other if one empire wishes to rid himself of an item that another empire
+has.
+
+In addition, SRE allows many different "flavors" to be used.  Instead of
+a space game in the tradition of S.E.E., you can set up a post-nuclear-war
+game (like BRE), wild-west, medieval, Star Wars, Star Trek, Jurassic Park,
+army, Dungeons & Dragons, Dune, or make your own flavor.  There are several
+flavors included with the game, and more are available on the Solar Realm.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  INSTALLATION
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Be aware that SRE requires approximately 300k of conventional memory to run.
+
+Installation of SRE should be fairly simple unless we haven't added support
+for your particular type of BBS.  If not, you may wish to call our board to
+see if there is a utility that will make the necessary door conversions to
+set up SRE on your system.
+
+IMPORTANT:  This version is NOT compatible with versions older than 0.990.
+            If you are running one of those, your game will be wiped out!
+            I suggest setting up a new option on your BBS for this new
+            version, and keeping the old one as well.
+
+  1.  Run "INSTALL" to set up the doorfile information and create a
+      batch file.  We have tested the game with DOOR.SYS and DORINFO1.DEF;
+      I do not yet have support for the 52-line DOOR.SYS.  I have
+      added several others, but they are not fully tested.  If one
+      does not work, try another.  For example, Spitfire has 4
+      formats; one may work!  There isn't any harm in installing for a
+      compatible BBS format; for example, if you run TAG, and you wish
+      to set up for DORINFO1.DEF instead of DOOR.SYS, you can run the
+      RBBS setup.
+
+  2.  Install the door to run the batch file (SRE.BAT) from the BBS.
+      (See your BBS manual if you do not know how to do this.  The
+      installer may have some clues also.)
+
+  3.  RESET the game with "SRE RESET".       *** VERY IMPORTANT ***
+      (Note:  SRE.EXE is the executable, and RESET is the parameter.)
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  SPECIAL CONFIGURATIONS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+If you are running a multinode system, please be aware that SRE is not
+designed to run multi-node.  It will create a "semaphore" file, INUSE.SR,
+and if it is found when SRE is run again, it will exit so that a second
+user cannot play.
+
+If you are running multiple nodes with different speed modems, you may
+have trouble with SRE's locked baud rate setup.  The installation program
+writes into RESOURCE.DAT:
+
+                LockBaudRate                    19200
+
+which may need to be different for each node.  What you can do is create
+a RESOURCE.1 and RESOURCE.2 (as many as needed) with that one LockBaudRate
+line in each.  The rest of the resources should be in RESOURCE.DAT.  Then
+edit your batch file to run
+
+                SRE -n1         and             SRE -n2
+
+on nodes 1 and 2.  SRE will read RESOURCE.DAT, and then RESOURCE.n where
+n is the node number, so you can have different setups on each node.  If
+your BBS passes the node number as a command line parameter, you can use
+
+                SRE -n%1
+
+or something similar.  Also, check SRDOOR.DOC for information on how to
+set the SRDOOR portion (which reads the BBS door drop file) for reading
+a different drop file for each node of your board.
+
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  SYSOP OPTIONS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+SRE has several features that makes it easier for the sysop to run the game:
+
+   1.  SRDOOR is an *external*, not internal, door converter.  If your BBS
+       doesn't want to cooperate with SRE, you can do several things to get
+       your doorfile converted to DOORFILE.SR.  (They are listed in the
+       documentation for SRDOOR.)  For example, Genesis Deluxe sysops can use
+       a program called "GENPC" to convert from Genesis format to SRE format
+       without using SRDOOR.  Searchlight and Maximus BBS software do not
+       need a door converter at all.
+
+   2.  F1 will bring up a help window on the sysop keys that are available.
+       F2 brings up a status window that allows you to spy on the player.
+       F5 returns the user to the BBS.  F7 and F8 decrease/increase the amount
+       of time the user has left online.  F10 activates chat mode; it is
+       deactivated with 'ESC'.  The chat has color support (^P followed by
+       a digit 0-9 changes color), and when you exit, it will restore the
+       line the user was on before you entered chat.  You can also shell
+       to DOS by pressing Alt-J.
+
+   3.  Auto-deletion of players occurs after 10 days of inactivity.  This
+       kills players who aren't playing anymore, so you don't worry about the
+       game becoming too full.  This can be controlled from Resource.DAT.
+
+   4.  "SRE SYSOP" allows you to delete players manually, change their empire
+       name, or change the user name (in case the user has changed handles on
+       the BBS).
+
+   5.  Help on function keys that you can use is available by pressing F1.
+       (While a player is playing.)
+
+   6.  The sysop can easily modify many configuration options by editing
+       Resource.DAT.  (See Docs/Resource.DOC for details)
+
+   7.  Running "SRE HELP" will show you the command-line options.
+
+   8.  You can lock certain users out of the game by adding their names
+       to Text/Lockout.LST.  Just put one username per line, and whenever
+       that user tries to play, it will display a message and send them
+       back to the BBS.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  CONFIGURATION
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+You can set various parameters when you RESET the game; there are more that
+can be set in a configuration file called Resource.DAT.  To see a list of
+Resource.DAT options, please see Docs/Resource.DOC.
+
+You can add your own text into SRE:  The file Text/Topics.HLP is a place
+to put help topics, bulletins, and advisor hints.  To see what the options
+are for adding text there, read the end of Text/SRTopics.HLP.
+
+There are many ANSI/text screens that you can add into SRE.  These files
+are shown at various places in the game:
+
+Screens/Title                   Before entering the game
+Screens/Return                  Before returning to the BBS
+Screens/NewPlaye(r)             Shown to players the first time they enter
+Screens/GameFull                When there is no space for another empire
+Screens/Lockout                 Shown to users whose names are in Lockout.LST
+Screens/WinWar                  Win a conventional attack
+Screens/LoseWar                 Lose a conventional attack
+Screens/TwoTimer                Find a double spy
+Screens/CivilWar                Civil war occurs
+Screens/Guerilla                Attacker sees this
+Screens/NukeWar                 Shown if nuclear attack is successful
+Screens/ChemWar                 Shown if chemical attack is successful
+Screens/RaidWar                 Successful pirate raid
+Screens/Collapse                Player lost all his planets
+Screens/Abandone(d)             Entire population left the empire
+Screens/TimeUp                  User's time has run out
+Screens/Revolt                  Planets revolt
+Screens/Thieves                 Pirates steal money
+Screens/Planets                 Planets are lost
+Screens/HighTax                 Violence due to high taxes
+Screens/FoodLost                Food is lost to pirates
+Screens/Nuclear                 Player is offered a nuclear weapon
+Screens/Chemical                Player is offered a chemical bomb
+
+Screens/PlanetP                 Shown the first time the player buys
+Screens/PlanetE                 a type of planet; the letter corresponds
+Screens/PlanetT                 to the menu option and happens to be
+Screens/PlanetF                 the first letter of the planet's name.
+Screens/PlanetR
+Screens/PlanetO
+Screens/PlanetG
+Screens/PlanetU
+Screens/PlanetS
+Screens/PlanetA
+
+You can create files with .TXT extensions for non-ANSI users, and .ANS
+extensions for ANSI users.  If there is a .TXT file but not an .ANS file,
+everyone will see the .TXT file.  If there is an .ANS file but not a .TXT
+file, non-ANSI users will see nothing.  If neither file exists, nothing
+will be shown.  Filenames over 8 characters can just be truncated to
+8 characters; the full name is shown because it is easier to remember,
+and most editors will truncate to 8 characters for you.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  HOW IT WORKS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Your BBS creates a door file containing user data.  SRDOOR interprets that
+door file.  Since there are many different types of BBS door files, SRDOOR
+needs to know how to interpret the file.  SRDOOR has a setup file called
+SETUP.SR that contains this information.  Then SRDOOR writes the
+information to a file called DOORFILE.SR.
+
+Then SRE runs.  SRE reads from DOORFILE.SR.  Most door games read the BBS
+door file directly.  Why do we have a separate program?  One thing is that
+if someone has a BBS that SRE doesn't support, they can write a new program
+to replace SRDOOR.  So far, I've heard of WW4SR, GENPC, STDOOR, P2SR, and
+SFDORFIL, all of which interpret the doorfile and convert it to
+DOORFILE.SR. Also, if you want to play without a BBS, you can create a
+DOORFILE.SR and run SRE, without having to go through a BBS.
+
+I hope that if you have trouble with SRE, you can tell us at which step
+the program stops working.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  DISCLAIMERS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+I wrote this game for fun, and I assume no responsibility for damages
+caused by running this program.  I have tried to make sure that there are
+no major bugs in the program, but inevitably a few will pop up.  The best
+way to report bugs is by sending me snailmail.  The best way to suggest new
+features or get technical support is to post to the SRGAMES fidonet echo.
+
+If you want some legal mumbo jumbo:
+
+The Solar Realm disclaims all warranties relating to this software, whether
+express or implied, including but not limited to any implied warranties of
+merchantability and fitness for a particular purpose.  Neither The Solar
+Realm nor the authors of this program shall be liable for any indirect,
+consequential, or incidental damages arising out of the use or inability to
+use such software, even if The Solar Realm has been advised of the
+possibility of such damages or claims.  In no event shall The Solar Realm's
+liability for any damages ever exceed the price paid for the registration
+fee for this software, regardless of the form of the claim.  The person or
+persons using this software bear all risks as to the quality and
+performance of this program.
+
+It is your responsibility to determine if this program will work reliably
+on your computer system and your software environment.  This program is
+available in an unregistered form for the purpose of evaluation; by
+registering, you acknowledge that it works to your satisfaction.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  CONTACTING ME
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+If you have any more questions/comments/problems, you can contact the
+author of SRE by snailmail:
+
+    Amit J. Patel
+    4851 Cairnsean
+    Houston, TX 77084-2541
+
+If you send mail after August 1994, I will be in graduate school, and the
+mail will be forwarded from this address to my school address.  It may take
+several weeks for a reply.  Internet email will be faster, usually.
+
+If you are on the Internet, you may email me at amitp@cs.stanford.edu.
+
+You can also call Mehul's BBS, The Solar Realm, at (713) 855-1665.
+There is no validation required (full access on first call), so you can
+download SRE if you would like to.  The 'N' key in the main menu allows you
+to leave some comments to me.  Be warned:  the board is very busy!  If you
+want to save time while logging on, you can log on under an 'anonymous'
+user called GUEST.  It will not create a user for you (saving the hassle of
+the new-user questionaire), but you will be able to access the files
+quickly.  I cannot guarantee that I will be able to read and reply to
+all the mail I get at this BBS, since I have to call long distance to
+get on there.
+
+You could send FidoNet mail to The Solar Realm:  1:106/900.  However, since I
+am going to be away at graduate school, it may be a long time before you get a
+reply.  File-requests of "BRE", "SRH", "SRE", "AC6", "LEA", "PC", and "SCE" are
+also available.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+

@@ -1,0 +1,462 @@
+This is the list of things that have changed in versions older than 0.990.
+
+What's GONE in SRE 0.990
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  The Special Attacks option has been removed; it is always ON now.
+2.  The Supply planets option has been removed; it is always ON.
+3.  The lottery doesn't show up in the unregistered version so that
+    you don't have money trapped in the bank.
+4.  There is no "research menu" at the moment.  The research that is
+    done is not under your control.
+5.  Pirates no longer strike back the turn after a player attacks them;
+    I am going to keep track of what the pirates think of each player,
+    and they will attack players they don't like in a future version.
+6.  I do not have SRE STATISTICS working yet.  It will be included
+    in a future version.
+7.  Most of the parameters have been removed and put into a sysop menu;
+    to get to the sysop menu, run SRE SYSOP.
+8.  All the support for an SRTERM program has been removed!!  It was
+    making things very complicated and I was unable to do the configurable
+    menus with that code in there.  (I never got around to writing
+    SRTERM anyway, so it shouldn't matter much.)
+9.  Several Resource options are gone, and can be set only at reset-time.
+    Planets per turn and Sysop name are the only ones I can remember.
+10. The INSTRUCTIONS and DISPLAY parameters have been removed.
+    If someone wants them back, let me know so that I can put it on
+    my list of things to do.  You can use the CREATEINSTRUCTIONS
+    parameter to create ANSI and text instructions files for your
+    users.
+11. The "don't accept new players" date has not yet been implemented.
+
+What's NEW in SRE 0.986g
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  The Special Attacks option has been moved into the Resource file,
+    so if you had it enabled, please edit your resource file, and put
+    "SpecialAttacks yes" in there.
+2.  The Multitasker option in the Resource file now tells SRE to give
+    up part of its time slice to Microsoft Windows or OS/2 when it
+    is waiting for user input.  I have not tried this option with
+    DESQview, but it may work in DV also.
+3.  A bug that caused the system to beep at sysops who had the special
+    attacks on in the unregistered version has been fixed.  I apologize
+    for this!
+
+What's NEW in SRE 0.986f/e
++-+-+-+-+-+-+-+-+-+-+-+-+-
+1.  The players can now draft people into your military when defending
+    against an attack; this is set in the same place the tax rate is set.
+    See the online help (SRE HELP) for details on the drafting.
+2.  A bug in 0.986e, where messages and chat mode wrapped incorrectly,
+    was fixed.
+
+What's NEW in SRE 0.986d
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  Some more bugs in the food market were fixed.
+2.  A bug causing the News files to have extra carriage return (ASCII 13)
+    characters in it was fixed.
+
+What's NEW in SRE 0.986c
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  The bank investments have been fixed so that the interest rate is
+    twice the rate for deposits.
+2.  Setups now operate one-way only.  When a players sets up A and B,
+    the result is that B thinks that A attacked him, but A does _not_
+    think that B attacked him.  The results are in the news file also.
+3.  Players can now send messages to themselves.  This may be useful
+    when they want to remind themselves of something they have to do.
+4.  Error/warning messages are displayed on the bottom of the screen
+    when they occur.  They are also recorded in SYSOP.LOG.  These messages
+    should probably be reported to The Solar Realm if they look serious.
+5.  A couple of minor bugs in trading were fixed.
+6.  The pirates have a limited idea of revenge, and they will occasionally
+    strike back after a pirate raid.
+
+What's NEW in SRE 0.986b
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  A bug with the input of numbers was fixed.
+2.  A bug with entering negative numbers in the Resource file was fixed.
+
+What's NEW in SRE 0.986
++-+-+-+-+-+-+-+-+-+-+-+
+1.  There is an ANSI news file (NEWS.ANS) as well as the text version
+    (NEWS.TXT), and there is an Yesterday's News file in ANSI too.
+2.  There is a new "attack" option, "Spy on Pirates".  It takes up your
+    attack for that turn, but it displays spy info on each pirate team.
+    (It's free, too!)
+3.  A new resource option, DeleteDeadPlayers, can let you prevent dead
+    players from starting over.
+4.  A new resource option, InactiveTimeOut, lets you choose how long
+    SRE waits before deleting an inactive player.  This used to be a RESET
+    option; now it is in the resource file.
+5.  There are new keys when doing numeric input:  'K' means 'thousand'
+    and 'M' means million.  That way, you can enter "3M" to mean 3 million.
+6.  There is a new System Menu option, V, which takes the player to
+    the Advisors, who give some advice on the empire.
+7.  The pirate teams will produce their own military/money/agents from
+    the planets they have captured.  This will increase the rewards of
+    defeating a pirate team.
+
+What's NEW in SRE 0.985
++-+-+-+-+-+-+-+-+-+-+-+
+1.  The reports are rewritten!  You may notice that your REPORTS.SR file
+    will be missing and it will replaced by RPT.SR, which is smaller.
+2.  When you are asked whether you want to accept a treaty, you will be
+    shown the empire's net worth, and if you have bribed a spy from their
+    empire, you can spy on them too.  If you accept, you can send a message
+    to your new ally.
+3.  When you propose a treaty, you can send a message also.  In a future
+    version, the message will appear with the treaty offer, like it should.
+    However, until then, will appears with the other messages.
+4.  The events are rewritten!  EVENT.SR replaces EVENTS.SR, and it should
+    be much smaller!
+5.  Covert op results, battle results, investment/miscellaneous results,
+    and soon, treaty messages, will be displayed separately in their own
+    colors.
+6.  Events are processed each turn instead of each day.  This way, bank
+    investments get back sooner.
+7.  A bug in bank loans was fixed.
+8.  The "bug" where users in protection can get attacked is "fixed".
+9.  SRE ENEMY works in unregistered versions now.
+10. Supply planets (including SRE SUPPLY) works in unregistered versions.
+
+What's NEW in SRE 0.984
++-+-+-+-+-+-+-+-+-+-+-+
+1.  50 Generals can fit on one government planet instead of 40.
+2.  Diplomacy option was added to the System Menu.
+3.  Coverts or generals will kill each other if they don't have enough
+    space on the government planets to survive.
+4.  "Supply planets" are an option at reset-time; (used to be REGISTERED only)
+    these planets supply all military units rather than only soldiers.  You can
+    also toggle them with SRE SUPPLY.
+5.  Fixed bug where the galactic coordinator gives too much money.
+6.  Fixed bug that let users put spaces after the empire name.
+7.  Installed new optimized ANSI routines.
+8.  New message system, with longer word-wrapping messages.  One nice side
+    effect is that even though the messages are longer, LESS space is taken
+    up on disk!!!
+9.  New message option:  SRE MESSAGE lets the sysop post a message
+    (public or private) to the players
+10. Problems with pirates having too much stuff when raided have been fixed.
+11. Pirate teams will live past resets.  If you wish to delete the pirates,
+    erase the file ENEMY.SR (at any time).
+12. The amount the galactic coordinator gives to you depends on how nice
+    you have been (with respect to chemical/nuclear attacks, galactic
+    tax donations, and how many anti-pollution planets you have).
+13. New option:  SRE SUPPLY  will let you select supply/soldier (REGISTERED)
+14. New option:  SRE GAMESTATUS  will show you some information about the game.
+15. New option:  SRE MSGREAD will let you read all the messages and
+    see who they are from, even if the message was marked "anonymous" by
+    the sender.
+16. "Show Relations" on the diplomacy section will show the net worths of
+    the other empires.
+17. There are now TWO help files for SRE:  SREHELP.DAT is the standard one
+    that comes with the game; HELP.DAT is one that you can create for your
+    own customization.  See SREHELP.DAT for details on how to customize the
+    help file.
+18. Bug that caused lockups (actually a loop that took a minute to complete
+    on a 16mhz system, but gave no indication that it was running) in
+    trading was fixed.
+19. Nuclear weapons are now 30,000,000 credits instead of 50,000,000.
+
+What's NEW in SRE 0.983c
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  The bank investments are for a certain number of turns rather than a
+    certain number of hours.  This is better when the number of turns each
+    day is high, since you don't have to wait as long to get the investments
+    back.
+2.  Support added for an SRTERM that might be written in the future.
+3.  Fixed bug with petroleum prices not being accurate if ^C was pressed
+    during play.
+
+What's NEW in SRE 0.983b
++-+-+-+-+-+-+-+-+-+-+-+-
+1.  SRE MSGPACK will pack the messages.  Normally, this is done automatically
+    each day, so you don't have to worry about it.
+2.  New resource options Trading and Messages.  (explained in RESOURCE.HLP)
+3.  Message bug with duplicating messages was fixed.
+
+What's NEW in SRE 0.983
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Chat mode fixed up so that it'll work better with locked baud rates.
+2.  SRE ENEMY allows you to edit the pirate names. (used to be REGISTERED only)
+3.  Numeric input has been made better.
+4.  F3 during chat turns the user's keyboard on and off.
+5.  F1 during play displays a help window.
+6.  F2 during play displays a status window to spy on your users.
+7.  F7 and F8 decrease and increase user's time left, respectively.
+8.  SRE.RC (Resource file from 0.982b) is OBSOLETE.  This means you have to
+    redo all your changes.  (Sorry!)  The new resource file is RESOURCE.DAT.
+    The format is different as well.  It's all explained in RESOURCE.HLP.
+    The reason there's no RESOURCE.DAT included is so that when you upgrade,
+    and unzip the new stuff into your directory, it won't delete the setup
+    you have!
+9.  A new option, SRE TURNS, allows you to change the number of turns granted
+    per day.  (REGISTERED)
+10. The INSTRUCTIONS, DISPLAY, and SCORES parameters work over the modem
+    if you don't use the /LOCAL switch.  If you use /LOCAL, then it'll display
+    to the screen instead of the modem.
+11. ALT-J jumps (shells) to DOS if you have enough memory.  SRE doesn't
+    swap to disk when shelling.  :(
+12. GAMEFULL.ANS or GAMEFULL.TXT is displayed when the game is full and
+    a user tries to start a new empire.  (If the .ANS file exists AND the
+    user has ANSI, it is displayed; otherwise it displays the .TXT file.)
+    That way, if you have two or three games running, you can tell the user
+    to try another game.
+13. Pirate Raids let you know what you've lost fighting the pirates.
+14. Treaties can be individually enabled/disabled from RESOURCE.DAT.
+15. SRE STATISTICS displays statistics about your game.
+16. The LOCKOUT.USR file can have names of users that you want to lock out
+    of a game.  Just create the file and list the users, one on each line,
+    that should not be allowed to play.  (The user name should be listed
+    the same way that it would appear on the status bar when that user
+    plays.)  Also, the LOCKOUT.ANS or LOCKOUT.TXT files are displayed when
+    that user attempts to play.
+17. The help system is even easier to use, and there are options in the
+    resource file to select which type of help input you'd like.
+18. There are resource options to selectively turn off nuclear and/or
+    chemical attacks.  (REGISTERED)
+19. You (the sysop) can add your own ANSI screens to SRE.  See SRE.DOC
+    for info on where these ANSI screens are displayed.
+20. You can specify a date to stop accepting new players into a game,
+    and when a user tries to play after that, SRE will display NOMORE.TXT
+    (or NOMORE.ANS if it exists).  (REGISTERED)
+
+What's NEW in SRE 0.982
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Two status bars.  (Wow.)
+2.  A resource file - SRE.RC - that lets you change the COM port parameters
+    and the length of timeout before the keyboard times out.  (And others)
+3.  Bug with short prompts and petroleum planets not giving money has been
+    fixed.
+4.  Number of turns of protection bug has been fixed; previously, it gave
+    one extra turn of protection.
+5.  Parameters such as /ANSI=0 didn't work with the DISPLAY or INSTRUCTIONS
+    parameters; now they do.
+6.  FINALLY!  SRE Checks time left on the board.  On some door types, I was
+    not able to figure out how much time was left, so SRE lets you play for
+    an unlimited amount of time.  Also, if the time left doesn't work for you
+    (SRE expects minutes and your door type gives seconds or hours), you
+    can disable the time-limit feature by using the command line option
+    /NOTIMELIMIT.  You can also edit SRE.RC to add the "No Time Limit"
+    option.  If you do want the time limit, use /TIMELIMIT [the resource
+    file option is "Time Limit"].  The default is unspecified, and may
+    change in future versions, so I strongly advise you edit SRE.RC and
+    set your preference.
+7.  Bug with reports (bank investments and covert operation results) not
+    showing up has been corrected.
+8.  Bug that made results of battles with over 3000 soldiers/fighters/
+    cruisers has been fixed.  Battle formulas are all-new (maybe not
+    better).
+9.  Help is now context-sensitive.  You can type "just enough" for SRE to
+    fill in the rest, and press TAB to complete the word or just press
+    RETURN if it's finished.  (This also applies to bulletins.)
+10. Running "SRE /?" will list all the parameters & switches.
+11. Pressing ">" on a prompt will fill in the "max" value.  This is very
+    useful in the bank, to Withdraw All or Deposit All.
+12. Bug with entering long registration codes has been fixed.  (It said
+    "Thanks for registering" after you type in the numbers, but it didn't
+    actually register the game.)
+13. Some support (?) for COM3-8.  You can edit [RESOURCE.DAT] to define your
+    COM ports.  (Untested)  This -should- work for IRQ levels 3 and 4.
+
+What's NEW in SRE 0.981
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Problem with attacking is fixed.  In 0.980, attacking did too much damage.
+2.  Problem that caused enemy players not to appear has been fixed.
+3.  Problem that prevented a player from *completely* destroying another with
+    conventional attacks has been corrected.
+4.  F5 key returns the user to the BBS.
+5.  Scores won't show up locally when writing to SRESCORES.TXT/SRESCORES.ANS.
+
+What's NEW in SRE 0.980
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Both Short and Long instruction files.  This is to encourage users to
+    read the short one if they're intimidated by the long one.
+2.  A new user message in NEWUSER.ANS/NEWUSER.TXT that is          (REGISTERED)
+    displayed when a new player joins the game.
+3.  Reset in the unregistered version gives more options (Pirate Raid)
+
+What's NEW in SRE 0.979
++-+-+-+-+-+-+-+-+-+-+-+
+0.  Since there never was a 0.979, there isn't anything new here.
+
+What's NEW in SRE 0.977
++-+-+-+-+-+-+-+-+-+-+-+
+1.  IMPORTANT!!  Use the NEW "RESEARCH.DAT" file from the ARJ/ZIP
+2.  Major bug in Pirate Raids fixed.                               (REGISTERED)
+3.  Many options in RESET:  date to start game, number of days before
+    maintenance is run, whether the name of a defender in an attack is shown
+    in the news file, whether failed covert ops are shown in the news file,
+    and whether special attacks are allows.                        (REGISTERED)
+4.  The /BIOS switch is temporarily set to be default.  /FASTWRITE forces the
+    direct screen writes.
+5.  Much internal `cleaning up'.  The code size decreased by about 15k.
+
+What's NEW in SRE 0.976
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Bug involving too high Galactic Coordinator taxes is fixed.  If you had
+    urban planets, the GC would charge you too much, usually more than you
+    have.
+2.  Nuclear bombs have a maximum planet capacity of 300.  This varies during
+    play.  This also overrides "What's NEW in SRE 0.974", #3.
+3.  Having government planets now reduces the severity of a civil war caused
+    by not paying the planets.  The civil war caused by not feeding the
+    people is not affected.
+4.  IMPORTANT!!!  Delete REPORT.SR
+
+What's NEW in SRE 0.975
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Bulletins available at the main menu.  Edit SREHELP.DAT and add bulletins
+    in the form:
+       #key bulletin-®name¯
+       ®text¯
+       #end
+    The text is word wrapped unless there is a \n in the file; the "\n" forces
+    movement to the next line.  The '\' character at the end of a line is a
+    place keeper.  Some editors erase spaces at the end of a line.  The \ is
+    ignored by SRE, but allows you to have a space at the end of a line.
+2.  Customizable help topics.  Help topics are available from the system menu.
+    They are in the form #key help-®name¯.  See #1 for more details.
+3.  Editable hints.  These are also in SREHELP.DAT, with the same format as
+    #1 and #2 above.
+4.  User Preferences menu.  If users are pressed for time, they can turn off
+    some of the verboseness of SRE, at the expense of making the game look
+    ugly.
+5.  Fast files.  The files are MUCH faster than those of 0.970.  However, on
+    some computers (386/33), you may not notice.
+6.  Main Menu now contains 9 options instead of 6.  The new ones:  Status,
+    See Bulletins, and Diplomacy.
+
+What's NEW in SRE 0.974
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Computer-controlled enemies can be attacked with Pirate Raid.  There
+    are 9 computer enemies that steal things from players.  The players can
+    attack back and take back their items.                         (REGISTERED)
+2.  Guerilla attacks work now!                                     (REGISTERED}
+3.  Nuclear attacks kill 25% of the opponent's planets.            (REGISTERED)
+4.  Chemical attacks kill 50% of the opponent's population.        (REGISTERED)
+5.  Saves in a turn.  If the user hangs up during play, it saves the place
+    and starts there again next time.
+6.  New covert op:  Treaty Spy, #7.
+7.  Investments.  At the bank, you may invest money and it will return
+    in 36 real hours.
+
+What's NEW in SRE 0.973
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Planet prices in protection are much lower than they used to be.  This
+    will allow the empires to grow much faster.
+2.  Main Menu available by editing the batch file.  Change
+       SRE
+    to
+       SRE /MENU
+3.  News files NEWS.TXT and YESTNEWS.TXT list major events of the day.
+
+What's NEW in SRE 0.972
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Some covert operations now include a risk factor displayed before
+    the player is certain that he/she/it wants to perform the covert op.
+2.  New covert operation:  Bombing, #6
+3.  F10 = chat.  Chat finally works acceptably.  Control-R + a number
+    changes colors.
+
+What's NEW in SRE 0.971
++-+-+-+-+-+-+-+-+-+-+-+
+1.  Bug fix:  the Abdicate option didn't work.  It caused a "divide error"
+    and sometimes locked up the system.
+
+2.  Scores files generated automatically --- SRE produces SRESCORES.ANS and
+    SRESCORES.TXT every time its run instead of the batch file running
+    SRE SCORES.
+
+3.  The batch file needs to be created again.  Re-Run SRINSTAL's Batch File
+    Setup option.
+
+4.  The instruction file can be sent to a file with
+    SRE INSTRUCTIONS /LOG /ANSI=1
+    to produce an ANSI instruction file (SRE.LOG), or
+    SRE INSTRUCTIONS /LOG /ANSI=0
+    to produce a non-ANSI instruction file (also in SRE.LOG).  You can
+    then copy SRE.LOG to another file.  This need only be done once.
+
+What's NEW in SRE 0.970
++-+-+-+-+-+-+-+-+-+-+-+
+
+1.  Instantaneous petroleum price fluctuations.  This prevents one user from
+    taking advantage of extremely high petroleum prices.  It is also more
+    realistic for the game.
+2.  Guerilla Warfare
+    Explained in the instructions to the game.
+3.  Several command-line options:
+    A.  /ANSI=0
+        Forces ANSI off.  Can be used with /LOG and SCORES to produce
+        a non-ANSI score file.
+    B.  /ANSI=1
+        Forces ANSI on.  Can be used with /LOG and SCORES to produce
+        an ANSI score file.
+    C.  /LOG
+        Writes all output to a log file, SRE.LOG.  (In ANSI if ANSI is on).
+        You can also use this option to extract the instructions to a file
+        with "SRE /LOG": play the game, and view the instructions.  Then
+        and edit the SRE.LOG file and copy the instruction part to a
+        separate file.
+    D.  /BIOS
+        Uses the BIOS for output instead of direct-screen writes.  Use
+        this for non-compatible computers or multi-tasking systems.
+        You can also use this to get rid of snow on CGA systems.
+    E.  /NOSPECIALEFFECTS
+        Turns off the special effect cursors at Yes/No prompts and at
+        pauses.  This greatly reduces the size of the LOG file.  Also,
+        some modems have bufferring that continues output even after
+        the user has pressed a key.  If so, this option will speed up
+        remote game operation.  (Ask users if PAUSE immediately goes
+        away when they press a key or if there's a delay; if there is
+        a delay, use this option.)
+    F.  /LOCAL
+        For BBS door files that don't send the right message to SRDOOR
+        that the user is local, this option forces LOCAL play.
+4.  Batch file setup inside of SRINSTAL.  You don't have to run two programs
+    (SRINSTAL, SETUPBAT) to install SRE --- just one.
+
+What's NEW in SRE 0.965
++-+-+-+-+-+-+-+-+-+-+-+
+
+1.  New planet types (Anti-Pollution, Petroleum)
+2.  System Menu (in the Government Spending Menu)
+    A.  Super Lottery - Buy tickets and the game picks a winner daily
+    B.  Scores
+    C.  Check trade deals that had to be rejected because player couldn't
+        meet the demands
+    D.  Covert Operations
+    E.  Bank
+    F.  Show Status
+    G.  Set Tax Rate
+    H.  Toggle Expert Mode
+    I.  Abdicate
+    J.  Change Colors
+3.  Bank available before paying planets
+4.  All-new improved SETUPBAT program, that allows:
+    A.  Outputting the scores to a separate ANSI/text file
+    B.  Recording all actions of all players in a trap file
+5.  A nicer-looking status bar
+6.  Command line parameters:
+    REGISTER
+    Registration of the game.  If you send the registration form in,
+    we will send you three code numbers to you that you type in with
+    this option.
+    REREGISTER
+    Registration of the game if it is already registered to someone else.
+    BANK
+    Setup of the bank:  creates the bank and sets an interest rate.  This is
+    available in the registered version only.
+    RESET
+    Erase all players, and set options.  Options are only available in the
+    registered version.
+    SCORES
+    Displays only the scores.  Either run "SRE SCORES" as a door program
+    to allow the scores to be sent to the user directly or create a score
+    file with "SRE SCORES /LOG /ANSI=1 /LOCAL" and copy SRE.LOG to another
+    file.  ("SRE SCORES /LOG /ANSI=0 /LOCAL" for a non-ANSI score file)
+
+(See the new instruction file for details)
+
+

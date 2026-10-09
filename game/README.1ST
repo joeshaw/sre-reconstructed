@@ -1,0 +1,56 @@
+  SOLAR REALMS ELITE
+  Unpacking/Upgrading Instructions
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+1.  Run
+        UNPACK -y
+    to unpack the rest of the files.  This is all you have to do if
+    you are upgrading.
+
+2.  Run
+        INSTALL
+    if you are installing for the first time, or if you wish to
+    change some of the score file, fossil driver, or locked baud
+    rate settings.
+
+3.  Set up your BBS software to run SRE.BAT when the user wishes
+    to play SRE.  (See your BBS manual if you do not know how to do this.)
+
+4.  Reset the game with
+       SRE RESET
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+  FILE LISTING for files created by UNPACK:
+
+DATA directory:
+research.dat    10455   1-01-93  6:25p 
+TEXT directory:
+player.msg      35302   1-13-95  9:02p 
+srtopics.hlp    31611   1-13-95  8:55p 
+SCREENS directory:
+newplaye.msg     1159   1-01-93  5:39p 
+timeup.ans        472   2-24-94  6:47a 
+DOCS directory:
+bugrpt.txt       2298   1-13-95  5:38p 
+distrib.txt      3305   2-23-95 12:13p 
+q&a.txt          7793   1-13-95  5:41p 
+register.doc    13883   1-13-95  5:37p 
+resource.doc    25432   9-06-94  5:10p 
+srdoor.doc      11818   1-13-95  5:42p 
+srereg.txt       2424   1-13-95  5:42p 
+sysop.doc       16680   1-13-95  5:42p 
+whats.new       22987   3-07-95  6:00p 
+whats.old       23541   1-21-93 10:54p 
+FLAVORS directory is not listed.
+
+
+  FILE LISTING for the main directory:
+
+file_id.diz       214   3-07-95  6:46p 
+install.cfg      4385   3-07-95  6:46p 
+install.exe     36704   8-15-94  8:51a 
+readme.1st       1512   3-07-95  6:46p 
+srdoor.exe      11696   2-26-94  1:22a 
+sre.exe        443568   3-07-95  6:45p 
+unpack.exe     101896   3-07-95  6:46p Data files for SRE
+

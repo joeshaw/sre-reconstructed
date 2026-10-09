@@ -23,19 +23,19 @@ Linux).
 ## Playing
 
 The game needs the data files of the original release (help text,
-screens, flavors, the research table).  `tools/newgame.sh` downloads the
-release from [John Dailey Software](https://www.johndaileysoftware.com/),
-unpacks it into a directory and writes a door file for you:
+screens, flavors, the research table); they are in `game/`.
+`tools/newgame.sh` copies them into a directory to play in and writes a
+door file for you:
 
-    brew install p7zip                  # to unpack the release's ARJ archive
     tools/newgame.sh ~/sre "Your Name"
     cd ~/sre
-    /path/to/sre Reset                  # once, as the sysop: set up the galaxy
+    /path/to/sre reset                  # once, as the sysop: set up the galaxy
     /path/to/sre                        # play
 
-`sre Reset` asks for the sysop's and the BBS's names and opens the sysop
-menu; choose **2** (Reset the Game).  Afterwards `sre Sysop` opens the
+`sre reset` asks for the sysop's and the BBS's names and opens the sysop
+menu; choose **2** (Reset the Game).  Afterwards `sre sysop` opens the
 sysop menu again (empire viewer, player and pirate editors, messages).
+Commands are not case sensitive.
 
 Other players can share the directory: give each their own copy of
 `DOORFILE.SR` (or edit its first and last lines, the user's name) and run
@@ -86,7 +86,7 @@ Left out, as parts of the BBS and DOS environment rather than the game:
 the FOSSIL and serial port drivers, the sysop's status bars and hot keys
 on the local screen, sysop chat, EMS/XMS swapping and the VGA palette.
 The terminal stands in for both the caller's modem and, when nobody is
-connected remotely (`sre Sysop`, `sre Reset`, local play), the sysop's
+connected remotely (`sre sysop`, `sre reset`, local play), the sysop's
 screen and keyboard.
 
 The original's registration is reproduced: an unregistered game behaves

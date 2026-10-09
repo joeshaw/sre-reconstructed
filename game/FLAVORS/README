@@ -1,0 +1,35 @@
+ÄÄÄ[Installation]ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+To install a "flavor" of SRE,  add an item in your RESOURCE.DAT (in the
+main SRE directory):
+
+        Flavor                       "flavorname"
+
+The flavor name is the name of the directory in Flavors\xxxxxx that
+contains the flavor.  The flavors that are included with the game are
+BRE, Dune, Medieval, WildWest, and Trek.
+
+There are more flavors available on the Solar Realm.  When installing
+a flavor, be sure it's expanded into the FLAVORS\XXXXXXX directory!
+(If you are using ARJ, use the ARJ x XXXX.ARJ; if you are using PKZIP,
+ run PKUNZIP -d XXXX.ZIP.  This will make it expand into the FLAVORS\
+ subdirectory.)
+
+ÄÄÄ[Creation]ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+It's pretty easy to create a flavor!
+
+First, make a subdirectory under Flavors\ named the same as your flavor
+name.  Then, in that directory, make a RESOURCE.DAT and TRANSLAT.DAT.
+In the RESOURCE.DAT, be sure to have the line:
+
+Output.TranslationFile                  "Flavors\yourflavor\Translat.DAT"
+
+You can also add lines to customize the menus, colors, and pirates.
+(See Docs\RESOURCE.DOC for more information on items that you can put
+in RESOURCE.DAT.)
+
+The TRANSLAT.DAT file should contain text 'translations'.  These are
+also described in the RESOURCE.DOC file (at the end).
+
+Be sure to install your flavor using the instructions above!
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+

@@ -1,0 +1,773 @@
+The SRE Configurable text file!
+IMPORTANT:  For instructions on modification, see the end of the file.  Be
+            sure to modify Topics.HLP, not SRTopics.HLP, because Topics.HLP
+            will not be erased when you upgrade to a new version of SRE.
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+#key bulletin-version-information
+  Solar Realms Elite 0.991 was written by Amit Patel at the Solar Realm\n\n
+#end
+
+#key bulletin-special-keys
+1.      > will enter the 'max' value listed as MAX= on numerical input.\n
+        This should save a lot of typing!\n
+2.      Pressing K or M at a numeric prompt will enter 3 or 6 zeros for\n
+        you, so it is now easier to say "6 million" (with 6M).\n
+3.      Pressing Ctrl-C will return you to the BBS.\n
+4.      Press SPACE to abort the display of a file; if you are viewing\n
+        a long file (like the instructions), you might want to press\n
+        ENTER when the Pause comes up instead of SPACE, because too\n
+        many SPACEs will abort the display of the file.\n
+5.      Press ? at a menu to re-display it.\n
+6.      Press 0 or Q at a menu to quit.\n
+7.      Press Z when choosing empires to toggle all.  You can choose\n
+        "all but X" by pressing Z first and then pressing X, which\n
+        will remove empire X from the list.\n
+8.      Press ESC to quit a menu or empire-choosing prompt to abort.\n
+9.      Press ENTER to select the default value at a prompt or menu.\n
+        At most menus, the default action is to quit the menu.\n
+\n
+#end
+
+#key bulletin-new-version
+This is the new version of SRE!  If you have played SRE in the past, \
+you will notice many changes.  The biggest thing is that 10 old credits \
+are now one credit.  Your sysop may also have "non-inflation" set, which \
+keeps prices low, even when you have a large empire.\n\n
+#end
+
+#key planet-petroleum
+The income varies between 700 and 100,000 credits per planet, depending \
+on supply [number of petroleum planets] and demand [total number of planets].\n
+#end
+
+#key planet-research
+Research planets can increase the efficiency (production) of your planets.  \
+By doing this, your planets will produce more profits for your investment \
+than those of other players.\n
+#end
+
+#key planet-government
+Government planets house covert agents and generals.  One government \
+planet can house 50 generals or 300 covert agents (or a combination).\n
+#end
+
+#key planet-tourism
+Tourism planets depend on people coming to your empire, so \
+when conditions are bad (pollution or insurgencies), fewer \
+people will be tourists, and profits will go down.\n
+#end
+
+#key planet-ore
+Ore planets are a stable source of income.  Although they \
+produce less money than tourism planets, they always are \
+profitable, even in the worst civil wars or pollution.\n
+#end
+
+#key planet-antipollution
+The Galactic Coordinator suggests having anti-pollution planets \
+to combat pollution, preserve wildlife, and project a good image \
+to your people.\n
+#end
+
+#key planet-urban
+Urban planets encourage a population growth in your empire.  \
+internal trade in cities and on planets is a source of income.  \
+You collect tax money from the people.\n
+#end
+
+#key planet-education
+Education planets cause students to come to your empire to study.  \
+If the conditions in your empire are favorable, they usually do not \
+go back home, so your empire gets an inflow of young educated citizens.\n
+#end
+
+#key planet-food
+Food planets are needed to produce the food to feed \
+your people and soldiers.  If you do not wish to invest \
+in food planets, you can buy food from the food market.\n
+#end
+
+#key planet-supply
+Supply planets produce military for less money than buying the military \
+unit would cost.  However, you also have to consider the initial investment \
+of buying a supply planet instead of a money-producer.  Sometimes \
+it is cheaper to buy a tourism planet and use the money from there to \
+buy a military; other times it is better to buy a supply planet.  Also, \
+it is more convenient to have a constant production of military rather than \
+having to buy it every turn.\n
+#end
+
+#key civil-war-general
+Civil Wars are caused when you can't feed your people or pay to \
+maintain your planets.  This civil war indicates either that you \
+ran out of money or you had insufficient food.\n\n
+#end
+
+#key civil-war-tourism
+Tourism planets, although giving 40% more profits than ore, are susceptible to \
+a loss of profits if another player performs insurgencies on you.  \
+One strategy is to have some tourism and some of the lower-profit ore, \
+because ore won't lose its profits during insurgencies.  The ore provides \
+a stable source of income when you have tourism problems.\n\n
+#end
+
+#key civil-war-long-term-food
+Even if you didn't have food shortages now, you can ensure that you don't \
+have any in the future by being self-sufficient.  You should buy enough \
+food planets to produce the amount of food you use each turn.\n\n
+#end
+
+#key civil-war-continuous
+Many times one civil war leads to another because you are unable to \
+stabilize the society.  You can sell your military and non-profitable \
+planets (government, research, education, and urban) to reduce costs of \
+operating your empire.  That way, you may have enough money to survive \
+the next turn.\n\n
+#end
+
+#key civil-war-loan
+You can also try to get a loan from the bank so that \
+you can pay for your empire for a turn, which may stop \
+the cycle of civil wars.\n\n
+#end
+
+#key help-strategies
+Here are some popular strategies:\n
+  1.  Buy lots of ore planets.  They are "safe"; they produce money even when\n
+      your empire is in internal conflict.  This virtually prevents losses\n
+      during insurgencies.\n
+  2.  Buy lots of tourism planets, and with the extra money, buy a lot of\n
+      covert agents to protect against insurgent aids by other empires.\n
+  3.  Buy urban and education planets and set a very high tax rate (70-100%),\n
+      so that you can make money from taxes instead of planets.  Some people\n
+      prefer a lower tax rate (10-20%) so that more people will come to the\n
+      empire.  If you keep a lower tax rate, be sure to buy a lot of food!\n
+  4.  Increase your tax rate to boost your profits.  However, there might be\n
+      civil unrest or mass emmigrations.  If you have enough education and\n
+      urban planets, the losses might not be too bad.\n
+  5.  Get a loan to buy extra planets.  If planets are inexpensive, you can\n
+      make enough money with the new planets to pay back your loan the next\n
+      turn.  (Registered versions of SRE only)\n
+  6.  Buy research planets and build up the efficiency of your other planets.\n
+      Then when you buy new planets, they'll be more profitable than everyone\n
+      else's planets, since you researched and built up efficiency first.\n
+  7.  Buy government planets and covert agents.  You can then Take Hostages\n
+      from your enemies to earn money.  However, you usually need your own\n
+      money supply in case your attempts fail.\n
+  8.  If you can convince EVERY empire in your galaxy to keep exactly 1/10th\n
+      of their planets as petroleum planets, the petroleum prices will be\n
+      higher than tourism or ore.  This requires cooperation by all empires.\n
+      If you keep a better ratio (1/20), the prices will be higher!\n
+#end
+
+#key help-research
+Research planets can increase the efficiency (production) of your planets.  \
+By doing this, your planets will produce more profits for your investment \
+than those of other players.  For example, if you push your Ore profits \
+up to 3,000 per planet, you will be making 2,000 profit, and someone else \
+would be making 1,000 profit.  You will be able to buy twice as much as \
+another player!\n
+#end
+
+#key help-covert-operations
+With Covert Agents, you can perform underhanded actions that can seriously \
+damage another empire.  Covert operations include:  Spying, Insurgent Aid \
+(which reduces the production of the other empire), Dissension (cause \
+military dissension), Demoralize (reduce the effectiveness of another's \
+army), Take Hostages, and Bribe Spy.  To prevent other people from doing \
+covert operations on you, you should keep a supply of covert agents (who \
+try to intercept opponent agents).\n
+#end
+
+#key help-soldiers
+Soldiers are ground defense for your planets.  When attacking another empire \
+you can use soldiers to fight other soldiers.  They cost a small amount to \
+maintain, and also require food.\n
+#end
+
+#key help-fighters
+Fighters are small spacecraft that are designed to destroy a planet's defense \
+bases.  They fight in the planet's atmosphere, and cannot travel through \
+space.  As a result, you need to take carriers to carry fighters during an \
+attack.  Fighters take a lot of time to prepare for an attack, so they are \
+no use as defense.\n
+#end
+
+#key help-defense-stations
+Defense stations are towering bases that shoot at incoming fighters.  \
+They cannot be moved (traded).  A defense station can sometimes hit a \
+soldier or cruiser, but soldiers are usually too small to hit, and hard \
+to find in various forms of terrain, and cruisers are out in space, too \
+far away for good accurate fire.\n
+#end
+
+#key help-heavy-cruisers
+Heavy cruisers are half-mile long deep-space craft.  They are capable of \
+travelling long distances but cannot enter a planet's atmosphere.  Heavy \
+cruisers have impressive weaponry, used against other cruisers.  They must \
+be led by a command ship to coordinate attacks; this keeps the cruisers from \
+accidentally firing at one another.  A strong command ship can double the \
+effectiveness of your heavy cruisers.\n
+#end
+
+#key help-light-cruisers
+Light cruisers are quarter-mile long craft similar to heavy cruisers.  \
+They pack a large amount of weaponry onto a smaller craft.  However, since \
+these ships are high-tech, your supply planets cannot produce them, and \
+they are not available on the market.  Only research planets can produce \
+them.  Unlike heavy cruisers, light cruisers do not help in defense \
+treaties.  They are the same strength as heavy cruisers, but due to their \
+smaller size, they get an extra five rounds to fire upon the enemy before \
+the battle begins.\n
+#end
+
+#key help-mothership
+A mothership is a *huge* carrier that can carry 100,000 fighters to battle.  \
+It provides no offensive or defensive value, and it takes no maintenance.  \
+You can have at most one mothership, which is produced by a very active \
+research program.\n
+#end
+
+#key help-bank
+The bank (in the Registered version) allows you to take a loan, deposit \
+for interest, or invest in bonds.  For example, you can take a loan on the \
+first turn to buy more planets than usual.  This could give you a head start \
+in the game!  During the game, depositing money in the bank gives you a \
+reserve in case you need money.  However, both cash and bank deposits are \
+subject to being taken by Terrorists asking for Ransom (Covert Op 'Take \
+Hostages').  If you do not need your funds immediately, you can save them \
+by Investing.  Investments are completely safe; however the money does not \
+return for a while.  They also give a very good profit.\n
+#end
+
+#key help-taxes
+Taxing your people is sometimes helpful to make extra profits.  However, taxes \
+are not necessary to survive.  If you keep a tax-free empire, many people will \
+come to your empire.  When you are in trouble, you can call on these people \
+to pay some taxes.  As long as you do not ask too much, they will comply.  \
+On the other hand, you can encourage people to come to your empire with \
+Urban and Education planets.  Then you can keep a high tax rate to earn money.\n
+#end
+
+#key help-draft-rate
+If you want to draft your citizens during time of war, you can set \
+a draft rate from 0 to 30%.  When another empire attacks you with \
+a conventional attack, some of your people will be drafted to help \
+defend the empire.  A million people turn into 100 soldiers.  When \
+the battle is over, most of these people will be dead or they will \
+leave your empire, so if you set your draft rate too high, your \
+population will drop every time you are attacked, even if your \
+military would have been able to handle the situation.\n
+#end
+
+#key help-petroleum
+Petroleum prices fluctuate due to supply and demand.  If there are too many \
+petroleum planets in a galaxy, the price will be low.  If there are few, \
+the price will be high.  Having one petroleum planet for every 10 other planet \
+types will keep the prices at around 2.5 to 3 thousand, which is better than \
+tourism.  However, you have to convince the other players to do the same thing \
+to prevent the prices from becoming too low.\n
+#end
+
+#key help-population
+Urban planets increase the birth rate; the birth rate is affected by the number \
+of people (parents) in your empire.  Education planets bring in new people, \
+regardless of the current population.  So education planets are very good \
+when you're small, and urban planets are good when you're large.\n
+\n
+To change the population growth/decrease, adjust your tax rate.  A side effect \
+of decreasing your population by increasing the tax rate is a surge of income!\n
+#end
+
+#key help-nuclear-attacks
+Nuclear attacks are illegal according to the Galactic Coordinator.  However, \
+if you do want to try them, you need to have a lot of covert agents, who \
+will search the area for black market agents who will illegally sell you \
+the weapons (for a price, of course!).  Nuclear weapons destroy a large \
+number of the opponent's planets, and your target will not even have a \
+CHANCE to prevent it.  Be careful -- some of these underground traders \
+may give you a faulty bomb!\n
+#end
+
+#key help-chemical-attacks
+Chemical attacks are illegal according to the Galactic Coordinator.  However, \
+if you do want to try them, you need to have a lot of covert agents, who \
+will search the area for black market agents who will illegally sell you \
+the weapons (for a price, of course!).  Chemical weapons kill approximately \
+half of the opponent's people, and those poor civilians won't have a clue to \
+what hit them.\n
+#end
+
+#key help-psionic-bombs
+Psionic bombs are illegal weapons, but they are quite powerful.  They can \
+destroy the stability of your opponent's empire by causing mass confusion \
+in the empire's population.  The resulting anarchy will also demoralize the \
+soldiers, who are responsible for maintaining law and order.\n
+#end
+
+#key help-food-planets
+On these planets, huge farms produce food, \
+which is required for your empire to survive. \
+An alternative to having food planets is to \
+buy from the food market each year, but the \
+risks are that the supply of food in the food \
+market may run out.  Having a food planet is \
+safer, but costs more than buying food from \
+the market.  Having too many food planets \
+leads to food surpluses, which can be sold \
+for low prices to the market, or saved for \
+a later time.\n
+#end
+
+#key help-ore-planets
+A stable source of income, ore planets continue \
+to function even during wars and domestic \
+troubles.  They can be valuable if your tourism \
+planets are not producing a good income during \
+troubled times.\n
+#end
+
+#key help-tourism-planets
+Producing more money (on average) than ore \
+planets, the tourism planets depend upon the \
+tourists spending money.  During periods that \
+your empire is not PEACEFUL (such as after a \
+civil war), the tourist attractions earn very \
+little or nothing.  Too many tourism planets \
+can cause your empire to be dependent on \
+peaceful times, and the empire can easily \
+collapse if you do have internal troubles. \n
+#end
+
+#key help-supply-planets
+Supply planets can produce military at a lower \
+cost than buying them.  They are also more \
+convenient, because they keep producing military \
+constantly.  You can set the balance of \
+production by choosing "Supply Planet Production".\n
+#end
+
+#key help-government-planets
+The base of the government agencies, these \
+planets house the generals, who not only are \
+military commanders, but are important \
+political figures as well.  They set up bases \
+of operations for which they required 1/50th \
+of the planet's usable land area.  Therefore, \
+50 generals can use a single government planet. \
+The covert agents also roam these planets, and \
+having over 300 spies on one planet causes them \
+to fight each other for territory, leading to \
+internal conflicts.\n
+#end
+
+#key help-education-planets
+Educational planets have large universities to \
+which students come from independent planets, \
+where the educational facilities are not as \
+large as those that your empire can afford. \
+After seeing your empire's resources and power, \
+most of the students remain in your empire to \
+add to your general population.\n
+#end
+
+#key help-research-planets
+These planets are set up as scientific research \
+laboratories in which developments may or may \
+not occur.  If a breakthrough occurs, it may \
+benefit your empire and give you an edge over \
+other empires that do not have your technology. \
+The benefits are reported to you before the \
+first status screen.  They include such things \
+as proteins to increase crop yield on food \
+planets to new tourist attractions that \
+increase tourism planet revenues.  Some of the \
+benefits will last forever and others are only \
+temporary.\n
+#end
+
+#key help-urban-planets
+Urban planets are devoted to housing people. \
+Since every city has internal commerce in the \
+form of stores, fuel docks, and other \
+services, the urban planets earn revenue in the \
+form of sales taxes.  Urban planets also \
+increase the population of your empire, and as \
+a result, increase the income taxes earned \
+from your people.\n
+#end
+
+#key help-petroleum-planets
+These planets supply petroleum to the \
+galaxy.  All planets in the galaxy require \
+petroleum to run machinery and vehicles.  If \
+there are few petroleum planets, the demand \
+for oil will be higher and the income per \
+petroleum planet will be higher.  If there are \
+too many of these planets, the price of oil \
+will drop, and so will profits.  One problem \
+of petroleum planets is high pollution.\n
+#end
+
+#key help-anti-pollution-planets
+Anti-pollution planets are completely covered \
+with forests and jungles to absorb the toxic \
+chemicals released into the galactic atmosphere \
+by petroleum planets.  Pollution causes reduced \
+tourism, so the anti-pollution planets are \
+neccessary to keep tourism active and also to \
+reduce emmigration.\n
+#end
+
+#key help-score
+Score is a measure of your people's pride in your empire.  Your score \
+depends on your population and planets.  Every time you attack, you \
+gain points if you win and lose points if you lose.  You also gain points \
+when you buy planets.  The player with the highest score at the beginning \
+of each day is chosen Solar Master, and that player receives a small prize.\n
+#end
+
+#key help-insurgencies
+A quick reference for insurgency levels:\n
+\n
+        Peaceful\n
+        Mild Insurgencies\n
+        Occasional Riots\n
+        Violent Demonstrations\n
+        Political Conflicts\n
+        Internal Violence\n
+        Revolutionary Warfare\n
+        Under Coup\n
+\n
+#end
+
+#key help-covert-op-chances
+A quick reference for covert operation success chances:\n
+\n
+        Nonexistent\n
+        Very slim\n
+        Slim\n
+        Unfavorable\n
+        Favorable\n
+        Good\n
+        Fairly good\n
+        Almost certain\n
+\n
+#end
+
+#key hint-small-empire-no-planets
+You may want to avoid building up your military until you have a lot of planets.  \
+You also could sell your army and generals (to get more money) if you haven't \
+already done so.  No one can attack you until your 'protection' is over, so \
+there is no point in keeping and paying lots of money to maintain your military.  \
+You could be spending your money on buying more planets!\n\n
+#end
+
+#key hint-small-empire-almost-ready
+You may want to start building up an army now, since \
+you will soon be out of protection.  After that, any \
+other empire will be able to attack yours.\n\n
+#end
+
+#key hint-small-empire-no-money
+You should get many tourism, ore, and petroleum planets \
+so that you will have a good source of income.  You may \
+also want to start establishing relations with other empires \
+with treaties.  They will allow you to trade with other \
+empires, and perhaps make a profit; some treaties provide \
+defense from attackers.\n\n
+#end
+
+#key hint-small-empire-command-ship
+You should start work on your command ship.  It will build \
+up automatically each turn, or you can spend extra money to \
+build it up quicker.  It acts as a powerful leader when you \
+go into battle.  It adds to your heavy cruiser strength by \
+providing a central flagship.\n\n
+#end
+
+#key hint-small-empire-covert-agents
+You may want to buy covert agents to prepare you for the world \
+out of protection.  Other empires may send spies to yours or they \
+may try to perform covert operations on your planets or people.  By \
+keeping covert agents, you can defend yourself against these types \
+of attacks.\n\n
+#end
+
+#key hint-insurgency
+You might need to sell some of your assets so that \
+you won't go through civil wars.\n\n
+#end
+
+#key hint-covert-agents
+You may want to buy covert agents so that your empire will \
+not be vulnerable to covert operations that can cause damage \
+or riots.\n\n
+#end
+
+#key hint-tax-rate
+You may want to go to the Operations Menu (*) and increase your \
+tax rate.  This will increase the money you have to spend.  On \
+the other hand, if you lower it, you will attract people to your \
+empire.\n\n
+#end
+
+#key hint-soldiers
+Your empire lacks soldiers, which are useful for both offense and \
+defense.\n\n
+#end
+
+#key hint-defense-stations
+You may want to buy some defense stations.  They are a good form \
+of defense against attacks.\n\n
+#end
+
+#key hint-pollution
+You need anti-pollution planets to reduce pollution in your empire.\n\n
+#end
+
+#key hint-lottery
+Perhaps you should buy some lottery tickets as an investment for \
+tomorrow!  Who knows, you may win!\n\n
+#end
+
+#key hint-end-of-protection
+This is your first turn out of protection.  Other empires can attack you, \
+perform covert operations on you, and trade with you.  Good luck in surviving \
+the 'real' world!\n\n
+#end
+
+#key hint-last-turn-of-protection
+This is your last turn in protection.  Other empires will be able to \
+attack you, so be sure to buy a defense this turn!\n
+#end
+
+#key hint-research
+You might want to buy research planets so that you can improve the \
+efficiency of your planets.\n
+#end
+
+#key reset-inflation
+\n
+There are two sets of game rules in SRE:II.  \
+You can have Inflation (similar to the older versions of SRE), \
+where prices increase as the empire gets larger, or \
+Non-Inflation, where prices remain relatively constant.  \
+The Non-Inflation rules include bureaucracy costs, and are \
+more challenging.  You may want to run the Inflationary \
+version for a while until your players are used to the new \
+version; you may want to set up another game for `advanced' \
+players (non-inflationary).  \
+\n
+#end
+
+#key reset-maintenance-interval
+\n
+You can allow more time for users to play their turns by \
+assigning more than one real day for each game `day'.  \
+(The system will run maintenance less often.)  \
+This may be useful if your games are full and users are unable \
+to call daily.  \
+\n
+#end
+
+#key reset-galactic-coordinator-taxes
+\n
+The Galactic Coordinator \
+collects taxes from all the empires, and also gives out \
+money each day.  If you set a higher tax rate, your \
+players will pay more, but they'll also receive more; \
+the Galactic Coordinator will also give money to some \
+empires after they suffer civil wars, and the amount \
+is greater if you use a higher tax rate.  However, if \
+the tax rate is too high, your empires will be paying \
+too much for taxes and they won't grow as well.  \
+\n
+#end
+
+#key reset-planet-market
+\n
+You can specify how many planets to put into the initial \
+market.  Although the initial reaction of most sysops is \
+to put in as many as possible, we've found that the games \
+last longer if there are few planets available.  Players \
+that start later are able to catch up more easily to provide \
+more competition.  \
+\n
+#end
+
+#key reset-planet-limit
+\n
+You can set a limit on the number of planets a player can buy \
+in one turn.  If you wish to do this, enter the limit; otherwise, \
+press Enter.  \
+\n
+#end
+
+#key reset-planet-regeneration
+\n
+Planets are automatically regenerated for players to buy.  \
+You can set the number of seconds it takes to add one \
+new planet into the planet market.  \
+\n
+#end
+
+#key reset-food-market
+\n
+You can specify how much food to put in the food market.  \
+Warning:  putting no food in the market may destroy \
+players who accidentally forget to buy food planets.  \
+\n
+#end
+
+#key reset-new-player
+\n
+You can play either an Emperor or Emperess who will be able to rule \
+for centuries.  Once you create a ruler, the same ruler will be used \
+after the reset.  (You will be able to create a new empire each time.)  \
+\n
+#end
+
+#key info-register
+\n
+If you register,\n
+\n
+ 1.  You will have a Solar Bank where players can make deposits, \n
+     get loans, and invest their extra cash.\n
+ 2.  Your name will appear at the end of the program as a \n
+     "registered sysop".\n
+ 3.  There will be a few extra options when you reset the game.\n
+\n
+Registering is a way of showing your support for this game; please \
+do not register just to get the bank and extra options.  I am not \
+providing these features as a way to "cripple" the unregistered version; \
+they are a way for me to show my appreciation to those sysops who \
+support my work.\n
+\n
+If you wish to remove the "UNREGISTERED" message at the end of the game, \
+read the Docs/Resource.DOC file.\n
+\n
+#end
+
+#key SRE-command-line-options
+Primary options (must be the first parameter)\n
+HELP                 Shows this help\n
+RESET                Start a new game\n
+SYSOP                Sysop functions, such as resetting the game\n
+REGISTER             Enter your registration numbers\n
+CREATEINSTRUCTIONS   Create Text/Player.ANS and Text/Player.TXT\n
+                     (ANSI and text instruction files)\n
+USERLIST             Puts a list of usernames in Text/UserList.TXT\n
+\n
+Secondary Options (may appear in combination with other parameters)\n
+/NoANSI              Forces ANSI off\n
+/ANSI                Forces ANSI on\n
+/NoSpecialEffects    Turn off the special effects on the pause and Yes/No\n
+                     prompts\n
+/NoCheckTimeLimit    Disable time-limit checking\n
+/CheckTimeLimit      Enable time-limit checking\n
+/Local               Force local play\n
+#end
+
+
+
+
+#EOF
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Instructions on modifying the help file (HELP.DAT):
+
+The help file is set up as a series of topics marked by #key and #end.  You
+can change any parts of the text, but be warned:
+
+   1.  SRE does not read your end-of-lines as the end of a line.  It
+       instead does word-wrapping automatically.  You need a '\n' sequence
+       to force SRE to go to the next line.  This is usually easier than
+       word-wrapping yourself.
+
+   2.  Many editors remove trailing spaces at the end of the line.  For
+       easier editing without worrying about the trailing spaces, SRE
+       reads the '\' at the end of a line and ignores it.  You put a '\'
+       character at the end of the line AFTER the spaces, and SRE will
+       keep those spaces.
+
+   3.  More details on the format:
+          ³
+          ³ #key ®type¯-®name¯
+          ³   ®text¯
+          ³ #end
+          ³
+       The 'type' is pre-determined by SRE.  Currently supported are
+       "hint", "help", "civil-war", "planet", and "bulletin".  See below
+       for a description of each type.  The 'name' is an identifier that
+       SRE uses to distinguish between the many entries under a single
+       type.  For example, 'planet' might be the type, and 'tourism' would
+       be the name.  In "help" and "bulletin", you can use your own names.
+       In the others, you may not (use the names already in this file).
+       The 'text' is as described above in #1 and #2.  It can be as long
+       as you'd like, and SRE will word-wrap and insert pauses as needed.
+
+   4.  Notice that you can add any text that you'd like between the #key and
+       #end statements (as comments).  Anything after the #EOF will be
+       ignored (for increased speed in searches).
+
+   5.  There is a new-line ('\n') at the end of each block of text.
+
+   6.  You can modify SRTopics.HLP if you wish, but I recommend that you
+       modify Topics.HLP instead.  That way, when you upgrade, and get a newer
+       SRTopics.HLP, your own additions won't be erased.  SRE will search
+       first in Topics.HLP for help topics, and if they aren't there, it will
+       search in SRTopics.HLP.
+
+Have fun customizing SRE for your own BBS!
+
+Ä[PLANET TEXT]ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+The first time a user buys planets, this text is displayed.  You can use
+this to introduce users to the types of planets and their uses.  You can
+also modify the descriptions to match something about your BBS.  Don't
+change the name of the planet, because SRE will still look for the original
+name!
+   ³
+   ³ #key planet-®name¯
+   ³   ®text¯
+   ³ #end
+   ³
+
+Ä[CIVIL WAR TEXT]ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+The civil war text is displayed when a user goes through civil war.  It is
+meant to help out those who don't know how to recover from food/money
+shortages.  Don't change the name, because SRE expects certain names.
+   ³
+   ³ #key civil-war-®name¯
+   ³   ®text¯
+   ³ #end
+   ³
+
+Ä[HELP TEXT]ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+The help text allows the user to access help on any number of topics.  The
+help is available in the System Menu by pressing 'H'.  The format of the
+help text is:
+   ³
+   ³ #key help-®name¯
+   ³   ®text¯
+   ³ #end
+   ³
+Where 'name' is the help topic that the user types in to see the text.  You
+can add all types of topics - popular strategies, rules for tournaments,
+hints, BBS advertisements, etc.
+
+Ä[BULLETINS]ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+You can add a bulletin with:
+   ³
+   ³ #key bulletin-®name¯
+   ³   ®text¯
+   ³ #end
+   ³
+You can add any name you want (case insensitive, but case is displayed in the
+list of bulletins).  The user can type in the name of the bulletin and the
+text will appear.  Since the user is typing in the name, keep it short for
+convenience.
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+

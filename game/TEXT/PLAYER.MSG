@@ -1,0 +1,614 @@
+^\74 SRE ^\70³ 0.991 ³ Solar Realms Elite: ^\74Interstellar Imperialists^\70               ^\07
+
+^\02Written by ^\0AAmit Patel^\02 in ^\0ABorland C++ 3.1^\02 (Borland International)
+^\07Call ^\0EThe Solar Realms BBS^\07, sysop ^\0ESunStriker
+^\0B(713)855-1665^\03  Houston, TX
+
+^\02Send comments, registration forms, suggestions, and bug reports to:
+^\0AAmit Patel
+4851 Cairnsean
+Houston, TX 77084-2541
+
+^\0ETo get started
+^\08ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+In ^\0FSolar Realms Elite ^\09(^\0BSRE^\09)^\07, you rule a solar empire. The
+goal is to become and remain the most powerful empire.  You can gain strength
+by buying forces, and you can gain size by colonizing planets. You start with
+6 planets, and a little bit of money.  You are required to feed your people
+and army, and to pay to maintain your planets and army.  If you fail to do
+these things, disastrous results may occur.  You are given 20 years ("turns")
+of protection, during which you can not attack or be attacked. You can not
+perform covert operations (except Spy).  This provides a way for smaller
+empires to build up their defenses and planets before they enter the "real
+world".
+
+^\03A note on time units in SRE:  ^\0ETurns ^\07and ^\0EYears ^\07are game time
+                              ^\0EDays ^\07and ^\0EHours ^\07are real time
+
+^\04ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FGame Menu^\07
+
+The main options you should be concerned about are [9] Diplomacy, and
+[4] Play Game.  Diplomacy is discussed next, and then the play sequence.
+
+^\02ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FDiplomatic Relations^\07
+
+   ^\0E1^\07 - ^\0ANeutrality Treaty^\07 - This is a treaty with another empire that will
+       prevent you from being attacked by the other empire.  It also allows
+       trading.
+
+   ^\0E2^\07 - ^\0AFree Trade Agreement^\07 - This treaty will also protect you from being
+       attacked by the other empire if for more than 0 days.  This treaty
+       also will earn money from tariffs from trade with the other empire.
+
+   ^\0E3^\07 - ^\0AMinor Alliance^\07 - This treaty will not only protect you from the other
+       empire's attacks, but the other empire will also send you defensive
+       forces when you are attacked.  You will automatically send him or her
+       forces when he/she is attacked also.
+
+   ^\0E4^\07 - ^\0ATotal Defense^\07 - This is the same as the Minor Alliance, but each of
+       you will send more forces in defense than in a Minor Alliance.
+
+   ^\0E5^\07 - ^\0AArmed Defense Pact^\07 - This is a Total Defense pact that only applies
+       to soldiers sent in defense, but more soldiers are sent with the Armed
+       Defense Pact than with the Total Defense.
+
+   ^\0E6^\07 - ^\0ACruiser Protection Plan^\07 - The heavy cruisers of both empires patrol
+       the planet areas of both empires, to provide protection.  Light
+       cruisers do not contribute.
+
+   ^\0E7^\07 - ^\0ABreak Treaty^\07 - This will automatically break ANY treaty.  BUT, if the
+       treaty is for more than 0 days, the treaty is not broken until the
+       other empire plays and learns of it.
+
+   ^\0E8^\07 - ^\0AView Relations^\07 - This gives you a list of relations with other empires.
+
+   ^\0E9^\07 - ^\0AOther Treaty^\07 - If you do not like the defense plans listed
+       above, you may make your own defense treaty with this option.  You can
+       set the percentage of soldiers and heavy cruisers sent when your ally
+       is attacked.  These custom treaties are like defense treaties (#3-#6);
+       you do not get the special bonuses of Neutrality or Free Trade.
+
+A treaty is used to ensure protection with your allies.  You can propose
+one of the 7 types of treaties with another empire, and if the empire
+accepts the treaty, you two will be friendly for a period of time.  If you
+specify a length of time for the treaty to be obeyed, during that time, the
+treaty is binding.  The other empire may not attack you or perform covert
+operations on you.  Likewise, you are prohibited from attacking or
+performing covert operations on the other empire.  When the treaty expires,
+or if you specify 0 days for the length of the treaty, the treaty still
+exists between your empires, but an attack or covert operation is not
+strictly prohibited.  Performing one of these actions immediately cancels
+the treaty.  Breaking the treaty is also immediate if the treaty has
+expired.  Use of these treaties allows small empires to bond together or
+with larger empires.  Also, trading is only allowed with empires you have
+relations with (by having a treaty).  Both the Neutrality Treaty and the
+Free Trade Agreement are meant to allow trading and to show good faith
+without making a commitment of forces for defense.  A guerilla ambush,
+however, is a surprise attack, and military defense treaties do not help
+the defender.
+
+^\09ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FGame Play^\07
+
+When you select option [4], "Play Game", you can play up to 5 turns (per day)
+of ruling your empire.  The game flow is illustrated by this diagram:
+
+    ^\04[^\0F4^\04]^\07 Play Game
+        ^\0C³^\07
+        Lottery (Registered version only)
+        ^\0C³^\07
+      ^\0CÚÄ>^\07 Reports on the earnings from planets and other sources of income
+      ^\0C³   ³^\07
+      ^\0C³^\07   Status screen (shows the state of your empire)
+      ^\0C³   ³^\07
+      ^\0C³^\07   Maintain your empire
+      ^\0C³   ³^\07
+      ^\0C³^\07   Feed your people
+      ^\0C³   ³^\07
+      ^\0C³^\07   Covert operations, if you have covert agents
+      ^\0C³   ³^\07
+      ^\0C³^\07   Bank (Registered version only)
+      ^\0C³   ³^\07
+      ^\0C³^\07   Government Spending  ^\0C<ÄÄÄÄÄÄÄÄÄÄ>^\07  Operations Menu
+      ^\0C³   ³                                   ³^\07
+      ^\0C³   ³                                   ÃÄ^\07Messages
+      ^\0C³   ³                                   ³^\07
+      ^\0C³   ³                                   ÃÄ^\07Bank
+      ^\0C³   ³                                   ³^\07
+      ^\0C³   ³                                   ÃÄ^\07Covert operations
+      ^\0C³   ³                                   ³^\07
+      ^\0C³   ³                                   ÃÄ^\07Trading
+      ^\0C³^\07   Battles                             ^\0C³^\07
+      ^\0C³   ³                                   ÀÄ^\07Status Screen
+      ^\0C³^\07   Trading
+      ^\0C³   ³^\07
+      ^\0C³^\07   Change in population / end of turn status
+      ^\0CÀÄÄÄÙ^\07
+
+^\0AÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FEarnings^\07
+
+The game will show you what each type of planet produced.  It also shows you
+the amount you made in taxes.  For supply planets, it shows the amount of each
+type of military unit that was added to your forces.  Petroleum and
+anti-pollution planets also report the change in the amount of pollution in
+your atmosphere.
+
+^\0CÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FPayments^\07
+
+You will be prompted to pay your forces, your planets, the bank (to repay
+a loan), and taxes to the Galactic Coordinator.  In the registered version,
+you can visit the bank before you do this to get extra funds if necessary.
+If the system determines that you can afford to pay everything fully, it
+will ask you whether you want to pay it all at once, and if you do, it will
+not ask you to pay for each item individually.
+
+   ^\0ENOTE^\07 : The number in brackets ^\09[]^\07 is the default.  If you press
+          ^\09[^\0BENTER^\09]^\07, the default will be used.
+          If it shows as ^\09[^\0BMAX=^\03####^\09]^\07, it is the maximum; default 0.
+          If you press ^\0F>^\07, it enters the maximum number for you.
+          Pressing ^\0FK^\07 or ^\0FM^\07 enters 3 or 6 zeros for you.
+
+^\02ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FFood Market^\07
+
+In the Food Market, which is owned and operated by the Galactic Coordinator,
+you can buy or sell food.  Your people and army require food each turn; if
+you have extra food, you can sell it to the market.  If you do not have enough,
+you can buy food.  The default amount to buy is the amount that you need to
+feed everyone this year; if you can feed them all, the default is to buy 0.
+
+Your advisors will warn you if they believe that you are running out of food.
+
+^\05ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FCovert Operations^\07
+
+Here are the options in this menu :
+    ^\0A1^\0B - Send Spy^\07
+        You can get information about another empire, similar but less
+        detailed than your own status screen.  Spying may not always be
+        successful, but you can guarantee that you can get a spy report by
+        bribing a spy in the other empire (see option 9).  You can spy as many
+        times as you like.
+   ^\03*^\0A2^\0B - Insurgent Aid^\07
+        By sending rebellious troublemakers and pamphlets an opponent empire,
+        you can increase the internal violence in that empire.  To restore
+        peace may be costly or impossible for the other emperor, and may cause
+        civil war.  The violence in the other empire will cause tourism
+        profits to decrease and the population to drop.  Insurgent Aid can be
+        attempted once per turn per empire.  It's harder to do Insurgent Aid
+        if the other empire is ^\03already^\07 in civil disorder.
+   ^\03*^\0A3^\0B - Set up^\07
+        Your spies send reports to empire B that it was attacked by empire A.
+        Although the two empires may have been at peace prior to your
+        meddling, empire B will believe that he was attacked by empire A.
+        Empire A may deny it, but there won't be a way to prove it.  The
+        operation can be performed once per day to the empires.  You cannot
+        set up empire A with empire B and then empire A with empire C on the
+        same day, but you can set up A and B and then C and D.  Your spies
+        will wait until the "attacker" player plays before performing this
+        operation; that way, the time of the attack will be during the
+        time that the emperor played his turns.
+   ^\03*^\0A4^\0B - Support Dissension^\07
+        Your spies will encourage the opponent empires's soldiers to desert
+        their posts.  This operation can be performed once per day per empire.
+        Your spies will not attempt the action for 12 real hours.
+   ^\03*^\0A5^\0B - Demoralize Troops^\07
+        By sending distractions and interruptions to the target empire, you
+        can reduce the training efficiency of their soldiers and reduce the
+        effectiveness of the army.  You can demoralize troops of each empire
+        only once per day.  Your spies will not attempt the action for 12
+        real hours.
+   ^\03*^\0A6^\0B - Bombing Operations^\07
+        Your spies can booby-trap the target's food supplies.  Some or
+        all of the food may be blown up.  This is useful in starving another
+        empire to death.  You can bomb the food supplies of each empire
+        only once per day.
+   ^\03*^\0A7^\0B - Relations Spying^\07
+        Your agents discover the treaties held by another empire.  You can
+        perform this action as many times as you like.
+   ^\03*^\0A8^\0B - Take Hostages^\07
+        Your terrorist spies capture a prominent official from the other
+        empire and demand a sum of money for his or her return.  The opponent
+        emperor is forced to pay the fee, and you will receive the money.
+        Taking hostages can be done once per day per empire.  The terrorists
+        wait 12 real hours before performing the action.
+   ^\03*^\0A9^\0B - Bribe Personnel^\07
+        After bribing a spy in the other empire, you can be guaranteed spy
+        reports without fear of your spy being captured.
+
+   ^\03*^\07 - Only available when NOT in protection.
+
+^\07ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FSolar Bank^\07
+
+If your sysop is running the ^\0BREGISTERED^\07 version, and the bank is
+enabled, you will enter the bank.  You can deposit credits as a savings
+account, on which you will earn interest, or get a loan, which you will
+have to make yearly payments.  Each year, interest is accumulated on a
+savings account or on a loan.  Early payback of a loan reduces some of
+the interest costs.  You can also invest in Galactic Coordinator Bonds.
+They cost 8500 credits and they return 10,000 credits after some amount
+of time.
+
+^\01ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FGovernment Spending^\07
+
+You will then come to the ^\0Egovernment spending^\07 menu.  You have the option
+of buying various forces.  Some are defensive, and others are offensive:
+  ^\0ASoldiers                   ^\03Defensive and Offensive
+  ^\0AFighters                   ^\03Offensive
+  ^\0ADefense Stations           ^\03Defensive
+  ^\0AHeavy Cruisers             ^\03Defensive and Offensive
+
+^\07You can also Colonize Planets:
+  ^\0EFood^\07
+                            On these planets, huge farms produce food,
+                            which is required for your empire to survive.
+                            An alternative to having food planets is to
+                            buy from the food market each year, but the
+                            risks are that the supply of food in the food
+                            market may run out.  Having a food planet is
+                            safer, but costs more than buying food from
+                            the market.  Having too many food planets
+                            leads to food surpluses, which can be sold
+                            for low prices to the market, or saved for
+                            a later time.
+  ^\0EOre^\07
+                            A stable source of income, ore planets continue
+                            to function even during wars and domestic
+                            troubles.  They can be valuable if your tourism
+                            planets are not producing a good income during
+                            troubled times.
+  ^\0ETourism^\07
+                            Producing more money (on average) than ore
+                            planets, the tourism planets depend upon the
+                            tourists spending money.  During periods that
+                            your empire is not ^\03PEACEFUL^\07 (such as after a
+                            civil war), the tourist attractions earn very
+                            little or nothing.  Too many tourism planets
+                            can cause your empire to be dependent on
+                            peaceful times, and the empire can easily
+                            collapse if you do have internal troubles.
+  ^\0ESupply^\07
+                            Supply planets can produce military at a lower
+                            cost than buying them.  They are also more
+                            convenient, because they keep producing military
+                            constantly.  You can set the balance of
+                            production by entering the Operations Menu
+                            and choosing "Supply Planet Production".
+  ^\0EGovernment^\07
+                            The base of the government agencies, these
+                            planets house the generals, who not only are
+                            military commanders, but are important
+                            political figures as well.  They set up bases
+                            of operations for which they required 1/50th
+                            of the planet's usable land area.  Therefore,
+                            50 generals can use a single government planet.
+                            The covert agents also roam these planets, and
+                            having over 300 spies on one planet causes them
+                            to fight each other for territory, leading to
+                            internal conflicts.
+  ^\0EEducation^\07
+                            Educational planets have large universities to
+                            which students come from independent planets,
+                            where the educational facilities are not as
+                            large as those that your empire can afford.
+                            After seeing your empire's resources and power,
+                            most of the students remain in your empire to
+                            add to your general population.
+  ^\0EResearch^\07
+                            These planets are set up as scientific research
+                            laboratories in which developments may or may
+                            not occur.  If a breakthrough occurs, it may
+                            benefit your empire and give you an edge over
+                            other empires that do not have your technology.
+                            The benefits are reported to you before the
+                            first status screen.  They include such things
+                            as proteins to increase crop yield on food
+                            planets to new tourist attractions that
+                            increase tourism planet revenues.  Some of the
+                            benefits will last forever and others are only
+                            temporary.
+  ^\0EUrban^\07
+                            Urban planets are devoted to housing people.
+                            Since every city has internal commerce in the
+                            form of stores, fuel docks, and other
+                            services, the urban planets earn revenue in the
+                            form of sales taxes.  Urban planets also
+                            increase the population of your empire, and as
+                            a result, increase the income taxes earned
+                            from your people.  Don't underestimate their
+                            power --- even though they seem to do very little
+                            at first, they become more influential the longer
+                            you've had them.
+  ^\0EPetroleum^\07
+                            These planets supply petroleum (oil) to the
+                            galaxy.  All planets in the galaxy require
+                            petroleum to run machinery and vehicles.  If
+                            there are few petroleum planets, the demand
+                            for oil will be higher and the income per
+                            petroleum planet will be higher.  If there are
+                            too many of these planets, the price of oil
+                            will drop, and so will profits.  One problem
+                            of petroleum planets is high pollution.
+  ^\0EAnti-Pollution^\07
+                            Anti-pollution planets are completely covered
+                            with forests and jungles to absorb the toxic
+                            chemicals released into the galactic atmosphere
+                            by petroleum planets.  Pollution causes reduced
+                            tourism, so the anti-pollution planets are
+                            neccessary to keep tourism active and also to
+                            reduce emmigration.
+
+You can build a ^\03command ship^\07, which will add power to your heavy
+cruisers during battle.  Light cruisers fight without the command ship's
+coordination.  The command ship's strength increases by 5% automatically
+(at no cost) each turn.  You can also build it up by spending money (to
+build faster).  In battle, one general is required to command every 50
+soldiers.  One carrier is needed to transport 100 fighters to the site of
+conflict.  Alternatively, if your research planets have produced a mothership,
+it can carry 100,000 fighters, so that you do not need carriers for this.
+(Carriers are still useful for trading.)
+
+You may also buy ^\02covert agents^\07, which allow you to perform ^\04immoral^\07 acts
+on other empires, such as spying, encouraging soldiers to dissent, taking
+hostages, setting up two empires against each other, reducing another
+army's effectiveness with distractions, and aiding rebels to produce
+internal conflicts.  Covert agents are very useful to bring down a large
+empire if you are a small empire.
+
+You can also sell any item except a planet or the command ship for one- third
+of the current price.  When you sell a planet, you can release it, but you
+will not receive any money for it.
+
+^\04ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FOperations Menu^\07
+
+The operations menu can be accessed by pressing ^\09[^\0B*^\09]^\07.  The system menu
+allows you to go back to the bank or covert operations menu.  It also lets you
+see your status screen or the scores.  You can buy a Super Lottery Ticket
+in this menu.  One Super Lottery Ticket is selected at the end of the day
+to be the winner.  All players will be notified of the winner of the
+jackpot.  From the system menu, you can configure the game to your suiting,
+(like choosing short/long descriptions, report dates, etc.), see the
+intructions (this file!), check waiting trade deals, abdicate (who'd want to
+do that?), and set the taxation rate (the percentage your police steal from
+each person's pocketbook every year), and set a draft rate (to draft
+people into your military for defense against an attack).
+
+^\04ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FBattles^\07
+
+After you are finished spending, you are given the option to attack
+another player.  You cannot attack a player that is in protection;
+you cannot attack if you are in protection, unless you wish to void
+your protection.  To void your protection, you are required to be a
+large enough empire with an adequate defense force.  You are not allowed
+to attack an empire that you have a ^\03binding treaty^\07 with.  Treaties
+that have expired but that are still in effect are no longer binding,
+and attacking that empire will cancel the treaty.
+
+^\0AConventional Attack^\07
+The normal way to attack another empire, the conventional attack uses your
+soldiers (led by generals), fighters (taken to battle by carriers), and heavy
+cruisers for battle and looting.  If you win, you can capture some of the
+opponent's planets and take some of the money.  The battle comes after a
+declaration of war, so the opponent has time to call her or his allies for
+defense. This is the only honorable way to fight another empire.
+
+There are three fronts fought simultaneously during a conventional attack.
+Soldiers will fight on the ground against enemy soldiers; fighters will
+attack the defense stations, which will fire back at your fighters; these
+battles take place in the space around the planets.  Heavy cruisers battle
+in deep space against each other.  Light cruisers fight alongside with heavy
+cruisers, but they do not get the attack bonuses that the command ship gives
+to heavy cruisers.  However, light cruisers get five bonus rounds of firing
+at their opponents before the opponent can fight back.  Your soldiers are not
+very effective in taking out defense stations or cruisers, but are crucial to
+your control of the planets.  Fighters can fight soldiers, but are not able
+to do much damage; they can do very little damage to cruisers.  The heavy
+cruisers are meant for deep space; although they can approach planets, their
+energy is spent maintaining orbit or maneuvering rather than fighting, so they
+are not able to do very much damage to defense stations or soldiers.
+
+The best strategy to minimize your losses and to have the best chance
+of winning is to match your opponent's army on each front.  An army based
+solely on fighters will be devastated if the enemy has soldiers and
+cruisers; you need to control two of the three fronts to win.  You may
+wish to use covert agents to determine the type of military held by your
+opponent before choosing what offensive you wish to use.
+
+^\0AGuerilla Ambush^\07
+This somewhat immoral act is a surprise attack on the opponent that allows
+no warning, so the victim empire has no time to call allies.  Also, the
+soldiers are randomly shooting at the enemy, so no generals are needed
+to lead them.  There is no good way of knowing the enemy casualties, and
+no planets can be captured.  However, fear can be spread in the civilian
+areas of the opponent's empire, and some of the soldier defenses can be
+weakened.  There is a risk that the opponent will capture a few of your
+soldiers and discover your identity; otherwise your attack will go
+unnoticed.
+
+^\0ANuclear Offensive^\07
+Rumours have spread concerning nuclear weapons that are being sold on
+the black market, now even in our galaxy.  The Galactic Coordinator is
+currently trying to destroy the sources of these weapons.  It may be a
+while before you are able to get nuclear weapons, if at all.  Nuclear
+weapons can spread radiation and make dead planets from productive ones.
+Naturally, any empire caught using nuclear weapons will be punished or
+eliminated by the Galactic Coordinator.  If you think you can withstand
+the force of The Galaxy's forces, and you have hired enough covert agents
+to look for the weapons, you can take the risk...
+
+^\0AChemical Warfare^\07
+Poisonous chemicals have been banned in our galaxy, but exist in many of
+the barbaric galaxies in the universe.  Occasionally these chemicals are
+brought to our galaxy for causing human misery.  Due to the highly
+uncivilized nature of these weapons, the Galactic Coordinator is tightly
+enforcing the ban.  If you found even possessing chemicals that can be
+used for chemical warfare, you will be instantly annihilated by The
+Galaxy's army.  Don't even think of using these.
+
+^\0APsionic Bombs^\07
+While normal attacks are targeted towards normal physical destruction,
+these bombs target the mind.  The population of your opponent will be
+thrown into anarchy as mass confusion and havoc reigns.  In addition,
+your opponent's soldiers will be totally demoralized.
+
+^\0APirate Raid^\07
+If you pay attention to the events that occur before the status screen,
+you may notice that various teams of Pirates take some of your military,
+covert agents, planets, food, or money.  You can raid these foes from the
+attack menu by sending a military and lots of money to capture back some
+of their goods.  Included in the items you capture may be items that they
+have captured from other empires.
+
+^\0ASpy on Pirates^\07
+If you don't know which pirates are good to attack, you can spend your
+attack turn spying on all of the pirate teams.  There is no cost for
+spying on the pirates, and you find out their number of planets and net
+worth.
+
+^\04ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FTrading^\07
+
+After you have finished in the battle section, you may trade with another
+empire.  You can trade with any player that you have a treaty with, even
+if the treaty has expired.  You can choose how much you would like to
+send to the other empire, and how much you will demand in return.  If you
+are generous, you may wish to send items without demanding anything in
+return.  Trading requires enough carriers to carry everything you send
+^\0Dand^\07 to carry everything that will be sent back.
+
+Note that empires in protection have guaranteed non-interaction
+status.  "Interaction" includes trading, attacks, and covert operations,
+so you cannot trade with empires under protection.
+
+^\05ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FInsurgencies^\07
+
+When other empires perform covert operations on you, you go through civil
+war, you are ambushed by guerilla forces, or your people riot due to high
+taxes, you may experience insurgencies within your empire.  There are 8
+levels of insurgencies, listed in increasing order:
+
+    ^\0DPeaceful^\07                    Your empire is internally in peace,
+                                and all operations are proceeding
+                                normally.
+
+    ^\0DMild Insurgencies^\07           Peaceful demonstrations might disrupt
+                                tourism, and faith in your empire is
+                                slightly weakened.
+
+    ^\0DOccasional Riots^\07            Small riots break out in your empire;
+                                many people refuse to pay taxes, and
+                                your empire's income is lower.  The
+                                conditions also reduce the number of
+                                people coming to your empire and may
+                                increase the number leaving.
+
+    ^\0DViolent Demonstrations^\07      Large groups of your subjects participate
+                                in riots and demonstrations.  These
+                                severely affect the flow of tourists
+                                in your empire; your tourism industries
+                                suffer.  Universities, harboring many
+                                dissidents, attract fewer people to your
+                                empire.
+
+    ^\0DPolitical Conflicts^\07         Officials within your government begin
+                                to take sides, causing factions to form
+                                and causing supporters to fight each
+                                other.  Some of your industries are
+                                devastated by the conditions in your
+                                empire.
+
+    ^\0DInternal Violence^\07           Top officials begin to question your
+                                authority; many of them form factions,
+                                intending to take political power.
+                                Massive riots leave your empire in
+                                ruins.
+
+    ^\0DRevolutionary Warfare^\07       Government officials organize large
+                                scale military units to bring the
+                                threat of civil war into the heart
+                                of your empire.  Your empire is avoided
+                                by tourists and students; people flee
+                                in masses.
+
+    ^\0DUnder Coup^\07                  Your command position is in jeopardy;
+                                you have little control of your military
+                                except when you can convince them to
+                                attack an outside foe.  Income from
+                                tourism, taxes, and urban trade is
+                                gone, and your population is decreasing
+                                rapidly.  Unless you bring stability
+                                to your empire, it will crumble soon.
+
+^\08ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FFinal Status^\07
+
+The final status screen will then be displayed.  This screen tells you
+how much your population has changed, and in what ways.  People leave
+and die when you have internal conflicts, and they come and are born
+when your empire is running well.  The immigration rate is increased
+by getting education planets, and the birth rate increases with urban
+planets.  The death rate increases with overcrowding, and the emmigration
+rate increases with violence in your empire.  Also shown on this screen
+are losses from a civil war, if you have one.
+
+^\03ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FMessages^\07
+
+Many times, you may wish to send messages to other empires in the game.
+From the Game menu or the Operations menu, you can send messages (item
+[7] on the menu).  Messages can be either private (email) or public
+(posts).
+
+If you wish to post a message that everyone will see, you can press ^\0B*^\07
+as the destination of the message.  If not, you can specify the empires you
+wish to send to by entering their empire letters.  To see a list, press
+^\0B?^\07.  You can also toggle all empires by pressing ^\0BZ^\07; you can
+turn off an empire that you have already entered by pressing the same letter
+again.  (This is the same interface as the one for treaties, except here
+you can also press *.)  Press ^\0BRETURN^\07 to stop toggling players and to
+start writing the message.
+
+Each time you start a new line of the message, the current line number is
+displayed.  You can type up to ^\0399^\07 lines in each message.  Enter a line
+with just ^\09"^\0B/S^\09"^\07 on it to end the message.  You can choose to
+make the message anonymous if you wish.
+
+^\08ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0FStrategies^\07
+
+As if this weren't enough, you will also need to think about your strategies.
+The types of planets you buy will probably be the most influence in
+determining how successful you are (for a while, at least).  Some players
+go for Tourism because it makes a lot of money; others go for Ore since
+it is stable and does not lose profits when your empire goes through civil
+war.  Others like Education and Urban planets and collect high taxes.  There
+are many other strategies available to you, so explore the possibilities!
+
+^\04ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+^\0EA Note from the Galactic Coordinator^\09  (^\0BIt^\09)^\07
+  "Asks you-Why does It collect taxes?  It have to fund the food market.
+   It run a communications network that gives all empires free message
+   transmissions and free notices when they attacked.  It also have to
+   pay the losses on the Super Daily Lottery, 12% of each day's prize
+   comes out of Its money.  Then maintain an army It must to stop you big
+   empire from using chemical and nuclear weapons; It to protect empires
+   under "protection" supply security; It also spend money stopping bad
+   trader men.  On humans It spend a lot of time and money providing, so
+   taxes a little you should pay."          ^\01Ä^\09Ä^\0BGalactic Coordinator^\07
+^\04ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ^\07
+
+(don't tell ^\03It^\07 that ^\03It^\07 has bad sentencesÄÄIt's struggling with English.)
+
+^\0EThat's about all!  Enjoy the Game!
+
+^\0B                                Amit Patel^\03, programmer
+

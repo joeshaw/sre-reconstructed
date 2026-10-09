@@ -1,0 +1,392 @@
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                        ³ You can only upgrade from an older version ³
+³   SOLAR REALMS ELITE   ³ if that version is 0.990 or NEWER!         ³
+³                        ÃÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÙ
+³      What's NEW!!      ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³
+³                        ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Version 0.994b
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. You can now type in "50%" or other percentage values for numeric
+    input.  It will take that much of the maximum as your input.  For
+    example, if the maximum is 100,000, then typing 35% would enter
+    35,000.
+ 2. The major crash at the end of the game was fixed.  This happens if
+    you have a resource option name on the left with no value on the right,
+    for the two scorefile resources.
+
+  Version 0.994a
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. A minor bug in the bonds was fixed.  If the user used 0 for the
+    length in turns and 0 for the length in hours, the game would exit
+    with a divide by zero error.  It would not let anyone else into the
+    game for several hours.
+ 2. There are some cosmetic changes in numeric input.  Instead of
+    displaying, "Your people need XXXX tons of food.  How much do you wish
+    to give them? [XXXX]" it omits the default value, in brackets.  Also,
+    the default value is `typed in' for the user instead of implicitly
+    being used whenever the user presses Enter.  This allows you to make
+    minor adjustments by backspacing over part of the default value to
+    change it.
+ 3. There are similar changes in textual input.  The only place the
+    player sees this is in configuring bond names.  However, the sysop
+    should see this in editing pirate, empire, and player names.
+ 4. The status screen of an empire now displays whether it has a mothership,
+    or nuclear/chemical/psionic bombs.  This information also shows up in
+    a spy report.
+ 5. A new unit, light cruisers, are like heavy cruisers, except that they
+    can only be built by research planets.  They have the same strength
+    as heavy cruisers, but they get to a battle earlier and get 5 bonus
+    rounds in which they fight the opponent's light cruisers or heavy
+    cruisers.  During these bonus rounds, heavy cruisers cannot fight back.
+    Light cruisers do not contribute to defense for treaties.
+
+  Version 0.993c
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. In order to abdicate, the player must type in the name of their
+    empire.  This keeps them from accidentally abdicating due to line
+    noise.
+
+  Version 0.993b
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. A bug in the bank giving too much in loans was fixed.
+ 2. The attack menu doesn't show up during the turn; instead, the
+    game asks the user whether they want to do attacks, trading, or
+    messages at the end of each turn.
+ 3. There is a new option on the startout menu, "Rankings", that sorts
+    empires by score, planets, and net worth.  In tournament mode, this
+    also shows the rankings for tournament points, which are used to
+    determine the winner of a tournament.
+ 4. Research planets can produce a "mothership", which can transport
+    100,000 fighters into battle.  It is a rare event to get one of these.
+ 5. Users can toggle the ANSI and IBM Characters flags from the Preferences
+    menu.  The new settings remain in effect only for the current session.
+ 6. NEWS*.{ANS,TXT} are no longer created.  You can delete the ones you
+    have from before; the batch file will have to be changed so that it
+    does not copy these (if you used them as bulletins).  Now, the news
+    files can be set up from the resource file, so you don't have to copy
+    them every time the batch file is run.  If you do not have settings,
+    no ANSI/text news files will be created for you.  However, users will
+    still be able to see the news from the game.
+ 7. The installation program, which occasionally locked up, has been fixed.
+    (I hope)
+ 8. There is a new resource option to turn off the ability to buy military
+    at the spending menu.  This might give a new twist on the game, with
+    players forced to use Supply planets to build up a military rather than
+    being able to hide with a low networth and then suddenly buy a huge
+    military with a large amount of money.
+ 9. Fixed a small bug with flavors, where if the translation file has spaces
+    after the second item, it would complain.
+
+  Version 0.993a
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. Ten days of news files are kept, in NEWS.{TXT,ANS} for today's news
+    and NEWSx.{TXT,ANS} for news from x days ago (x = 1 to 9).
+    ** If your batch file copies YESTNEWS.* for bulletins, you must **
+    ** change the batch file to copy NEWS1.* instead **
+ 2. The pirates do less damage to empires than in 0.992, but they
+    have varying strengths -- pirate 9 is stronger than pirate 1.
+ 3. In tournament play, there is an additional column on the score listing
+    for 'points', which are given for being a Master for a day.  The person
+    who has the most points at the end of the tournament is the winner.
+ 4. A new resource, Messages.Anonymous, lets you control whether users
+    can write anonymous messages.
+ 5. Flavors can be controlled through a resource option, Flavor, that
+    points to a subdirectory under Flavors\ that should be read for
+    flavor files.  In this subdirectory can be Resource.DAT, Translat.DAT,
+    and any ANSI/Text files that normally would go in Screens\.  This
+    will allow flavor writers to further customize by adding ANSI files.
+ 6. The popular Star Trek flavor is included with SRE.  Also, a new flavor,
+    the Dune flavor, is included.
+ 7. There are more color options to configure -- see Resource.Doc and
+    look for Output.xxxxx.Color.
+ 8. If you are having trouble with your board as a result of SRE allowing
+    users to go a little over their time limit, you can use the StrictTime
+    resource option.
+ 9. High-ascii characters are now allowed in empire names and messages.
+10. The new installation program supports local-only play, for people
+    who do not have a BBS but want to experiment with strategies.
+
+  Version 0.992b
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. Pirates keep track of which empires have attacked and how much
+    they were hurt.  (This gives them a "personality".)
+ 2. A new resource, News.CivilWar, lets you choose whether you want
+    major civil wars to be listed in the news file.
+ 3. The Flavors feature is faster (2-5 times as fast as before),
+    and the way translations are done is a little better.  (If you
+    had "A" turning into "B" and "B" turning into "A" in version
+    0.991, "A" would turn into "B", which would then turn into "A";
+    now, it will just turn into "B", but "B" will not be further
+    translated.)
+ 4. News files are a little more varied.
+ 5. Pirate names and colors can be set in the resource file.  These
+    will take effect during Reset if you choose 'New Pirate Names'.
+ 6. A bug with lost bank investments was fixed.
+ 7. A new type of special weapon, the Psionic Bomb, was added; this
+    weapon creates anarchy in your opponent's empire, and totally
+    demoralizes the troops.  It is available in the registered
+    version, and it can be bought in the same way that the nuclear
+    and chemical weapons can be bought.
+
+  Version 0.992a
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. A bug with petroleum accidents occuring too often has been fixed.
+ 2. New random events have been added (mostly good ones), and many have
+    been changed.
+ 3. The bank interest rate fluctuates (during daily maintenance).
+    The interest rate affects the duration of an investment.
+ 4. A bug with being able to learn who wrote an anonymous message has
+    been fixed.
+ 5. SRE USERLIST now puts a list of users in Text\UserList.TXT
+ 6. FOSSIL support has been added!  To use it, enable the System.Fossil
+    resource in Resource.dat.
+ 7. A bug with empires being able to abdicate and still receive
+    trade deals from a 'previous life' has been fixed.
+ 8. A bug allowing players not to pay for their military has been fixed!
+ 9. The '/' key can be used to search at any prompt where an empire
+    letter is required.  The player can type in part of an empire name
+    to select it, rather than having to remember the empire letter.
+
+  Version 0.991a
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. "Translation files" are now supported; they allow you to substitute
+    one piece of text for another in the output of SRE; for example, you
+    can ask SRE to write "shark" instead of "soldier".  The documentation
+    is in Docs\Resource.DOC.  Three sample translations are given in
+    Flavors\*.*, along with resource files that convert your game
+    into another "flavor" of SRE.  (BRE, Medieval, and Wild West flavors
+    are included, and you can create your own.)
+ 2. A bug in trading, where you could not demand money, was fixed.
+ 3. If another player is playing, SRE wrote a message to the screen
+    but not to the remote side; it now writes to the remote side.
+ 4. The player editor has been revised to work better; it allows you
+    to edit user and player names.
+ 5. New resource options Attacks.Conventional, Attacks.Guerilla,
+    Attacks.PirateRaid, and Attacks.PirateSpy allow you to select
+    which attacks are allowed at the attacks menu.
+ 6. At reset-time, the sysop can choose the amount of food in the
+    food market.
+ 7. Players can sell bonds (investments in their own empires) to
+    other players.  There is a resource option that controls whether
+    this new feature is enabled, Bank.PlayerInvestments.  Also, there
+    are shortcut keys at the Bank prompt:  $ makes a normal (Galactic
+    Coordinator) investment, and S shows a list of investments.
+ 8. The resource option `Attacks.Maximum' now works properly.
+ 9. When displaying scores, the Solar Master, Planet Master, and
+    Weapons Master are shown.
+
+  Version 0.990e
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. Another bug, this time with new users being deleted immediately,
+    has been fixed.
+
+  Version 0.990d
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. A very BIG bug with the modem output routines not working was fixed!
+
+  Version 0.990c
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. A (somewhat major) bug with allies sending forces during an attack
+    was fixed.
+ 2. Custom treaties were added:  these treaties allow the players to
+    choose the percentage of forces sent during an attack, instead of
+    using preset defense treaty types.
+ 3. The "Setup" covert operation is now harder to spot; the agent waits
+    until that empire plays its turns before writing the results to the
+    news file, so that it appears at the right date and time.
+ 4. Pirate maintenance is run hourly so that they can constantly
+    resupply rather than rebuilding only at midnight.
+ 5. Chat mode now has word-wrap again.  (bug fix)
+ 6. A bug with the resource option Attacks.Maximum only working for
+    one or two days was fixed.
+ 7. During message reply, players can now add or delete destinations
+    for both private and public replies.  By pressing '*', the player
+    can set the message to be public.
+ 8. A bug in the trading menu that didn't allow trading of carriers
+    has been fixed.
+
+  Version 0.990b
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. The cost of maintaining your empire and your current amount of
+    money are displayed before paying to maintain your empire.
+ 2. Added Display.Border -- a resource option that lets you change the
+    border color in VGA-effects mode to one different from the default.
+ 3. Added new status bars (accessible by pressing F2); pressing F2 will
+    cycle through 4 status bars instead of 2, showing the military and
+    planet distribution in addition to the information shown before.
+ 4. Added the Output.InternationalYesNo resource option for sysops
+    in countries where "Y" and "N" are not universally known as "yes"
+    and "no".
+ 5. Added the /? command line option for viewing command line parameters.
+ 6. Added the CREATEINSTRUCTIONS command line parameter for creating
+    Text/Player.ANS and Text/Player.TXT files, which are ANSI and text
+    player instruction files.
+
+  Version 0.990a
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 0. This version is NOT COMPATIBLE with older versions!  You will not
+    be able to keep your old game running, so if this is a problem,
+    do not run this version until you are ready for a reset, or run
+    two SRE games, one old and one new.  I would suggest re-reading
+    the documentation, because many things have changed.
+ 1. All prices have been slashed! 10 old credits are worth 1 new credit;
+    this will seem strange for a while, but BRE has done the same thing,
+    so perhaps having both games do the same thing will make it easier.
+ 2. New non-inflationary pricing system!  Prices will remain low for the
+    entire game rather than increasing whenever the empire becomes
+    larger.  The empires must pay to maintain the bureaucracy that will
+    accompany a large empire.  There is an option at reset-time to keep
+    the old inflationary pricing.
+ 3. Players can enter the game without creating an empire; they can see
+    the scores, the game parameters, public messages, and bulletins.
+    This will allow them to see the game without being in it, and also
+    to send messages to those who are playing.
+ 4. The civil war system has been redone.  If you don't pay or don't
+    feed your people, the severity of your actions will dictate the
+    casualties in the civil war.  In the past, any lack of food would
+    cause 1/2 of your planets to revolt --- in the new version, it
+    depends on how much you fed your people (the less you feed, the
+    worse the civil war.)
+ 5. Treaties can be sent to multiple targets instead of sending to
+    one at a time.
+ 6. The food scale has been changed by a factor of 100:  your people
+    require 1/100th as much food as they used to; the prices in the
+    food market are now more sensitive, and vary more often than in
+    the old versions.
+ 7. There are more research options now.  You can edit them also:  edit
+    Text/Research.LST, a text file with various research planet
+    advances.  I will have an explanation of the fields in a later
+    version; I am still working on it.
+ 8. Players can list bank investments with the "S" key from the bank menu.
+ 9. Users can list the covert agents that are still out on missions
+    and what missions they are performing by pressing "S" from the
+    covert operations menu.
+10. From most menus, the user can press "V" to visit the bank.  This
+    will make it more convenient to get to the money for covert ops,
+    attacks, and spending.
+11. There are a few more ANSI files that can be displayed to the user.
+    The title screen can now be changed, and the exit screen is available
+    in unregistered versions.  Also, _all_ of the ANSI screens go in
+    the Screens/ subdirectory, instead of some of them going there and
+    others going in the main SRE directory.
+12. There is a tournament mode now!  When you decide to reset the game,
+    you can set up a tournament instead of a normal game.  In Tournament
+    mode, you can set the first and last day of the tournament, and
+    after the last day, SRE will rank empires based on their performance.
+    Each empire will receive points for being Solar, Planet, or Weapons
+    Master.  (You can assign the point values in the Resource.dat file.)
+    The one with the most points at the end of the tournament will be
+    the winner.  The number of points an empire has is not displayed
+    to the user until the tournament is over, so empires can't gang up
+    on the current leader.
+13. A new Advisor tells the player the efficiency of his empire.  The
+    efficiency is calculated by taking earnings, subtracting costs, and
+    dividing by the number of planets.  (It is the profit per planet.)
+14. The menus are configurable!  You can change the menu text and the
+    menu colors in the Resource.DAT file.  For more information, see
+    Resource.DOC.  There are over 150 text strings and 500 colors that
+    you can set!  (This will make it possible to make translate part
+    of the game [the menus and help files] into another language.)
+15. The LOG option has been changed --- you can now set a filename
+    for the LOG file; instead of being LOG: Boolean = yes | no, it's
+    Game.LOG: String (a filename)
+16. Planets get created continuously while a player is logged on.  This
+    means that someone could be playing, buy up all the planets, and a
+    few minutes later, find that another planet is available in the
+    market.
+17. The status bar's color can be set in the Resource file.  The
+    stars by the empire name in the empire status screen will match
+    the status bar's color.
+18. You can now set a path/filename for score files, so that the batch
+    file does not have to copy them out each time SRE runs.
+19. Several names of resource options have been changed.  Most important
+    are probably BIOS, VGA, Multitasker, LOG, Scores, and Treaty.  If
+    you were using one of those, please read Resource.DOC for the new
+    names.  I changed BIOS because in the future, I may be able to
+    interface with DESQview's display routines, so the new format
+    would leave direct video, BIOS, and DESQview output in the same
+    resource option.
+20. You can have multiple resource files for different nodes.  See
+    SYSOP.DOC for details.
+21. For a list of things that have are NOT in 0.990 but WERE in 0.986,
+    see WHATS.OLD.
+22. The menus will automatically resize based on the size of the columns;
+    if the numbers are small, the menu will not be as wide, so it will
+    display faster.
+23. LOCKOUT.USR has been moved to Text/Lockout.LST.  The format is
+    the same (one username per line); the ANSI files have been moved
+    to Screens/.
+24. The configurable help text file has been renamed from SREHELP.DAT
+    to Text/SRTopics.HLP.  You can create Text/Topics.Hlp if you wish
+    to put your own text in there.
+25. The help system now shows a menu and asks the user for a help topic
+    number, so the players don't have to type in the entire word.  The
+    help topic colors are configurable (!), so you can individually color
+    them through the resource file.
+26. When empires trade, the net worth of the trading deal is counted in
+    the net worth of the empire who owns the goods.
+27. Messages can be attached to trade deals so that the empire can
+    tell his trading partner why & what he's trading.
+28. The prizes in the Pick-5 lottery are higher than ever!
+29. The game saves MUCH less often, so it should be significantly faster
+    in most places.
+30. The news file options have been moved into the resource file.
+31. The player can automatically pay for all expenses if he wishes.
+32. Players can set various preferences in an expanded Preferences
+    section.  Included are options for paying all expenses, donating
+    to the Galactic Coordinator, depositing everything into the bank
+    at the end of each turn, non-redisplaying menus, and preventing
+    Enter from exiting the spending menu.  These preferences remain
+    in Data/Player.II even past a reset, so that they don't have
+    to enter everything again.
+33. When the player finds a bribed spy working in his empire, he can
+    re-bribe that spy to work for him to spy on the empire who originally
+    bribed him.  (Confusing?)
+34. The system will not let players exit the "double spy" menu unless
+    they press "Q".  This will prevent them from missing the rare
+    occasion of finding a double-spy.
+35. Users can get information about the game such as the amount of
+    planets and food available, number of turns per day, turns of
+    protection, and tournament information if a tournament is being
+    run.
+36. The sysop empire viewer has been fixed so that the scores and
+    planets appear in the correct color and order.
+37. The pirate editor lets you change the color of the pirate team.
+38. The status screen now shows the net worth and total number of planets.
+39. There is a new resource option (News.PirateRaids) for controlling
+    whether pirate raids are reported in the news files.
+40. Only one bribed spy can be working for you in another empire at
+    a time; in the past, more than one spy could be bribed, but having
+    more did no more than having one, so it was a waste of money.
+41. New empires can choose the letter (slot) they wish to play.
+    (This is instead of always filling the first slot.)  This way,
+    players can sometimes choose the same slot after a reset.
+42. During daily maintenance, "important" data files are copied
+    to the Backups/ directory.
+43. Neutrality treaties are always binding, even when their "time"
+    has run out.  This allows players to have treaties of virtually
+    unlimited length; to break the treaty, the player must break
+    it from the Diplomacy Menu.
+44. During reset, you can choose whether you want to reset the pirate
+    names; if you don't want to do so, the names remain, but the pirate
+    data is set to zero.
+
+  What to expect in the future
+ÄÄÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ 1. A research menu that allows the player to select areas which should
+    be researched more than others.
+ 2. Special weapons that can be developed by research planets.
+ 3. Message attaches to battle results, so that the empire who attacked
+    can put a message to the person he attacked.
+ 4. Message attaches to treaty proposals.
+ 5. A statistics bulletin generator, or perhaps an interface to an
+    external bulletin generator.  (If you are interested in writing
+    an external bulletin program, please let me know!)
+ 6. A sysop-set date for the last day a player can join the game.  This
+    will allow you to "close" a game after it has started, so that
+    players can't start over.  (It may be useful in Tournament mode.)
+ 7. Listing all trading fleets that the player owns and are still
+    out on their mission.
+

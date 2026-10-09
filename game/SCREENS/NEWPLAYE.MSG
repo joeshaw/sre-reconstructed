@@ -1,0 +1,31 @@
+^\07Welcome to ^\0FSRE:II^\07!
+
+These are keys that are not usually listed on menus/prompts but may
+be useful:
+
+   ^\0EQ^\07  Press Q or 0 at a menu to quit the menu.  You can
+        also press ESC.
+
+   ^\0EK^\07  K will enter three 0s for you, so if you want to
+        enter 5000, you can just type ^\0F5K^\07.
+   ^\0EM^\07  M will enter six 0s for you (M for million)
+
+   ^\0E>^\07  Enter the "max" number; when you are paying money,
+        it is all of your money; when you are feeding, it is all
+        of your food; when you are buying, it is as much as you
+        can afford; etc.
+
+   ^\0EEnter^\07  Pressing Enter will input the default value at
+        any prompt or menu.  At most menus, the default is to
+        Quit the menu, so you don't have to press Q; just press
+        Enter.
+
+   ^\0EZ^\07  When you can choose more than one empire (messages
+        and treaties), pressing Z will toggle all empires.  If
+        you wish to send to all, just press Z; if you wish to
+        send to all but a few, press Z and then enter the empires
+        you wish to remove from the list.
+
+I hope you enjoy the game!
+
+

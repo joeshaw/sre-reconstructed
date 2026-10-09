@@ -1,0 +1,76 @@
+Output.TranslationFile                  "Flavors/Medieval/Translat.DAT"
+Output.LeftBracket                      "*"
+Output.RightBracket                     "*"
+StatusBar.Background                    5
+FoodMarket.Name                         "the Commoner's Market"
+
+Menu.System.2.Name                      "Enter the Realm"
+Menu.Sysop.12.Name                      "Bandit Editor"
+Menu.Galaxy.Title                       "Medieval SRE"
+Menu.Galaxy.Colors                      (15 4 4 12 15)
+Menu.Galaxy.4.Name                      "Play Game"
+Menu.Galaxy.5.Name                      "Kingdom Status"
+Menu.Bulletins.Title                    "List of Bulletins"
+Menu.Bulletins.Colors                   (7 4 - - 7 15)
+Menu.Diplomacy.Title                    "Relations"
+Menu.Diplomacy.Colors                   (15 6 6 14 7)
+Menu.Diplomacy.5.Name                   "BattleRam Defense Plan"
+Menu.Diplomacy.7.Name                   "Declaration of War"
+Menu.Production.Title                   "Training and Production"
+Menu.Production.Colors                  (15 14 - - 7 15 7)
+Menu.Buying.Title                       "Ye Olde Marketplace"
+Menu.Buying.Colors                      (15 5 5 13 15 12 15)
+Menu.Buying.5.Name                      "Build Castle"
+Menu.Buying.6.Name                      "Territories"
+Menu.Buying.10.Name                     "Sell Items"
+Menu.Buying.10.Colors                   (4 12 15 14 15)
+Menu.Buying.11.Name                     "Operations Menu"
+Menu.Buying.11.Colors                   (4 12 15 14 15)
+Menu.Selling.Title                      "Ye Olde Marketplace"
+Menu.Selling.Colors                     (15 3 3 11 7 9 15)
+Menu.Selling.6.Name                     "Abandon Territories"
+Menu.Selling.10.Name                    "Buy"
+Menu.Selling.10.Colors                  (1 9 3 14 15)
+Menu.Selling.11.Name                    "Operations Menu"
+Menu.Selling.11.Colors                  (1 9 3 14 15)
+Menu.BuyPlanets.Title                   "Territories"
+Menu.BuyPlanets.Colors                  (11 3 3 11 7 15)
+Menu.SellPlanets.Title                  "Abandon Territories"
+Menu.SellPlanets.Colors                 (7 8 6 12 7 15)
+Menu.Operations.Title                   "Operations Menu"
+Menu.Operations.Colors                  (15 2 2 10 11)
+Menu.Operations.2.Name                  "Royal Treasury"
+Menu.Operations.3.Name                  "Visit Wizards"
+Menu.Operations.16.Name                 "Resign"
+Menu.Covert.Title                       "Wizard's Tower"
+Menu.Covert.Colors                      (15 5 12 15 7 11)
+Menu.Covert.1.Name                      "Spy Spell"
+Menu.Covert.2.Name                      "Create Insurgencies"
+Menu.Covert.3.Name                      "Cause Confusion"
+Menu.Covert.6.Name                      "Poison Food"
+Menu.Covert.8.Name                      "Kidnap Royal Official"
+Menu.Covert.9.Name                      "\Bribe Wizard"
+Menu.Infiltration.Colors                (15 5 12 15 7 11)
+Menu.Infiltration.2.Name                "Determine Relations"
+Menu.DoubleSpy.Title                    "\ALERT!  Corrupt Wizards"
+Menu.DoubleSpy.1.Name                   "\Find a corrupt wizard"
+Menu.DoubleSpy.2.Name                   "\Eliminate all wizards"
+Menu.DoubleSpy.3.Name                   "\Bribe a covert wizard"
+Menu.Attack.Title                       "Attack Menu"
+Menu.Attack.Colors                      (14 12 4 14 7)
+Menu.Attack.4.Name                      "\Spy on Bandits"
+Menu.Pirates.Title                      "Select Bandit Team"
+Menu.Pirates.Colors                     (15 8 7 14)
+Menu.Trading.Offer.Title                "Stuff to Send"
+Menu.Trading.Offer.Colors               (15 9 1 3 9 11 15)
+Menu.Trading.Demand.Title               "Stuff to Demand"
+Menu.Trading.Demand.Colors              (15 9 1 3 9 11)
+Scores.Colors.Title                     15
+Scores.Colors.Line                      4
+Scores.Colors.Key                       14
+Scores.Colors.Brackets                  6
+Scores.Colors.Col0                      7
+Scores.Colors.Col1                      15
+Scores.Colors.Col2                      14
+Scores.Colors.Col3                      12
+

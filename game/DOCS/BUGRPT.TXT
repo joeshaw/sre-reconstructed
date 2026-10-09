@@ -1,0 +1,55 @@
+SRE BUG Report
+---------------------------------------------------------------------------
+This is a bug report form.  Solar Realms Elite is not guaranteed to work, &
+we shall not take any responsibility for any damages caused by the program.
+(This is just a game we wrote for fun.)   If you want to report a major bug
+(that's not listed "cause unknown" in the bug list file),  please print out
+this form and send it in.  Thanks!  (No guarantee that we can fix it!)
+---------------------------------------------------------------------------
+Name:  __________________________________________ Date: ___________________
+Address:  _________________________________________________________________
+Address:  _______________________________________ Country:  _______________
+City:  _____________________________________ State: ___ ZIP: ______________
+BBS:  ___________________________________________ Number:  (___)____-______
+Version of SRE:  __________    (if unsure, see the first line of WHATS.NEW)
+
+If any of this information is relevant, please fill it in:
+BBS Type:  _________________________________  Version: ____________________
+Door File Produced:  _______________________  COM port: 1[ ] 2[ ] 3[ ] 4[ ]
+System:  [ ] DESQview  [ ] DOS, v. ____  [ ] MS-Windows  [ ] OS/2, v. _____
+
+---------------------------------------------------------------------------
+Please describe the bug and if possible, how you were able to get it.  If
+SYSOP.LOG contains anything, please tell us that as well --- it may help!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+We will reply with a letter indicating either that the bug is fixed in
+version X.XXX, or that the bug is being worked on (or unsolvable at this
+time).
+---------------------------------------------------------------------------
+[  ] Already Fixed                                                     For
+[  ] Cause known, bug fixed ___/___/___                              Solar
+[  ] Cause unknown                                                   Realm
+[  ] Not really a bug                                                  Use
+---------------------------------------------------------------------------
+
+Please print this out and send to:
+
+   Amit Patel
+   SRE Bug Report
+   4851 Cairnsean
+   Houston, TX 77084-2541
+
+

@@ -1,0 +1,84 @@
+StatusBar.Background                    1
+Output.TranslationFile                  "Flavors/BRE/Translat.DAT"
+Output.LeftBracket                      "("
+Output.RightBracket                     ")"
+Menu.Galaxy.Title                       "BRE Emulator"
+Menu.Galaxy.Colors                      (15 1 1 9 15)
+Menu.Galaxy.4.Name                      "Play Game"
+Menu.Galaxy.5.Name                      "Empire Status"
+Menu.Bulletins.Title                    "List of Bulletins"
+Menu.Bulletins.Colors                   (7 1 - - 7 15)
+Menu.Diplomacy.Title                    "Diplomacy Menu"
+Menu.Diplomacy.Colors                   (15 2 2 10 7)
+Menu.Diplomacy.5.Name                   "Tank Defense Plan"
+Menu.Diplomacy.7.Name                   "Declaration of War"
+Menu.Production.Title                   "Industrial Production"
+Menu.Production.Colors                  (15 4 - - 7 14 7)
+Menu.Production.1.Name                  "Troops"
+Menu.Production.2.Name                  "Jets"
+Menu.Production.3.Name                  "Missile Bases"
+Menu.Production.4.Name                  "Commanders"
+Menu.Production.8.Name                  "Tanks"
+Menu.Buying.Title                       "Spending Menu"
+Menu.Buying.Colors                      (15 4 4 12 15 14 15)
+Menu.Buying.1.Name                      "Troops"
+Menu.Buying.2.Name                      "Jets"
+Menu.Buying.3.Name                      "Missile Bases"
+Menu.Buying.4.Name                      "Commanders"
+Menu.Buying.5.Name                      "HeadQuarters"
+Menu.Buying.6.Name                      "Regions"
+Menu.Buying.8.Name                      "Tanks"
+Menu.Buying.10.Name                     "Sell"
+Menu.Buying.10.Colors                   (4 12 15 14 15)
+Menu.Buying.11.Name                     "System Menu"
+Menu.Buying.11.Colors                   (4 12 15 14 15)
+Menu.Selling.Title                      "Spending Menu"
+Menu.Selling.Colors                     (15 4 4 12 15 14 15)
+Menu.Selling.1.Name                     "Troops"
+Menu.Selling.2.Name                     "Jets"
+Menu.Selling.3.Name                     "Missile Bases"
+Menu.Selling.4.Name                     "Commanders"
+Menu.Selling.6.Name                     "Regions"
+Menu.Selling.8.Name                     "Tanks"
+Menu.Selling.10.Name                    "Buy"
+Menu.Selling.10.Colors                  (4 12 15 14 15)
+Menu.Selling.11.Name                    "System Menu"
+Menu.Selling.11.Colors                  (4 12 15 14 15)
+Menu.BuyPlanets.Title                   "Regions"
+Menu.BuyPlanets.Colors                  (7 13 5 15 14 15)
+Menu.SellPlanets.Title                  "Regions"
+Menu.SellPlanets.Colors                 (7 13 5 15 14 15)
+Menu.Operations.Title                   "System Menu"
+Menu.Operations.Colors                  (15 1 1 9 15)
+Menu.Operations.Columns                 1
+Menu.Covert.Title                       "Covert Operations"
+Menu.Covert.Colors                      (15 3 3 11 15 7)
+Menu.Infiltration.Title                 "Covert Operations"
+Menu.Infiltration.Colors                (15 3 3 11 15 7)
+Menu.Attack.Title                       "Attack Menu"
+Menu.Attack.Colors                      (14 6 6 15 7)
+Menu.Pirates.Title                      "Select Pirate Team"
+Menu.Pirates.Colors                     (15 8 7 15)
+Menu.Trading.Offer.Title                "Stuff to Send"
+Menu.Trading.Offer.Colors               (7 6 6 14 15 12 15)
+Menu.Trading.Offer.1.Name               "Troops"
+Menu.Trading.Offer.2.Name               "Jets"
+Menu.Trading.Offer.3.Name               "Missile Bases"
+Menu.Trading.Offer.4.Name               "Commanders"
+Menu.Trading.Offer.8.Name               "Tanks"
+Menu.Trading.Demand.Title               "Stuff to Demand"
+Menu.Trading.Demand.Colors              (7 6 6 14 15 12)
+Menu.Trading.Demand.1.Name              "Troops"
+Menu.Trading.Demand.2.Name              "Jets"
+Menu.Trading.Demand.3.Name              "Missile Bases"
+Menu.Trading.Demand.4.Name              "Commanders"
+Menu.Trading.Demand.8.Name              "Tanks"
+Scores.Colors.Title                     14
+Scores.Colors.Line                      6
+Scores.Colors.Key                       15
+Scores.Colors.Brackets                  6
+Scores.Colors.Col0                      7
+Scores.Colors.Col1                      14
+Scores.Colors.Col2                      15
+Scores.Colors.Col3                      4
+

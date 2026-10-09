@@ -1,0 +1,46 @@
+These Distribution Sites are on the SRGAMES echo; you can freq SRE and BRE
+from them.
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+Matt Galin         Hall Highlights             1:142/562  16.8 (203) 232-5037
+Chris Miller       Centaur Aisle               1:138/171  14.4 (206) 581-0298
+Mark Pittenger     The Last Frontier           1:138/136  14.4 (206) 847-8168
+Ken Givens         The Chess Board             1:124/2213 9600 (214) 641-1136
+Stephen Andrews    Star Base 147               1:124/7002 16.8 (214) 826-9375
+Dave Kulp	   Auto Mania! BBS	       1:2613/601 16.8 (315) 483-9455
+Neil Steele	   The Boarding House	       1:3814/12  14.4 (405) 377-8561
+David V. Dillard   Eternity ][                 1:10/110   28.8 (408) 899-3032
+Steve Cain         The File Exchange           1:2617/104 28.8 (410) 744-1102
+Rodney Davis	   Comlink Information Systems 1:261/673  14.4 (410) 744-3308
+Jim Leonardt       Wolfhound BBS               1:284/52   9600 (417) 326-3361
+Vladimir Bratkov   Computer Wizard BBS	       1:105/57   16.8 (503) 256-2574
+John Sibley	   LBD Consultants BBS	       1:322/507  14.4 (508) 987-6182
+Ryan Tucker	   T&T Communications	       1:290/10   16.8 (515) 265-0164
+Damien Sam         The House of Knightmares    1:153/950  28.8 (604) 291-1207
+Jeffrey Oxenreider The Strategist BBS	       1:226/560  14.4 (614) 882-2624
+Daniel Coonce	   The Hybrid BBS	       1:3637/4   14.4 (615) 526-5424
+Duane Brown	   End of the Line BBS	       1:274/16   14.4 (703) 720-1624
+Ray Hurst          Shark Waters                1:106/890  16.8 (713) 890-0025
+Gerral Reeves      The SouthSide BBS           1:210/48   14.4 (805) 832-7734
+Jim Chapman        The Gateway BBS             1:2240/320 9600 (810) 742-9414
+Roger Etheredge    The Bunkhouse               1:393/69   9600 (817) 243-1403
+Steve Shapiro      The Dark Side               1:112/32   14.4 (904) 645-6293
+Kyle Defina	   The IceCave BBS	       1:2605/626 14.4 (908) 819-7721
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+For Internet access, Damien Sam has set up ftp sites ftp.uniserve.com and
+www.uniserve.com.  Look in pub/srgames.
+
+These sites may also have our games; they are not on the SRGAMES echo.
+Gary Artysh        Magnum BBS                                  (215) 637-0850
+Scott Biedermann   Ponderous BBS                               (409) 938-4356
+Guy E. Allen       Guy's Home Board                            (702) 566-3760
+Jim Connor         The Shire                                   (904) 783-3236
+Justin McDermid    The Continuum BBS           1:353/353       (604) 542-8920
+Hardy Rosenke      Home HARDware (!) BBS       1:153/923       (604) 948-0275
+Rick Barrowclough  The Forbidden Realms        1:153/945       (604) 582-6941
+Ken Derkson        Battlemech BBS              1:153/937       (604) 431-3981
+                                               1:153/946       (604) 431-3982
+                                               1:153/947       (604) 431-3983
+                                               1:153/948       (604) 431-3984
+Paul Temby (Austr) Blue Max BBS                3:680/837     [+61-8]-374-2702
+Ton de Graaff      Wrestler Soft               2:280/908        31-20-6900413

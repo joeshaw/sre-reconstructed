@@ -4,7 +4,7 @@
 # fixture is a state the original itself produced.
 #
 # usage: tests/fixtures.sh OUTDIR [sre0994b.zip]
-# Needs python3 with unicorn, and 7z (or unar) for the ARJ archive inside.
+# Needs python3 with unicorn, curl and unzip.
 # SRE_STATUS=path/to/STATUS.SRE adds registered games.
 set -eu
 OUT=$1
@@ -29,15 +29,12 @@ player() {      # player DIR NAME: make NAME the BBS user
     printf '%s\r\n1\r\n1\r\n25\r\n2400\r\n1\r\n60\r\n%s\r\n' "$2" "$2" > "$1/DOORFILE.SR"
 }
 
-# The release, unpacked as UNPACK.EXE would.
+# The release: the original SRE.EXE from the zip, and the data files
+# (as UNPACK.EXE would unpack them) from game/.
 rm -rf "$OUT/base"; mkdir "$OUT/base"
-(cd "$OUT/base" && unzip -q "$ZIP")
-if command -v 7z > /dev/null; then
-    (cd "$OUT/base" && 7z x -y UNPACK.EXE > /dev/null)
-else
-    (cd "$OUT/base" && unar -q -f UNPACK.EXE > /dev/null)
-fi
-rm -f "$OUT/base/UNPACK.EXE" "$OUT/base/INSTALL.EXE"
+(cd "$OUT/base" && unzip -q "$ZIP" SRE.EXE)
+cp -R "$HERE/game/." "$OUT/base/"
+rm -f "$OUT/base/.gitattributes"
 printf 'System.Fossil\t\tyes\r\n' > "$OUT/base/RESOURCE.DAT"
 mkdir -p "$OUT/base/NEWS" "$OUT/base/BACKUP"
 player "$OUT/base" "Joe Shaw"

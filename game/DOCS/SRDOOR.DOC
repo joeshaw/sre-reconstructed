@@ -1,0 +1,239 @@
+                       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                                    ³             ³
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´   SRDOOR Door Conversion Utility   ³     4.2     ³
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                                    ³             ³
+      ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                                                  ³
+          ÄÄÄÄÄÄÄÄÄÄÄÄÄ´ * Purpose                                        ³
+            ÄÄÄÄÄÄÄÄÄÄÄ´                                                  ³
+              ÄÄÄÄÄÄÄÄÄ´ * Command line format                            ³
+                ÄÄÄÄÄÄÄ´                                                  ³
+                  ÄÄÄÄÄ´ * Setup                                          ³
+                    ÄÄÄ´                                                  ³
+                      Ä´ * Multinode Setup                                ³
+                       ³                                                  ³
+                       ³ * Compatibility Information                      ³
+                       ³                                                  ³
+                       ³ * File format                                    ³
+                       ³                                                  ³
+                       ³ * Notes to door game authors                     ³
+                       ³                                                  ³
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄ
+  Purpose
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         This program reads a BBS door file and converts it into a
+         standard Solar Realms format file called DOORFILE.SR.  You do
+         not need to understand how this program works if you just
+         wish to run the game; the game's installation program will
+         automatically set up a batch file which uses SRDOOR.  This
+         one program will work with BRE, SRE, SCE, AC6, LEA, PC, SRH,
+         and any other games from the Solar Realm.  The purpose of an
+         external door conversion is to allow sysops of BBSes not
+         supported by SRDOOR to use another program to convert to the
+         DOORFILE.SR file.  For example, if you were running a BBS
+         that produced USER.DAT as a door file, and SRDOOR did not
+         support it, you could write a program to replace SRDOOR that
+         would read USER.DAT and convert it to DOORFILE.SR.  See the
+         section, "File Format".
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Format
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         SRDOOR [®specialbbstype¯ [®comport¯]]
+	  or
+	 SRDOOR -f ®filename¯
+          or
+         SRDOOR LOCAL
+
+         The parameters "specialbbstype" and "comport" are required for
+         certain BBS types.  See the "File Format" section for more
+         information.  If you specify LOCAL, it will ask for the username,
+         and then create a DOORFILE.SR for you.
+
+	 The -f option allows you to choose a setup file other than SETUP.SR.
+
+         or
+
+	 (writing the doorfile directly)
+
+	 ECHO ®username¯	 >DOORFILE.SR
+	 ECHO ®ansi-status¯	>>DOORFILE.SR
+	 ECHO ®ibm-char-status¯ >>DOORFILE.SR
+	 ECHO ®page-length¯	>>DOORFILE.SR
+	 ECHO ®baud-rate¯	>>DOORFILE.SR
+	 ECHO ®com-port¯	>>DOORFILE.SR
+	 ECHO ®time-limit¯	>>DOORFILE.SR
+         ECHO ®real-name¯       >>DOORFILE.SR
+
+         For example, if your BBS passes as command line parameters
+	 the username in %1, the com port in %2, the baud rate in %3,
+	 and the time limit in %4, but doesn't pass the others, you
+	 could write into your batch file (instead of SRDOOR):
+
+	 ECHO %1   >DOORFILE.SR
+	 ECHO -1  >>DOORFILE.SR
+	 ECHO -1  >>DOORFILE.SR
+	 ECHO -1  >>DOORFILE.SR
+	 ECHO %3  >>DOORFILE.SR
+	 ECHO %2  >>DOORFILE.SR
+	 ECHO %4  >>DOORFILE.SR
+         ECHO %1  >>DOORFILE.SR
+
+	 (The -1 means "I don't know this value"; you can use this for
+         ANSI, pagelength, IBM character status, and Time Limit.)  Notice
+         that the username can be used as the 'real name'; it is better
+         if you can find the real name, but if it is not available, you
+         can use the handle/username.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Setup
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         Use the INSTALL program to set up a batch file.  It will
+         automatically run SRDOOR.
+
+         If you have a non-supported BBS, these are some options:
+            1.  Use a doorfile converter to convert to a supported format
+                (DOOR.SYS or DORINFO1.DEF preferred)
+            2.  Write a program to read your doorfile and write DOORFILE.SR;
+                if you do this, please send us your program so that we may
+                incorporate it into future versions of SRDOOR. (see below)
+	    3.	Use command-line parameters to write directly to DOORFILE.SR.
+		(See above for an example.)
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Multinode Setup
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         Once you have used INSTALL to set up a batch file, you can edit
+         the batch file to make SRDOOR use the -f flag.  You can copy
+         SETUP.SR to SETUP.1, SETUP.2, and so on, one for each node.  Then,
+         edit your batch file to run
+
+                SRDOOR -f SETUP.%NODE%
+
+         instead of just SRDOOR.  You can now make each SETUP file have
+         a different path for a door drop file.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Compatibility
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         We have tested SRDOOR with DOOR.SYS and DORINFO1.DEF; we have not
+         been able to test it with the other door types.  If you have any
+         useful information, please send it to us!
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  File Format
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         SRDOOR reads text files in which one piece of information is on
+         each line.  Unfortunately, some BBS programs do not create these
+         types of door files.  For standard door files, view SETUP.SR for
+         more information.  For a non-standard door file, SRDOOR currently
+         has an experimental GTUSER modes:
+
+            SRDOOR GTUSER ®comport¯
+               Converts GT type GTUSER.BBS files to DOORFILE.SR.
+
+         Notice that the parameter ®comport¯ is needed in the GT-USER
+         files.  Use the COM port that the modem is attached to
+         (1, 2, 3, or 4).
+
+         You can also write your own program to convert your favorite door
+         file to DOORFILE.SR.  The DOORFILE.SR format is:
+
+            (line 1):   Complete name or handle of user
+            (line 2):   ANSI status:  1 = yes, 0 = no, -1 = don't know
+            (line 3):   IBM Graphic characters:  1 = yes, 0 = no, -1 = unknown
+            (line 4):   Page length of screen, in lines.  Assume 25 if unknown
+            (line 5):   Baud Rate:  300, 1200, 2400, 9600, 19200, etc.
+            (line 6):   Com Port:  1, 2, 3, or 4.
+            (line 7):   Time Limit:  (in minutes); -1 if unknown.
+            (line 8):   Real name (the same as line 1 if not known)
+
+         There is a program called GENPC that does this for Genesis Deluxe
+         BBS software; P2SR does this for PC-Board 14.x; Maximus and
+         Searchlight software can create this file directly.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  What's new
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         ş SRDOOR 4.2 has a 'LOCAL' option that lets people not
+           running BBSes create a DOORFILE.SR easily.  PCBoard.SYS
+           support was taken out, since DOOR.SYS can be used instead.
+
+         ş The main change from 3.1 was the addition of line 8,
+           the "Real Name" line.  This line will be used in the
+           future for BRE's "dupe-checking" feature.
+
+         ş Colors were added to make the display nicer.
+
+         ş The executable size shrank 30% when I converted from C++
+           to Turbo Pascal.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Bugs
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         <> Not tested for BBS types other than DOOR.SYS and DORINFO1.DEF.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Notes to Online Game Writers
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         We at the Solar Realm encourage you to use this door file
+         format. We feel it has all the necessary information for a
+         door game.  It also has the advantage of being easy to read
+         in a variety of languages (unlike many door files being used
+         that require BASIC, Pascal, or C).  By using an external door
+         conversion program, you leave open the option for sysops to
+         write their own converter so that those sysops who have BBSes
+         that your game does not support may be able to find or write
+         a replacement for SRDOOR.  Both Battle Quest (BQ) and The
+         Unknown Quest 0.865 (TUQ) use the DOORFILE.SR format and
+         SRDOOR.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Source Code Availability
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         I have both C++ and Pascal versions of SRDOOR.  SRDOOR 4.2 as
+         distributed with SRE is the Pascal version.  Source code is
+         available on the Solar Realm.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Contact
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         For more information, contact the Solar Realm BBS at (713)855-1665.
+         (16.8k USR/DS.; 1:106/900 fido)  Send Email to Cookie Monster.
+
+         For a faster reply, send Internet email to amitp@cs.stanford.edu.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Disclaimer
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         This program is not guaranteed to work.  It is distributed "as-is".
+         If you find it useful, great!  If not, we are in no way to be held
+         responsible.  No contribution is required to use this program.  It
+         is meant to be used with Solar Realms door programs.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Usage
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+         If any person wishes to use this program for any other legal use,
+         the only requirement is that she or he write a letter to the Solar
+         Realm BBS informing them that SRDOOR is being used.  Please describe
+         your project.  We are interested in keeping track of all persons
+         using SRDOOR (for upgrade notices and information purposes).  No
+         charge is required to use SRDOOR, and no fee may be charged for its
+         distribution.  This documentation file must accompany SRDOOR.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+

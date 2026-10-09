@@ -1,0 +1,18 @@
+
+Files included in this SRE to Trek Realms conversion kit:
+RESOURCE.DAT - Trek resource file
+TRANSLAT.DAT - Trek translation file
+TITLE.ANS    - Title screen
+README!.1ST  - This file
+
+Just add this resource option into your main RESOURCE.DAT:
+
+Flavor                  "Trek"
+
+and put the above files in the FLAVORS\TREK subdirectory.
+
+And, let me know what you think! You can leave E-mail for me at the
+Solar Realms BBS  (713) 855-1665  (to "Rattur")
+or call my board, Peoria's On-Line Game Domain (309) 688-7242 and E-mail
+me there! Enjoy!
+

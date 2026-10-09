@@ -1,0 +1,536 @@
+                       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                        ³                          ³
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´   SOLAR REALMS ELITE   ³  Resource.DAT Reference  ³
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                        ³                          ³
+      ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´                                                   ³
+          ÄÄÄÄÄÄÄÄÄÄÄÄÄ´ * Format of the Resource.DAT file                 ³
+            ÄÄÄÄÄÄÄÄÄÄÄ´                                                   ³
+              ÄÄÄÄÄÄÄÄÄ´ * Different Resource.DAT files for each node      ³
+                ÄÄÄÄÄÄÄ´                                                   ³
+                  ÄÄÄÄÄ´ * System settings                                 ³
+                    ÄÄÄ´                                                   ³
+                      Ä´ * Game settings                                   ³
+                       ³                                                   ³
+                       ³ * Menu customization                              ³
+                       ³                                                   ³
+                       ³ * Custom Translation File                         ³
+                       ³                                                   ³
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄ
+  FORMAT
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+The Resource.DAT file has on each line a parameter name on the left and
+value(s) on the right.  You do not need to be a programmer to
+understand the Resource.DAT file, but the following description may
+refer to some programming terms.
+
+Strings (text) should be enclosed in double quotes.  Text can include
+spaces (like "I am a frog").
+
+Numbers can be put in decimal or hexadecimal.  To enter a hexadecimal value,
+prefix the number with '0x'.  (This is the format used by the C programming
+language.)  The number 256 can be entered in hex with 0x100.  Hexadecimal
+numbers may be useful for specifying COM port addresses.
+
+Boolean ("truth" or "logic") values can be entered in many ways:
+        TRUE can be any of
+                true  t  1  on  yes
+        FALSE can be any of
+                false f  0  off  no
+
+You can comment out a line by putting ";" as the first character.  SRE will
+ignore all lines that don't make sense to it, but they take up memory unless
+you put the ";".  This is similar to REM is BASIC or DOS batch files.
+
+You can enter any of the Boolean-values resources on the command line.  For
+example, if you want to run with Special Effects ON, you can do any of the
+following:
+
+        SRE /SpecialEffects
+        SRE /SpecialEffects=T
+        SRE /SpecialEffects=1
+        SRE /SpecialEffects=Y
+
+If you wanted to turn them OFF, you can do
+
+        SRE /NoSpecialEffects
+        SRE /SpecialEffects=F
+        SRE /SpecialEffects=0
+        SRE /SpecialEffects=N
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  MULTIPLE RESOURCE FILES
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+If you have multiple nodes, you may want to have different settings on each
+node.  For example, if you have a high speed node 1 and a low speed node 2,
+you can create a RESOURCE.DAT with all the common options, and a RESOURCE.1
+for node 1 and RESOURCE.2 for node 2.  Then, in your batch file that runs
+SRE, you can tell SRE to read the extra Resource file with:
+
+        SRE -n1
+
+or
+
+        SRE -n2
+
+Things that you may want to do are turn OFF special effects on high speed
+systems and set the locked baud rate.  If you're bored, you can even define
+different color sets for each node!
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  SYSTEM SETTINGS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+<> CheckTimeLimit : Boolean = no
+   Would you like SRE to read the time limit from the doorfile?  SRE
+   expects the value in minutes; if your value is in seconds, SRE will
+   give your users 60 times as much time as they should have.  I will
+   add an option if there is a demand for it to take the value in
+   seconds instead of minutes.  DORINFO1.DEF and DOOR.SYS both give
+   time values in minutes.
+
+<> LockBaudRate : Number = none
+   You should use this to tell SRE at which speed your modem is locked.
+   If you ran the INSTALL program, it has set this value for you.
+
+() ComN : (port) Number (interrupt level) Number
+   You can define Com1 through Com8.  Normally, COM1 through COM4 are
+   already defined.  You don't have to mess with this unless your COM
+   port isn't the standard port 3F8/2F8/3E8/2E8 with IRQ 3/4/3/4.  Example:
+              Com7                    0x3E8 4
+
+<> TimeOut : Number = 300 seconds
+   This is the number of seconds to wait before printing the warning
+   "30 seconds before timeout!".  30 seconds past the amount you specify
+   here, SRE will return to the BBS.
+
+<> StrictTime : Boolean = no
+   If you set this to 'yes', SRE will throw people out when they run
+   out of time, regardless of where they are.  With it set to 'no',
+   it will wait to throw them out when they're done with the menu they're
+   on.  You may need to set this to 'yes' if your BBS is picky about
+   running maintenance at 12:00am, and won't run it a few minutes later.
+
+<> ExtendedSwapping : Boolean = no
+   If this is 'yes', SRE will attempt to swap to extended memory instead
+   of disk.  This or ExpandedSwapping will speed up the game a bit.
+
+<> ExpandedSwapping : Boolean = no
+   If this is 'yes', SRE will attempt to swap to expanded memory instead
+   of disk.  If both Extended and Expanded options are selected, SRE
+   will first try extended, and if that fails, it will try expanded.
+
+<> StatusBar.Game.Name : String = ""
+   If you want some sort of name to show up on the status bar, put it
+   here.  This is so that if you run many games, you can 'name' each one
+   so that you'll know which one is running by looking at the status bar.
+   For example, if you're running a contest, you could write "Contest"
+   in this string to have the status bar display that the game is a contest
+   game.
+
+<> StatusBar.Background : Number = 2
+   You can change the status bar background color!  I know that the default
+   green looks terrible on many systems; the "Display.VGA" makes it more
+   readable, but if you don't want to use that option, you can change it
+   here.  The background color can be from 1 to 6.  If you try other numbers,
+   there will be unpredictable results!
+
+<> Output.Comma : Boolean = yes
+   If 'yes', commas are shown for numbers 5 or more digits long.  If 'no',
+   no commas are output.  If you wish, you can specify a one-character
+   string as a replacement for the comma.  For example, in many countries,
+   the convention is to use a period (".") instead of a comma; to do this,
+   you can use:
+        Output.Comma                    "."
+
+<> Output.Time.Separator : String = ":"
+   Time is usually shown as "hh:mm"; you can change this for your country's
+   conventions to any other one-character string.
+
+<> Output.Time.24Hour : Boolean = no
+   If you set this to 'yes', times will be shown in 24-hour format instead
+   of AM/PM format.
+
+<> Output.InternationalAsk : Boolean = no
+   If you set this to 'yes', questions will be asked with a '1'/'0'
+   response instead of 'Y'/'N', which is usually used in the U.S.  This
+   provides the standard international Yes/No question interface rather
+   than the English "Yes" vs "No".
+
+<> Output.Bracket.Color : Number = 9
+<> Output.Bold.Color : Number = 11
+<> Output.Empire.Color : Number = 15
+<> Output.Number.Color : Number = 11
+   Some of SRE's colors can be configured here.  The bracket and bold
+   colors are used for default values (How much?  [xxxx]), and the
+   number color is used for most numeric output.  The empire color is
+   used for empire names.
+
+<> Display.VGA : Boolean = no
+   If 'yes', SRE will change the colors using the VGA's palette switching
+   capabilities.  If you don't want the colors changed, or if you are
+   running a multitasking system where the change in colors will affect
+   other programs on the screen, leave this off.
+
+<> Display.Border : Number (no default)
+   If Display.VGA is set to yes, it sets the border color of your screen;
+   it will set it to match the status bar unless you set an explicit
+   value here.  Note that these numbers are NOT the standard 16; they
+   can be any of 64 values (0 through 63) defined by the EGA palette.
+   Numbers 0 through 5 are the usual colors, but 6 though 63 are not.
+   This allows you to use a "17th" color on your screen, since it doesn't
+   have to be one of the standard 16.  For colors 1 through 6, you can
+   multiply by 8 to get a darker shade, so if you use one of the colors
+   1 through 6 for your status bar, you can have a darker border by
+   multiplying by 8 and setting your border color to that number.
+
+<> System.BlankLocalScreen : Boolean = no
+   If 'yes', SRE will blank the local screen while a remote user is playing
+   the game, so that the sysop won't be able to watch the user play.
+
+<> System.Unregistered : Boolean = no
+   If 'yes', it indicates that you do not plan to register this game.
+   SRE will no longer display "This game is unregistered" before the
+   user returns to the BBS.
+
+<> UserBreak : Boolean = yes
+   If 'yes', SRE will allow the user to break out of the program with ^C
+   or ^D.  If your users are abusing this feature, you can disable it.
+
+<> System.SaveOften : Boolean = yes
+   If 'yes', SRE will save the user's data often.  If 'no', SRE will run
+   faster because it won't be saving 20 times a turn.  If you find that
+   your users are cheating by hanging up, you may want to turn this on.
+
+<> SpecialEffects : Boolean = on
+   For locked baud rates, it's not always good to keep special effects
+   (the pause cursor) on, since it might overflow the modem buffer and
+   cause sluggish displays for users on at low speed.  You should try
+   leaving it on, and if users complain, then turn it off.
+
+<> Display.Video : String = "direct"
+   If you set this to "bios", SRE will write to the BIOS instead of to
+   the screen.  It makes it "well-behaved" according to DesqView and
+   MS-Windows.
+
+() ANSI : Boolean (or -1) = -1
+   The default is -1; if you set 'yes' or 'no', SRE will force ANSI or
+   non-ANSI modes.
+
+() IBMCharacters : Boolean (or -1) = -1
+   The default is -1; if you set 'yes' or 'no', SRE will force output
+   of IBM characters or output of only the low part of the ASCII set.
+   (If you like to experiment, try running with ANSI, but without
+   IBMCharacters to see some unusual combinations!)  You may want to
+   turn this OFF if you are in a country where the high-ASCII
+   characters are not the same as the U.S. high ASCII characters.
+
+<> System.Multitasker : Boolean = false
+   If you are running a multitasking system, you may want to _try_ this
+   option.  I have not tested it too much, but it is supposed to make the
+   game give up CPU cycles to DESQview, MS-Windows, or OS/2.  This should
+   speed up the system because it won't be sitting in busy loops waiting
+   for input.
+
+<> System.Fossil : Boolean = false
+   If you want SRE to attempt to use your FOSSIL driver instead of
+   its own communications routines, set this to True.  It hasn't been
+   tested very much, but it seems to work here.  :)
+
+<> Game.Log : String (no default) (filename)
+   If you want to record the last user's actions, you can define a LOG
+   file.  This will write everything the user does into the file you
+   specify.  Each time SRE runs, it will overwrite the previous LOG
+   file, so if you wish to preserve them all, you can add to your
+   batch file:
+                        TYPE logfile.LOG >>allusers.LOG
+
+<> Local : Boolean = off
+   If this is 'on', SRE will force local play, regardless of the COM
+   port specified in the doorfile.
+
+<> Output.LeftBracket : String = "["
+<> Output.RightBracket : String = "]"
+   You can change the left and right bracket characters used in menus
+   and for default parameters by entering strings of length 1 here.
+
+<> Output.TranslationFile : String (no default) (filename)
+   You can specify a file with custom translations for your copy of
+   SRE.  For details on the translation file, see the description
+   later in this file.
+
+<> Flavor : String = ""
+   If you specify a flavor, SRE will look in the Flavors\®flavorname¯
+   subdirectory for additional files.  Specifically, it looks for
+   an additional RESOURCE.DAT and any files that normally are found
+   in the Screens\ subdirectory.  For more information on flavors, read
+   Flavors\README.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  GAME SETTINGS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+<> Diplomacy : Boolean = on
+   If this is 'off', no diplomacy will be allowed.  Remember that diplomacy
+   is required for trading, so trading will be effectively disabled as well.
+
+<> Treaty.Neutrality       : Boolean = on
+<> Treaty.FreeTrade        : Boolean = on
+<> Treaty.MinorAlliance    : Boolean = on
+<> Treaty.ArmedDefense     : Boolean = on
+<> Treaty.CruiserDefense   : Boolean = on
+<> Treaty.Custom           : Boolean = on
+<> Treaty.TotalDefense     : Boolean = on
+<> Treaty.Break            : Boolean = on
+   These control which treaty options are allowed.  By default, all of
+   them are shown on the menu (they are all 'on').
+
+<> Attacks.Guerilla   : Boolean = yes
+<> Attacks.PirateRaid : Boolean = yes
+<> Attacks.PirateSpy  : Boolean = yes
+<> Attacks.Nuclear    : Boolean = yes
+<> Attacks.Chemical   : Boolean = yes
+   These control whether each type of attack is enabled.  The nuclear
+   and chemical options work only if you are registered, and they
+   apply to the acquisition of the weapons, not the use of them.  If
+   a player already has a nuclear bomb when you disable nuclear attacks,
+   he can still use it, but he will not be able to get any more nuclear
+   bombs.
+
+<> Attacks.Maximum : Number = -1
+   This is the number of attacks (other than pirate raids) that a player
+   may make in each maintenance interval (usually a day).  -1 is no limit.
+
+<> Spending.Military : Boolean = yes
+   This option allows you to control whether players can buy military at
+   the spending menu.  If you turn this off, players are forced to build
+   up a military with Supply planets; it may be an interesting twist on
+   the game.
+
+<> Bank.Investments : Boolean = yes
+   You can disable bank investments (in the registered version) by setting
+   this to 'no'.
+<> Bank.PlayerInvestments : Boolean = yes
+   You can disable player investments (in the registered version) by
+   setting this to 'no'.
+
+<> FoodMarket.Name : String = "the Solar Food Market"
+   This is the name of the food market.  It defaults to "the Solar
+   Food Market".
+
+<> Messages : Boolean = yes
+   If 'no', messages are disabled.
+
+<> Messages.Anonymous : Boolean = yes
+   If 'yes', users can post anonymous messages.
+
+<> Trading : Boolean = yes
+   If 'no', trading is disabled.
+
+<> Trade.Expire : Number = 4
+   This is the number of days a trading deal can sit there before being
+   sent back to the sender.  This prevents empires from keeping their
+   items in a trade deal for a long time, because they don't have to pay
+   for maintenance while it's in trading.
+
+<> Scores.File.ANSI : String = "SRESCORES.ANS"
+<> Scores.File.Text : String = "SRESCORES.TXT"
+   You can define where to write SRE's score files.  If you set one or both
+   to an empty string ( "" ), SRE will not write that score file.
+
+<> News0.File.ANSI : String = (none)
+<> News0.File.Text : String = (none)
+<> News1.File.ANSI : String = (none)
+<> News1.File.Text : String = (none)
+<> News2.File.ANSI : String = (none)
+<> News2.File.Text : String = (none)
+<> News3.File.ANSI : String = (none)
+<> News3.File.Text : String = (none)
+<> News4.File.ANSI : String = (none)
+<> News4.File.Text : String = (none)
+<> News5.File.ANSI : String = (none)
+<> News5.File.Text : String = (none)
+<> News6.File.ANSI : String = (none)
+<> News6.File.Text : String = (none)
+<> News7.File.ANSI : String = (none)
+<> News7.File.Text : String = (none)
+<> News8.File.ANSI : String = (none)
+<> News8.File.Text : String = (none)
+<> News9.File.ANSI : String = (none)
+<> News9.File.Text : String = (none)
+   If you set any of these, a text or ANSI news file will be created for
+   you.  News0 is created every time the game is played, and the others
+   are only created during maintenance.
+
+<> DeleteDeadPlayers : Boolean = yes
+   If this is 'yes', the maintenance will delete dead and non-active players
+   so that your game will not become cluttered with empires.  If you are
+   running a tournament, you may wish to set this to 'no' so that players
+   that are dead are left on the scores list.
+
+<> InactiveTimeOut : Number = 10
+   This is the number of maintenance intervals for which a player can be
+   inactive before getting automatically deleted by SRE.  This prevents
+   the game from filling up with players that never play.  After the player
+   has not played and maintenance has been run InactiveTimeout times,
+   the player is deleted.
+
+<> News.FailedCovertOps : Boolean = true
+   If this is 'true', the News Team will report all failed covert operations
+   in the News file.  This will allow all players to know who has been
+   performing covert ops.  However, it may clutter up your news file, so you
+   may want to remove it.
+
+<> News.AttackVictim : Boolean = true
+   If this is 'true', the news files will have the name of the person who
+   was attacked.  Some sysops do not want this in the news file because
+   other players will see that the victim is weak and attack him.  This
+   creates the 'vulture syndrome', where all the players attack that empire
+   until it collapses.
+
+<> News.PirateRaids : Boolean = false
+   If this is 'true', news files will have pirate raids in them.
+
+<> News.CivilWar : Boolean = false
+   If this is 'true', major civil wars (those involving a loss of more
+   than 30% of planets) will be reported in the news file.
+
+<> Points.SolarMaster : Number = 5
+<> Points.PlanetMaster : Number = 1
+<> Points.WeaponsMaster : Number = 1
+   At the end of each day, the system may pick a "Solar", "Planet", and
+   "Weapons" Master.  These are the players with the most score, planets,
+   and net worth, respectively.  If you have set up a tournament, the
+   player is given points for being a Master for a day.  You can change
+   the settings here.  For example, if you wish to base the tournament
+   purely on size, you can set the SolarMaster and WeaponsMaster points
+   to 0.  At the end of the tournament, the empires are ranked based on
+   the number of points they have accumulated.
+
+<> Pirate1.Name : String
+<> Pirate1.Color : Number
+   You can set the pirate names and colors from the resource file if
+   you wish.  You can also edit them with "SRE SYSOP"; however, if you
+   are designing a Flavor, you may wish to supply some pirate names.
+   Pirate1 through Pirate9 can be set.
+
+<>
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  MENU CUSTOMIZATION
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+One new feature of SRE 0.990 is the ability to modify all of the menus!
+All of the menu resources have the this format:
+
+Menu.®MenuName¯.Title                        title
+Menu.®MenuName¯.Colors                       (t l b k d c1 c2)
+Menu.®MenuName¯.®Item¯.Name                  description
+Menu.®MenuName¯.®Item¯.Colors                (b k d c1 c2)
+
+The title and description are strings; the rest are numbers from 1 to 15,
+where   t = title
+        l = line
+        b = brackets
+        k = key
+        d = description
+        c1 = column 1
+        c2 = column 2
+
+If you set the Menu.®MenuName¯.Colors, it will be the default color set
+for that menu, unless you have defined colors for the menu items, or if
+SRE has set colors for an item.  The ordering is:
+
+                SRE's default menu color
+                Your menu color
+                SRE's color for each item [only used on select items]
+                Your color for each item
+
+Not all menus have two extra columns; if you define colors for them, they
+will be ignored.  If you set the description to "", the menu item will be
+accessible but it will not be displayed on the menu.  Some menu items are
+invisible, but you can find them below and make them visible by setting
+their descriptions to non-empty strings.  (Visit bank and See covert ops)
+
+The Menu names and valid item numbers (and actions, where the key pressed
+is not the same as the action number) are:
+
+System          1 2 3 4 13(Preferences) 99(Quit)
+Sysop           1 2 3 6 7 10(Empire edit) 11(Player edit) 12(Pirate edit)
+Galaxy          1 2 3 4 5 6 7 8 9 10(Join game) 11(Tournament results)
+Operations      2 3 4 5 6 7 8 9 10(Advisors) 11(Tax rate) 12(Production)
+                13(Preferences) 14(Instructions) 15(Help) 16(Abdicate)
+Preferences     2 3 4 6 7
+Production      1 2 3 4 8 9
+Diplomacy       1 2 3 4 5 6 7 8 9
+Covert          1 2 3 4 5 6 7 8 9 80(Visit bank) 81(List covert ops)
+Infiltration    1 2
+DoubleSpy       1 2 3 80(Visit bank) 99(Quit)
+Attack          1(Conventional) 2(Guerilla) 3(Pirate Raid) 4(Spy on Pirates)
+                5(Nuclear) 6(Chemical) 7(Psionic) 80(Visit bank)
+Pirates         1 2 3 4 5 6 7 8 9
+PirateSpy       1 2 3 4 5 6 7 8 9 100(Header line)
+Buying          1 2 3 4 5 6 7 8 9 100(Header line) 10(Sell) 11(Operations)
+                80(Visit bank) 99(Quit)
+Selling         1 2 3 4 6 7 8 9 100(Header line) 10(Buy) 11(Operations)
+                80(Visit bank) 99(Quit)
+BuyPlanets      0 1 2 3 4 5 6 7 8 9 (Planets P E T F R O G U S A)
+SellPlanets     0 1 2 3 4 5 6 7 8 9 (Planets P E T F R O G U S A)
+Trading.Offer   1 2 4 6 7 8 9 100(Header line)
+Trading.Demand  1 2 4 6 7 8 9 100(Header line)
+Investments     1(List) 2(Invest) 3(Configure) 4(Kancel)
+Investments.Buy [0-24 for the bonds offered by each empire]
+                50(Galactic Treasury Bonds)
+Bulletins       [1 through the number of bulletins]
+Help            [1 through the number of help topics]
+
+The Bulletins and Help menus are special in that
+    1   They don't have keys, so the key color and bracket color are
+        ignored.
+    2   The help topic / bulletin name is column #1, and the number
+        is the 'description', so please keep that in mind when
+        assigning colors.
+
+The Production menu isn't really a menu, but it is displayed as if it
+were one, so you can still change the colors.
+
+There are over 19 menus and 150 menu items available --- and you can change the
+color and text of each one!!!  (Have fun!)
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  CUSTOM TRANSLATION FILE
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+In addition to the menu customization, you can add a translation file, which
+allows you to specify as many translations as you want.  Translations can be
+things like:
+
+                "soldiers"                      "troops"
+                "fighters"                      "knights"
+                "heavy cruisers"                "catapults"
+
+Each line contains two strings:  the one on the left is something that is
+normally produced by SRE; the one on the right is what you want SRE to
+display instead.  This can add a lot to your game, but you should be careful
+--- this translates text exactly, so you need both upper and lower case
+versions, and sometimes it is hard to handle plural vs. singular versions.
+Also, it doesn't always get everything, because sometimes there are color
+changes in SRE's text.  For example, "You cannot afford any Soldiers" is
+sometimes printed in SRE, but "Soldiers" is in green.  SRE will not match
+"You cannot afford any Soldiers" as matching what it prints because you
+cannot specify color changes.  The only way to be sure is to experiment!
+There are also unintended side effects -- for example, if you change "Spy"
+to "Wizard", what happens to the attack menu, where one option is "Spy on
+Pirates"?  It becomes "Wizard on Pirates"!
+
+A combination of text files in the Text\ directory, a resource file with
+new menus, and a translation file can take your SRE game into a new genre!
+If you don't want to completely transform your game, you may wish to give
+it a twist that adds flavor corrsponding to the theme of your BBS.  For
+example, The Shark City BBS might change "soldiers" into "sharks".  :-)
+
+Have fun, and if you would like others to see your setup, you can upload
+the relevant parts of Resource.dat, your translation file, and other files
+you may have modified to our board.
+

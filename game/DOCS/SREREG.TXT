@@ -1,0 +1,52 @@
+----------------------[SRE 0.994 Registration]------------------------------
+Although you are not required to register SRE, if you like the game, please
+send $15 US!  And if you'd like to register, please read REGISTER.DOC first,
+and then fill out this form.  I prefer that you fill out the form using
+'overtype' mode in an editor, and then print it out, since it's easier to
+read printed out text than everyone's handwriting.  :-) Sorry, we do not
+register to aliases/handles; real names only!  There is no credit card
+registration.  It takes 2 to 3 weeks to receive your codes.
+
+Required information:
+Name    ____________________________________________________________________
+Address ____________________________________________________________________
+        ____________________________________________________________________
+City _______________________ State _____ Country ________ ZIP _______-______
+SRE Version _______________     [if unsure, see the first line of WHATS.NEW]
+
+The registered version of SRE has a Solar Bank.  Players can deposit, make
+loans, and invest money with the bank.  Please name your bank:
+[45 chars max]     [_____________________________________________]
+
+*Optional* information:
+BBS Software: ______________________________________________________________
+Name of BBS: _______________________________________________________________
+BBS Number:  (____) _____-______             Max Baud Rate:  _______________
+BBS runs under  [ ] MS-DOS  [ ] DR-DOS  [ ] DESQview  [ ] OS/2
+                [ ] MS-Windows  [ ] PC Emulator  [ ] Novell Network
+                [ ] Other __________________________________________________
+Are you on FidoNET?                    [ ] Yes, node: ___:____/______ [ ] No
+Are you on Internet?      [ ] Yes, email ____________________________ [ ] No
+How important are online games on your BBS?  _______________________________
+
+You do not have to call our board for the registration numbers.  We send
+all registrations through the U.S. Mail.  If you have suggestions or
+comments, please put them on a separate sheet of paper and include your
+address on there.  Since I don't handle registrations, the comments will be
+forwarded to me, and I'll need an address to reply to you.
+
+
+
+
+
+
+
+Print out this file and send to:
+
+    Amit Patel
+    SRE Registration
+    4851 Cairnsean
+    Houston, TX 77084-2541
+
+Thanks!
+

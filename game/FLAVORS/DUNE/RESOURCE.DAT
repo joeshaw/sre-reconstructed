@@ -1,0 +1,105 @@
+Output.TranslationFile                  "flavors/dune/translat.dat"
+Output.LeftBracket                      " "
+Output.RightBracket                     "."
+StatusBar.Background                    3
+ExtendedSwapping                        yes
+ExpandedSwapping                        yes
+StatusBar.Game.Name                     "Dune Realms"
+System.Unregistered                     yes
+Pirate1.Name                            "Fremen"
+Pirate1.Color                           5
+Pirate2.Name                            "Sand Vipers"
+Pirate2.Color                           14
+Pirate3.Name                            "Wind Rogues"
+Pirate3.Color                           3
+Pirate4.Name                            "Spice Scum"
+Pirate4.Color                           13
+Pirate5.Name                            "Emperor's Rebels"
+Pirate5.Color                           9
+Pirate6.Name                            "Squad Raiders"
+Pirate6.Color                           10
+Pirate7.Name                            "Freedom Fighters"
+Pirate7.Color                           15
+Pirate8.Name                            "Harvesting Hoodlums"
+Pirate8.Color                           6
+Pirate9.Name                            "Soul Drainers"
+Pirate9.Color                           11
+News.PirateRaids                        no
+News.AttackVictim                       yes
+News.FailedCovertOps                    yes
+Menu.System.Title                       "Dune Realms"
+Menu.System.Colors                      (15 5 13 15 7)
+Menu.System.1.Name                      "System Info"
+Menu.System.2.Name                      "Land on Dune"
+Menu.System.3.Name                      "Who You Are in Dune Realms"
+Menu.System.4.Name                      "Game Bulletins"
+Menu.System.13.Name                     "Set Your Personal Preferences"
+FoodMarket.Name                         "Fremen Food Emporium"
+Menu.Galaxy.Title                       "Planetary Overview"
+Menu.Galaxy.Colors                      (15 1 9 15 7)
+Menu.Galaxy.1.Name                      "House Status"
+Menu.Galaxy.4.Name                      "Enter Dune Realms"
+Menu.Galaxy.5.Name                      "Your Current Status"
+Menu.Galaxy.8.Name                      "Dune Scores"
+Menu.Galaxy.9.Name                      "Diplomatic Options"
+Menu.Galaxy.10.Name                     "Create a House"
+Menu.Bulletins.Title                    "Mission Bulletins"
+Menu.Bulletins.Colors                   (7 1 - - 7 14)
+Menu.Diplomacy.Title                    "Diplomatic Options"
+Menu.Diplomacy.Colors                   (15 4 12 15 7)
+Menu.Diplomacy.1.Name                   "Peace Treaty"
+Menu.Diplomacy.2.Name                   "Free Trade Agreement"
+Menu.Diplomacy.4.Name                   "Infantry Defense Alliance"
+Menu.Diplomacy.5.Name                   "Sonic Defense Agreement"
+Menu.Diplomacy.6.Name                   "Total Defense Alliance"
+Menu.Diplomacy.8.Name                   "View Diplomatic Relations"
+Menu.Production.Title                   "Industrial Output"
+Menu.Production.Colors                  (15 1 - - 7 14 7)
+Menu.Buying.Title                       "Spice Spending Spree"
+Menu.Buying.Colors                      (15 3 11 15 7 9 10)
+Menu.Buying.10.Colors                   (7 11)
+Menu.Buying.11.Colors                   (7 11)
+Menu.Selling.Title                      "Selling Menu"
+Menu.Selling.Colors                     (15 8 7 15 7 13 14)
+Menu.Selling.10.Colors                  (7 14)
+Menu.Selling.11.Name                    "System Menu"
+Menu.Selling.11.Colors                  (7 14)
+Menu.BuyPlanets.Colors                  (15 3 11 15 11 9 10)
+Menu.SellPlanets.Colors                 (15 8 7 15 12 13 14)
+Menu.Operations.Title                   "System Menu"
+Menu.Operations.Colors                  (15 1 9 15 7)
+Menu.Operations.Columns                 3
+Menu.Operations.3.Name                  "Espionage"
+Menu.Covert.Title                       "Espionage"
+Menu.Covert.Colors                      (15 2 10 15 7 14)
+Menu.Covert.80.Name                     "Visit Spice Silo"
+Menu.Covert.81.Name                     "See Current Espionage Activities"
+Menu.Attack.Title                       "Attack and Battle Menu"
+Menu.Attack.Colors                      (15 4 12 15 7)
+Menu.Attack.1.Name                      "Standard Invasion"
+Menu.Attack.2.Name                      "Surprise Attack"
+Menu.Attack.3.Name                      "Attack Fremen"
+Menu.Attack.4.Name                      "Scan Fremen Bases"
+Menu.Attack.5.Name                      "Nuclear Attack"
+Menu.Attack.6.Name                      "Chemical Attack"
+Menu.Attack.80.Name                     "Visit Spice Silo"
+Menu.Pirates.Title                      "Fremen Teams"
+Menu.Pirates.Colors                     (15 5 13 15)
+Menu.PirateSpy.Title                    "Fremen Teams"
+Menu.Trading.Offer.Title                "You will offer to send"
+Menu.Trading.Offer.Colors               (7 6 6 14 15 12 15)
+Menu.Trading.Demand.Title               "and in return you want"
+Menu.Trading.Demand.Colors              (7 6 6 14 15 12)
+Scores.Colors.Title                     15
+Scores.Colors.Line                      4
+Scores.Colors.Key                       15
+Scores.Colors.Brackets                  12
+Scores.Colors.Col0                      14
+Scores.Colors.Col1                      12
+Scores.Colors.Col2                      7
+Scores.Colors.Col3                      13
+Output.Bracket.Color                    3
+Output.Bold.Color                       11
+Output.Number.Color                     15
+Output.Empire.Color                     14
+

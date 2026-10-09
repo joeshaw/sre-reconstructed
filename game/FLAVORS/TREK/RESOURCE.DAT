@@ -1,0 +1,101 @@
+Output.TranslationFile                  "Flavors/Trek/Translat.DAT"
+Output.LeftBracket                      "{"
+Output.RightBracket                     "}"
+Output.InternationalAsk                 yes
+StatusBar.Background                    5
+ExtendedSwapping                        yes
+ExpandedSwapping                        yes
+StatusBar.Game.Name                     "Trek Realms"
+Treaty.MinorAlliance                    no
+Treaty.CruiserDefense                   no
+Treaty.Custom                           no
+Treaty.Break                            no  
+News.PirateRaids                        yes
+News.AttackVictim                       no
+News.FailedCovertOps                    yes
+Menu.System.Title                       " Trek Realms Main Menu "
+Menu.System.Colors                      (15 12 15 14 14)
+Menu.System.1.Name                      "System Info"
+Menu.System.2.Name                      "Set Course for Federation Space"
+Menu.System.3.Name                      "Who You Are in Trek Realms"
+Menu.System.4.Name                      "Game Bulletins"
+Menu.System.13.Name                     "Set Your Personal Preferences"
+FoodMarket.Name                         "Quark's Food Forum"
+Menu.Galaxy.Title                       "Galactic Overview"
+Menu.Galaxy.Colors                      (15 13 0 0 12)
+Menu.Galaxy.1.Name                      "                    1. Federation Status                                 "
+Menu.Galaxy.2.Name                      "                    2. What's new in the Galactic Times?                 "
+Menu.Galaxy.3.Name                      "                    3. Read the Galactic Times                           "
+Menu.Galaxy.4.Name                      "                    4. Enter Trek Realms                                 "
+Menu.Galaxy.5.Name                      "                    5. Your Current Status                               "
+Menu.Galaxy.6.Name                      "                    6. Receive Transmissions                             "
+Menu.Galaxy.7.Name                      "                    7. Send Transmissions                                "
+Menu.Galaxy.8.Name                      "                    8. Federation Scores                                 "
+Menu.Galaxy.9.Name                      "                    9. Diplomatic Options Menu                           "
+Menu.Galaxy.10.Name                     "                    4. Join This Game of Trek Realms                     "
+Menu.Bulletins.Title                    "Mission Bulletins"
+Menu.Bulletins.Colors                   (7 1 - - 7 14)
+Menu.Diplomacy.Title                    "Diplomatic Options"
+Menu.Diplomacy.Colors                   (15 1 0 0 11)
+Menu.Diplomacy.1.Name                   "                     1. Organian Peace Treaty                            "
+Menu.Diplomacy.2.Name                   "                     2. Free Trade Agreement                             "
+Menu.Diplomacy.4.Name                   "                     4. Armed Defense Alliance                           "
+Menu.Diplomacy.6.Name                   "                     6. Total Defense Alliance                           "
+Menu.Diplomacy.8.Name                   "                     8. View Diplomatic Relations                        "
+Menu.Production.Title                   "Industrial Output"
+Menu.Production.Colors                  (15 4 - - 7 14 7)
+Menu.Buying.Title                       "Spending Credits"
+Menu.Buying.Colors                      (15 6 4 12 15 14 15)
+Menu.Buying.10.Colors                   (4 12 15 14 15)
+Menu.Buying.11.Colors                   (4 12 15 14 15)
+Menu.Selling.Title                      "Selling Menu"
+Menu.Selling.Colors                     (15 6 4 12 15 14 13)
+Menu.Selling.10.Colors                  (4 12 15 14 15)
+Menu.Selling.11.Name                    "System Menu                 "
+Menu.Selling.11.Colors                  (4 12 15 14 15)
+Menu.BuyPlanets.Colors                  (7 13 5 15 14 15)
+Menu.SellPlanets.Colors                 (7 13 5 15 14 15)
+Menu.Operations.Title                   "System Menu"
+Menu.Operations.Colors                  (15 1 1 9 15)
+Menu.Operations.Columns                 1
+Menu.Operations.3.Name                  "Espionage"
+Menu.Covert.Title                       "Espionage"
+Menu.Covert.Colors                      (15 4 3 11 15 2)
+Menu.Covert.80.Name                     "Visit Credit Storage                                       "
+Menu.Covert.81.Name                     "See Current Espionage Activities                           "
+Menu.Infiltration.Colors                (15 4 3 11 15 2)
+Menu.Attack.Title                       "Attack and Battle Menu"
+Menu.Attack.Colors                      (14 4 6 14 6)
+Menu.Attack.1.Name                      "\                        Standard Invasion                             "
+Menu.Attack.2.Name                      "\                        Covert Invasion                               "
+Menu.Attack.3.Name                      "\                        Attack Pirates                                "
+Menu.Attack.4.Name                      "\                        Scan Pirate Bases                             "
+Menu.Attack.5.Name                      "\                        Nuclear Attack                                "
+Menu.Attack.6.Name                      "\                        Chemical Attack                               "
+Menu.Attack.7.Name                      "\                        Psionic Attack                                "
+Menu.Attack.80.Name                     "\                        Visit Credit Storage                          "
+Menu.Pirates.Title                      "Select Pirates to Attack"
+Menu.Pirates.Colors                     (15 8 7 15)
+Menu.PirateSpy.Title                    "Long Range Scan of Pirate Bases"
+Menu.Trading.Offer.Title                "You will offer to send"
+Menu.Trading.Offer.Colors               (7 6 6 14 15 12 15)
+Menu.Trading.Demand.Title               "and in return you want"
+Menu.Trading.Demand.Colors              (7 6 6 14 15 12)
+Scores.Colors.Title                     15
+Scores.Colors.Line                      1
+Scores.Colors.Key                       11
+Scores.Colors.Brackets                  9
+Scores.Colors.Col0                      7
+Scores.Colors.Col1                      11
+Scores.Colors.Col2                      3
+Scores.Colors.Col3                      9
+Pirate1.Name                            "Romulan Ale Runners"
+Pirate2.Name                            "Klingon Rebels"
+Pirate3.Name                            "Insane Vulcans"
+Pirate4.Name                            "Mudd's Grandchildren"
+Pirate5.Name                            "Shady ShapeShifters"
+Pirate6.Name                            "Host-Seeking Trills"
+Pirate7.Name                            "Disconnected Borg"
+Pirate8.Name                            "Norsican Knifers"
+Pirate9.Name                            "Ferengi Looters"
+

@@ -1,0 +1,166 @@
+PROBLEMS (Q) AND ANSWERS (A) FOR SRE!          [last updated 12/30/92]
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I can't figure out why ...
+A.  Check SYSOP.LOG.  It records any errors that SRE detects.  If you
+    report bugs to us, it may help if you include the contents of that
+    file.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I can't get any flavors to work.
+A.  Be sure you are putting FLAVOR, not FLAVORS, as the resource.dat
+    option.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I am registered but I can't get nuclear & chemical weapons to show
+    up on the menu.
+A.  Each player will need to find nuclear, chemical, and psionic weapons.
+    Since they are outlawed by the Galactic Coordinator, they are not easily
+    available; I suggest keeping more covert agents than planets so that the
+    agents will search the planets looking for people who can sell you a
+    nuclear / chemical weapon.  If one is found, a question will be asked ("Do
+    you wish to buy a nuclear weapon?") in the profits/ news screen.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I don't run a BBS, but I would like to play SRE.
+A.  1.  Run INSTALL
+    2.  During the installation process, select LOCAL play.  It will
+        create a batch file that will ask for your name and then run
+        SRE.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  SRDOOR doesn't read the door file correctly.
+A.  We have tested SRDOOR for DOOR.SYS and DORINFO1.DEF.  If you are
+    unable to use these, you may be able to experiment with the formats
+    for other BBSes.  Unfortunately, we have not fully tested the other
+    BBS formats.  If you have any information about the door file
+    produced by your BBS, please send us a letter!
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I get an error message about running SRDOOR!
+A.  Run INSTALL SRE to install the correct BBS type for your system.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  SRE doesn't read the ANSI status of the user.
+A.  SRE currently ignores the ANSI status, even though it's in the door
+    file, so that users can play black and white if they'd like.  (It's
+    faster without color!)
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I can't figure out what to put in my batch file to run SRE.
+A.  Run INSTALL to set up a batch file automatically.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I don't know how to set up my BBS software to run SRE.
+A.  Consult your BBS manual for more information.  Look for information
+    on running DOORS.  You also need to produce a DOOR FILE when running
+    SRE.  Select a door file format that is compatible with the options
+    listed in INSTALL.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I have a high speed modem running at locked baud rates.
+A.  Read Resource.Doc for the "LockBaudRate" parameter, which lets you
+    tell SRE that you're using locked baud rates.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I get snow on my CGA monitor.
+A.  Use the Display.Video resource to set up BIOS calls.  See
+    Resource.HLP for details.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  SRE runs too slowly.
+A.  Get a faster computer!  :)
+
+    If you have EMS or XMS memory, you should set SRE's swapping so
+    that it doesn't swap to disk.  Look at Resource.DOC for more
+    details.  Also, try changing the display parameter in the
+    resource file.  Turning off special effects might also help.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I am using DESQview and running SRE produces trash on my screen.
+A.  Be sure to use
+        Display.Video                   BIOS
+    and
+        Display.VGA                     off
+
+    when running under DESQview.  (See Resource.HLP if you want
+    details.)
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I have a monochrome monitor.  How can I play locally without color?
+A.  Use the /ANSI=0 switch to turn off ANSI color.  Also use BIOS
+    video option to make sure SRE is compatible with your monochrome
+    display card.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  My modem buffer causes the pauses and Yes/No prompts to be
+    extremely slow on the remote side.
+A.  Use the /NOSPECIALEFFECTS switch to turn off the special effects
+    at the pauses and Yes/No prompts.  Alternatively, (preferably)
+    you can edit RESOURCE.DAT to set up your system configuration.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I want to know what the users have done in SRE.
+A.  Use the LOG option in Resource.dat to write all output to a file
+    Note: this file is overwritten every time SRE runs, so you should
+    save it somewhere if you want the log of more than one user.  You
+    can do this in your batch file with:
+        SRE             (already in the file)
+        TYPE SRE.LOG >>ALLUSERS.LOG
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I want a separate file to contain the scores.
+A.  SRE automatically creates SRESCORE.ANS (ANSI file) and
+    SRESCORE.MSG (non-ANSI file) when it runs.  You can modify
+    RESOURCE.DAT to write the score files anywhere you want.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I want to register but I don't want my name to appear.
+A.  Your name will appear at the end of the game in the registered
+    version.  We do not register to your handle for legal reasons.
+    (A handle is not a legal recipient of registration benefits.)
+    Sorry!
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I want to register but I don't want my name to be added to
+    junk-mail mailing lists.
+A.  Don't worry!  All registerers of SRE will NOT be added to any
+    junk-mail list.  Our list is used ONLY for notifying registered
+    users of updates and/or bulletins.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  SRE is terrible.
+A.  Then why are you reading this?
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I need to delete a user.
+A.  Use SRE SYSOP to access the empire viewer, which allows you to
+    delete the empire.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  I've received my registration numbers and I want to know how
+    to get the registration benefits.
+A.  Type SRE REGISTER and enter your registration numbers.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  Why is there no full editor in SRE?
+A.  Many sysops want a full editor; many more users don't.  They are
+    afraid that the temptation may be too great for sysops to give themselves
+    extra money.  The main reason is that I have been trying to work
+    on other enhancements & bug fixes and I don't have the time to
+    write a full editor.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Q.  This game is registered to somebody else!
+A.  Delete STATUS.SRE.  It won't display "Registered to Joe Bloggs" anymore.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+Any more questions?  Write to
+
+    Amit Patel
+    SRE Question
+    4851 Cairnsean
+    Houston, TX 77084-2541
+
+or if you have Internet access, send email to amitp@cs.stanford.edu
+
