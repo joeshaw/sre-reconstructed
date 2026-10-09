@@ -176,8 +176,14 @@ void CovertOps(Player *p, Empire *e, Galaxy *g);       // 409c:0a6d
 void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
 void DoubleAgents(Player *p, Empire *e);               // 432f:006f
 void Trade(Player *p, Empire *e);                      // 6e3f:2429
-void SendMessage(int16 from, String name);             // 58b6:1ce9
-void ReadMessages(Player *p, Empire *e);               // 58b6:1eb3
+int16 SendMessage(int16 from, String name);            // 58b6:1ce9
+class Streamable;
+Streamable *ComposeMessage(Empire *e, int16 to);       // 58b6:1bee
+int16 SysopMessages();                                 // 58b6:26ba
+int16 MessagesEmpireDeleted(int16 id);                 // 58b6:25f9
+void ClearMessages();                                  // 58b6:2a17
+int16 ReadPublicMessages();                            // 58b6:2901
+int16 ReadMessages(Player *p, Empire *e);              // 58b6:1eb3
 int16 Attack(Player *p, Empire *e, char how);          // 5090:0121
 void EndOfTurn(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
 void Population(Player *p, Empire *e);                 // 5f38:0000

@@ -3,7 +3,6 @@
 #include "sre.h"
 
 void PlayGame(Player *p);                               // 1e7b:0197
-int16 ReadPublicMessages();                             // 58b6:2901
 void PlayerInitIndex(Player *p, int16 index);           // 64d2:090c
 
 // ---------------------------------------------------------------------

@@ -48,6 +48,8 @@ public:
     int16 read(void *buf, int16 n);                 // 1629:0d73
     int16 write(const void *buf, int16 n);          // 1629:0dd2
     void skip(int16 n);                             // 1629:0e9b
+    int32 tell();                                   // 1629:0ec1
+    void seek(int32 pos);                           // 1629:0ee5
 };
 
 // File open modes, as Borland's O_ flags.

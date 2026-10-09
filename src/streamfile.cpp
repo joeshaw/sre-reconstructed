@@ -129,6 +129,21 @@ void RawFile::skip(int16 n)
         lseek(fd, n, SEEK_CUR);
 }
 
+// 1629:0ec1
+int32 RawFile::tell()
+{
+    if (fd == -1)
+        return 0;
+    return (int32)lseek(fd, 0, SEEK_CUR);
+}
+
+// 1629:0ee5
+void RawFile::seek(int32 pos)
+{
+    if (fd != -1)
+        lseek(fd, pos, SEEK_SET);
+}
+
 #pragma pack(push, 1)
 struct RecordHeader {
     int16 size;
