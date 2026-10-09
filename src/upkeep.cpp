@@ -67,7 +67,7 @@ static void ComputeCosts(Empire *e, Costs *c)
 static void Consequences(Empire *e, Costs *c, Costs *paid)
 {
     if (paid->military < c->military) {
-        e->b1c5 = (int8)((c->military - paid->military) / (c->military / 100 + 1));
+        e->b1c5 = (int8)((paid->military - c->military) / (c->military / 100 + 1));
         e->b1c6 = (int8)(e->b1c5 + e->effectiveness);
         e->b1c4 |= 8;
     }
