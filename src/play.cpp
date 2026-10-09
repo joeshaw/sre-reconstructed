@@ -9,7 +9,7 @@ void TurnReport(Player *p, Empire *e);                 // 462a:0b58
 void Advisor(Player *p, Empire *e);                    // 6572:2459
 void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f
 void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 512f:018b
-void Research(Player *p, Empire *e);                   // 409c:0a6d
+void CovertOps(Player *p, Empire *e, Galaxy *g);       // 409c:0a6d
 void Bank(Player *p, Empire *e, Galaxy *g);            // 3e41:0000
 void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
 void Industry(Player *p, Empire *e);                   // 432f:006f
@@ -17,8 +17,8 @@ void Trade(Player *p, Empire *e);                      // 6e3f:2429
 void SendMessage(int16 from, String name);             // 58b6:1ce9
 void ReadMessages(Player *p, Empire *e);               // 58b6:1eb3
 int16 Attack(Player *p, Empire *e, char how);          // 5090:0121
-void CovertOps(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
-void Diplomats(Player *p, Empire *e);                  // 5f38:0000
+void EndOfTurn(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
+void Population(Player *p, Empire *e);                 // 5f38:0000
 void Upkeep(Player *p, Empire *e);                     // 44e2:07cc
 void Growth(Player *p, Empire *e);                     // 44e2:0000
 void TreatyMessages(Player *p, Empire *e);                  // 70d2:1ddf
@@ -249,7 +249,7 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         break;
     case 9:
         PrevPhase(e);
-        Research(p, e);
+        CovertOps(p, e, g);
         break;
     case 10:
         PrevPhase(e);
@@ -271,10 +271,10 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
     case 15:
         break;
     case 16:
-        CovertOps(p, e, g);
+        EndOfTurn(p, e, g);
         break;
     case 17:
-        Diplomats(p, e);
+        Population(p, e);
         break;
     case 18:
         UpdateScore(e);

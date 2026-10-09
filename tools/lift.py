@@ -362,6 +362,8 @@ class Lifter:
                     continue
                 m1 = re.match(r'^(.*?)(\w)_?([0-9a-f]+)$', a)
                 m2 = re.match(r'^(.*?)(\w)_?([0-9a-f]+)$', b)
+                if isnum(a) or isnum(b):
+                    m1 = m2 = None
                 if m1 and m2 and m1.group(1) == m2.group(1) and m1.group(2) == m2.group(2):
                     va, vb = int(m1.group(3), 16), int(m2.group(3), 16)
                     pre = m1.group(1) + m1.group(2)

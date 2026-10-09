@@ -250,7 +250,7 @@ static void BreakTreaty(Player *p, Empire *me)
 }
 
 // 70d2:1787
-static void ViewRelations(Empire *me)
+void ViewRelationsOf(Empire *me)
 {
     Relations(me, 0);
 }
@@ -287,7 +287,7 @@ void DiplomacyMenu(Player *p, Empire *me)
             Propose(p, me, r);
             break;
         case 7: BreakTreaty(p, me); break;
-        case 8: ViewRelations(me); break;
+        case 8: ViewRelationsOf(me); break;
         case 9: Propose(p, me, 7); break;
         }
     } while (r != -1);

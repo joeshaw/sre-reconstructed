@@ -15,13 +15,12 @@ int16 ReadPublicMessages() { return 0; }
 void SendMessage(int16, String) {}
 Resource r_trading("Trading", (int32)1);       // 6e3f aa0a
 void TradeArrivals(Player *, Empire *) {}
-void Research(Player *, Empire *) {}
 void Bank(Player *, Empire *, Galaxy *) {}
 void Spending(Player *, Empire *, Galaxy *) {}
 void Industry(Player *, Empire *) {}
 void Trade(Player *, Empire *) {}
 int16 Attack(Player *, Empire *, char) { return 0; }
-void CovertOps(Player *, Empire *, Galaxy *) {}
-void Diplomats(Player *, Empire *) {}
+void EndOfTurn(Player *, Empire *, Galaxy *) {}
+void Population(Player *, Empire *) {}
 void Upkeep(Player *, Empire *) {}
 void Growth(Player *, Empire *) {}
