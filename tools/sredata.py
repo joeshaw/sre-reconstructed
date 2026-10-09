@@ -52,4 +52,5 @@ def main():
         open(os.path.join(out, 'empire'), 'wb').write(eo)
         open(os.path.join(out, 'pirate'), 'wb').write(po)
 
-main()
+if __name__ == "__main__":
+    main()

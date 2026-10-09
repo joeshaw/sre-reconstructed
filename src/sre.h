@@ -167,7 +167,7 @@ void Communications(Player *p, Empire *e);             // 58b6:2481
 void Advisors(Player *p, Empire *e);                   // 3ab7:0000
 
 // Turn phases and other game modules.
-void TradeArrivals(Player *p, Empire *e);              // 6e3f:1f14
+int16 TradeArrivals(Player *p, Empire *e);             // 6e3f:1f14
 void TurnReport(Player *p, Empire *e);                 // 462a:0b58
 void Advisor(Player *p, Empire *e);                    // 6572:2459
 void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f

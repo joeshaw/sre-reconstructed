@@ -15,7 +15,7 @@ subprocess.run([sys.executable, '-I', here + '/tools/dosemu.py', w + '/orig', '-
                 '--clock', clock, '--out', w + '/orig.out', '--dump-ptr', 'c92e:4a9c:' + w + '/orig.emp'],
                stderr=subprocess.DEVNULL)
 secs = calendar.timegm(datetime.datetime.fromisoformat(clock).timetuple())
-env = dict(os.environ, SRE_CLOCK=str(secs), SRE_DUMP=w + '/port.emp')
+env = dict(os.environ, SRE_TESTMARK='1', SRE_CLOCK=str(secs), SRE_DUMP=w + '/port.emp')
 data = inp.encode('latin-1').decode('unicode_escape').encode('latin-1')
 subprocess.run([here + '/sre'], input=data, cwd=w + '/port', env=env, stdout=open(w + '/port.out', 'wb'))
 a = open(w + '/orig.emp', 'rb').read(); b = open(w + '/port.emp', 'rb').read()

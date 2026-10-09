@@ -492,6 +492,8 @@ class Dos:
             self.setreg(UC_X86_REG_AX, self._fstatus() if ah == 1 else 1)
         elif ah == 0x02:
             self._poll()
+            if self.input and self.input[0] == 0:
+                del self.input[0]
             if not self.input:
                 raise NeedInput()
             self._snap()
@@ -499,12 +501,12 @@ class Dos:
         elif ah == 0x03:
             self._poll()
             self.setreg(UC_X86_REG_AX, self._fstatus())
-            if not self.input:
+            if not self._avail():
                 self._idle()
         elif ah == 0x0c:
             self._poll()
-            self.setreg(UC_X86_REG_AX, self.input[0] if self.input else 0xffff)
-            if not self.input:
+            self.setreg(UC_X86_REG_AX, self.input[0] if self._avail() else 0xffff)
+            if not self._avail():
                 self._idle()
         elif ah == 0x0d:
             self.setreg(UC_X86_REG_AX, 0xffff)
@@ -517,6 +519,8 @@ class Dos:
         elif ah == 0x18:
             cx = self.reg(UC_X86_REG_CX)
             n = min(cx, len(self.input))
+            if 0 in self.input[:n]:
+                n = self.input.index(0)
             es, di = self.reg(UC_X86_REG_ES), self.reg(UC_X86_REG_DI)
             self.wb(es, di, bytes(self.input[:n]))
             del self.input[:n]
@@ -544,21 +548,31 @@ class Dos:
                 self.snaps.append(t)
 
     def _fstatus(self):
-        ah = 0x60 | (1 if self.input else 0)
+        ah = 0x60 | (1 if self._avail() else 0)
         al = 0x08 | (0x80 if self.carrier else 0)
         return (ah << 8) | al
 
     def _send(self, b):
         self.output.extend(b)
+        self.idle_polls = 0
         if self.ansi_out:
             self.ansi_out.write(b)
             self.ansi_out.flush()
 
+    # A NUL in the input script holds back what follows until the program
+    # sits waiting for a key (so key-ready checks can't swallow it).
+    def _avail(self):
+        return bool(self.input) and self.input[0] != 0
+
     def _idle(self):
-        if self.input or self.local_input:
+        if self._avail() or self.local_input:
             self.idle_polls = 0
             return
         self.idle_polls += 1
+        if self.input and self.idle_polls > 50:
+            del self.input[0]
+            self.idle_polls = 0
+            return
         if self.idle_polls > self.idle_limit:
             raise NeedInput()
 

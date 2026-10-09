@@ -139,13 +139,26 @@ static int Carrier()
     return 1;
 }
 
+// Test scripts (SRE_TESTMARK set) may hold back input with a NUL byte:
+// what follows is only seen once the program waits for a key.
+static int g_testmark = getenv("SRE_TESTMARK") != 0;
+static int g_waiting;
+
 static int RemoteCharReady()
 {
-    if (!TermReady())
-        return 0;
-    if (g_peek == -2)
-        g_peek = TermGetc();
-    return g_peek >= 0;
+    for (;;) {
+        if (!TermReady())
+            return 0;
+        if (g_peek == -2)
+            g_peek = TermGetc();
+        if (g_peek == 0 && g_testmark) {
+            if (!g_waiting)
+                return 0;
+            g_peek = -2;
+            continue;
+        }
+        return g_peek >= 0;
+    }
 }
 
 static int RemoteGetc()
@@ -356,6 +369,10 @@ char KeyIn::GetKey()
     int16 warned = 0;
     int32 start = b_time(0);
     int32 last = b_time(0);
+    struct Waiting {
+        Waiting() { g_waiting = 1; }
+        ~Waiting() { g_waiting = 0; }
+    } waiting;
     while (start + g_timeout + 30 > last) {
         if (g_remote && !Carrier()) {
             klocal << Color(14) << "Hangup?\n";

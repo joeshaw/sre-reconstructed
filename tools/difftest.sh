@@ -12,7 +12,7 @@ SECS=$(python3 -c "import datetime,calendar;print(calendar.timegm(datetime.datet
 rm -rf "$W"; mkdir -p "$W"
 cp -r "$T" "$W/orig"; cp -r "$T" "$W/port"
 timeout 900 python3 -I "$HERE/tools/dosemu.py" "$W/orig" "$@" --input "$IN" --frozen --clock "$CLOCK" --out "$W/orig.out" 2> "$W/orig.err"
-printf '%b' "$IN" | (cd "$W/port" && SRE_CLOCK=$SECS timeout 60 "$HERE/sre" "$@" > "$W/port.out")
+printf '%b' "$IN" | (cd "$W/port" && SRE_TESTMARK=1 SRE_CLOCK=$SECS timeout 60 "$HERE/sre" "$@" > "$W/port.out")
 echo "port exit=$?"
 tail -1 "$W/orig.err"
 status=0

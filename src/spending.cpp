@@ -366,7 +366,7 @@ void Spending(Player *p, Empire *e, Galaxy *g)
         int16 mil = r_military.Bool();
         for (int16 i = 1; i <= 9; i++) {
             char key = 0;
-            if (!mil || i == 5 || i == 6 || i == 7)
+            if (mil || i == 5 || i == 6 || i == 7)
                 key = (char)('0' + i);
             buy.Add(names[i], key, i);
             if (i == 5)
