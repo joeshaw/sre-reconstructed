@@ -19,6 +19,7 @@ void SysopMenu();
 void ResetGame();
 int16 Register();
 void TimeStart();
+void IdleHook();
 void ScoreFiles();
 
 // 1848:0067: file error handler (logs to SYSOP.LOG).
@@ -128,6 +129,7 @@ static int RealMain()
         exit(2);
     }
     atexit(AtExit);
+    SetIdle(IdleHook);
     if (HasCommandArg("Reset")) {
         if (!SystemValid() || g_system.sysop[0] == 0)
             ResetGame();

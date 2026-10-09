@@ -2,7 +2,6 @@
 #include "sre.h"
 
 void Preferences(Player *) {}
-void TimeCheck() {}
 void ResearchInit() {}
 void SysopMenu() {}
 void TimeStart() {}
@@ -13,9 +12,24 @@ int16 TradesEmpireDeleted(int16) { return 0; }
 void ClearTrades() {}
 Resource r_messages("Messages", (int32)1);     // 58b6 62e8
 Resource r_diplomacy("Diplomacy", (int32)1);   // 70d2 b01e
-void PlayGame(Player *) {}
 void ReadMessages(Player *, Empire *) {}
 int16 ReadPublicMessages() { return 0; }
 void SendMessage(int16, String) {}
 void Diplomacy(Player *, Empire *) {}
 void DiplomacyEnd(Player *, Empire *) {}
+Resource r_trading("Trading", (int32)1);       // 6e3f aa0a
+void TradeArrivals(Player *, Empire *) {}
+void TurnReport(Player *, Empire *) {}
+void Advisor(Player *, Empire *) {}
+void FoodMarket(Player *, Empire *, Galaxy *) {}
+void PlanetMarket(Player *, Empire *, Galaxy *) {}
+void Research(Player *, Empire *) {}
+void Bank(Player *, Empire *, Galaxy *) {}
+void Spending(Player *, Empire *, Galaxy *) {}
+void Industry(Player *, Empire *) {}
+void Trade(Player *, Empire *) {}
+int16 Attack(Player *, Empire *, char) { return 0; }
+void CovertOps(Player *, Empire *, Galaxy *) {}
+void Diplomats(Player *, Empire *) {}
+void Upkeep(Player *, Empire *) {}
+void Growth(Player *, Empire *) {}

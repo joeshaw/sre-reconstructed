@@ -302,9 +302,23 @@ void KeyIn::EndInput()
     kout << Color(savefg, savebg);
 }
 
+// 247e:17dd / 247e:03ce: the function called while waiting for keys.
+static void (*g_idle)() = 0;             // DS:bee0
+void SetIdle(void (*fn)()) { g_idle = fn; }
+static void Idle()
+{
+    if (g_idle)
+        g_idle();
+}
+
 // 247e:03e9
 int16 KeyIn::KeyReady()
 {
+    static int16 calls;                  // DS:bf0b
+    if (calls++ == 10) {
+        Idle();
+        calls = 0;
+    }
     // Carrier loss is detected by the blocking read in GetKey; here the
     // end of the input just means no key.
     if (g_remote && !Carrier())
@@ -406,6 +420,7 @@ char KeyIn::GetKey()
             }
             warned = 1;
         }
+        Idle();
         TermFlush();
         if (!TermReady())
             b_delay(15);

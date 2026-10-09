@@ -88,4 +88,6 @@ int TermReady();
 int TermGetc();         // -1 at end of input
 void TermRestore();
 
+void SetIdle(void (*fn)());
+
 #endif
