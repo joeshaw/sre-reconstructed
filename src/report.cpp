@@ -3,7 +3,7 @@
 #include "report.h"
 
 const char *REPORT_FILE = "Data/Report";       // DS:91e3
-int16 g_newreports;                             // DS:91d2
+int16 g_newreports = 1;                         // DS:91d2
 static const char *REPORT_CLASS = "Report";     // DS:91ce
 
 static Streamable *NewReport() { return new Report(); }

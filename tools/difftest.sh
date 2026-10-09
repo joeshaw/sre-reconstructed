@@ -12,7 +12,7 @@ SECS=$(python3 -c "import datetime,calendar;print(calendar.timegm(datetime.datet
 rm -rf "$W"; mkdir -p "$W"
 cp -r "$T" "$W/orig"; cp -r "$T" "$W/port"
 timeout 900 python3 -I "$HERE/tools/dosemu.py" "$W/orig" "$@" --input "$IN" --frozen --clock "$CLOCK" --out "$W/orig.out" 2> "$W/orig.err"
-printf '%b' "$IN" | (cd "$W/port" && SRE_TESTMARK=1 SRE_CLOCK=$SECS timeout 60 "$HERE/sre" "$@" > "$W/port.out")
+printf '%b' "$IN" | (cd "$W/port" && SRE_TESTMARK=1 SRE_UNREGISTERED=1 SRE_CLOCK=$SECS timeout 60 "$HERE/sre" "$@" > "$W/port.out")
 echo "port exit=$?"
 tail -1 "$W/orig.err"
 status=0
@@ -40,7 +40,12 @@ while read -r f; do
     ./DATA/PLAYER.II|./Data/Player.II)
         python3 "$HERE/tools/playercmp.py" "$W/orig/$f" "$W/port/$f" || { echo "file differs: $f"; status=1; }
         continue;;
-    ./DATA/*.II|./Data/*.II) continue;;
+    # The salted data files are compared decrypted, above.
+    ./DATA/SYSTEM.II|./DATA/GALAXY.II|./DATA/EMPIRE.II|./DATA/PIRATE.II) continue;;
+    ./DATA/*.II)
+        python3 "$HERE/tools/streamcmp.py" "$W/orig/$f" "$W/port/$f" > /dev/null ||
+            { echo "file differs: $f"; status=1; }
+        continue;;
     esac
     [ -f "$W/port/$f" ] && ! cmp -s "$W/orig/$f" "$W/port/$f" && { echo "file differs: $f"; status=1; }
 done < "$W/orig.files"

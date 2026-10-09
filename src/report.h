@@ -26,7 +26,7 @@ public:
     ReportData d;
     Report();                                       // 69d7:022f
     const char *ClassName();                        // 69d7:005f
-    int16 Size() { return 0x240; }
+    int16 Size() { return (int16)(d.len + 0x41); }  // 69d7:006d: as long as the text
     int16 Expired();                                // 69d7:007e
     void OnEmpireDeleted(int16 id);                 // 69d7:01c9
     uint8 *Data() { return (uint8 *)&d; }
