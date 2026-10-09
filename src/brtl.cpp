@@ -1,5 +1,6 @@
 // Borland C++ 3.1 runtime behaviour the game depends on.
 #include "brtl.h"
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
@@ -276,8 +277,18 @@ static void wallclock(struct tm *out)
             t += (time_t)(b_millis() / 1000);
         gmtime_r(&t, out);
     } else {
+        // The original only accepts dates from 1980 to November 1999
+        // (6c38:0261), so the host's date is moved back by
+        // SRE_DATE_SHIFT years: 28 by default, which keeps the calendar
+        // (weekdays and leap years) the same and works through 2027.
+        static int shift = -1;
+        if (shift == -1) {
+            const char *e = getenv("SRE_DATE_SHIFT");
+            shift = e && *e ? atoi(e) : 28;
+        }
         time_t t = time(0);
         localtime_r(&t, out);
+        out->tm_year -= shift;
     }
 }
 

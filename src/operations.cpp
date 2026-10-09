@@ -119,7 +119,7 @@ void Preferences(Player *p)
             break;
         case 7:
             yes = YesNo(!((p->prefs2 >> 4) & 1), "Do you want Enter to exit from the spending menu");
-            p->prefs2 = (uint8)((p->prefs2 & ~0x10) | ((!yes & 1) << 4));
+            p->prefs2 = (uint8)((p->prefs2 & ~0x10) | ((yes ? 0 : 1) << 4));
             break;
         case 8:
             g_ansi = YesNo(g_ansi, "Use ANSI color");

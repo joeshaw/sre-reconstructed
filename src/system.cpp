@@ -300,7 +300,7 @@ static void SortRanks(int16 *idx, const int32 *val, int16 n)
 // 6c38:126b
 static void RankMenu(const int16 *idx, const int16 *emp, const int32 *val, int16 n)
 {
-    Menu m("", "Rankings", 0xf, 8, 0, 0xa, 7, 3, 0xb, 7, 7, 7);
+    Menu m("Rankings", "", 0xf, 8, 0, 0xa, 7, 3, 0xb, 7, 7, 7);
     String names[25];
     for (int16 i = 0; i < n; i++) {
         names[i] = String(g_empires[emp[idx[i]]].name);

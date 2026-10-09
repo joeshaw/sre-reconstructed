@@ -23,7 +23,7 @@ help|remote|joined||||| 41\r\r0\rQ
 day|remote|fed||||| 24Q  y{50*\x00\r}
 starve|remote|joined||||| 24Q  y{38*\x00\r}\x00n{30*\x00\r}
 # Maintenance.
-maint|remote|@day|1995-03-09T12:00:00|||| 1Q
+maint|remote|@day|1995-03-09T12:00:00|||| 2\x001\x003\x00\r\x00q\x00q\x00\r
 maint-cmd|local|@day|1995-03-09T12:00:00|||Maintenance|
 # Attacks, by Ann Bee's Beta Realm on Joe Shaw's lpha Empire.
 attack-conv|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x001\x00A\x00y{80*\x00\r}
@@ -91,3 +91,12 @@ sysop-empire-edit|local|two||||Sysop|E\rPJoe Shaw\ry\rENew Name\ry\rPnobody\r\rD
 sysop-empire-keep|local|two||||Sysop|E{down}{up}b\rDn\rq\x1bq
 sysop-players|local|two||||Sysop|PL{down}{up}{down}\rE{down}\ryAnn B\ryAnnie\rD\rq\rq
 sysop-player-delete|local|two||||Sysop|PD\rq\rq
+# More of the operations menu.
+ops-comm|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00*\x006\x00y\x00A\r\x00Via communications.\r/s\r\x00\r{80*\x00\r}
+ops-prefs|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00p\x001\x002\x00y\x00y\x003\x00n\x00y\x00\r\x00\r{80*\x00\r}
+abdicate-yes|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00^\x00y\x00lpha Empire\r{20*\x00\r}
+abdicate-wrong|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00^\x00y\x00Wrong\r{80*\x00\r}
+# Maintenance after a few days, with two empires.
+maint-army|remote|@attack-conv|1995-03-09T12:00:00|Joe Shaw||| 2\x001\x003\x00\r\x00q\x00q\x00\r
+maint-days|remote|@maint-army|1995-03-12T12:00:00|Ann Bee||| 2\x001\x003\x001\x00\r\x00\r\x003\x002\x00\r\x00\r\x00q\x00q\x00\r{80*\x00\r}
+maint-days-play|remote|@maint-days|1995-03-12T13:00:00|Ann Bee||| 24{80*\x00\r}

@@ -156,12 +156,6 @@ struct CovertPrompt : MenuHook {
     }
 };
 
-static void Caught(Empire *me, Empire *t, const char *what)
-{
-    CovertReport r(t->id);
-    r << "A covert agent from " << c_empire << Untr(me->name) << c_normal << what;
-}
-
 // 409c:0a6d
 void CovertOps(Player *p, Empire *me, Galaxy *g)
 {
