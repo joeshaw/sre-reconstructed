@@ -182,6 +182,7 @@ void Operations(Player *p, Empire *e, Galaxy *g)
     do {
         TimeCheck();
         Menu m("Operations", "Operations Menu", 0xe, 4, 4, 0xc, 0xf, 7, 7, 7, 7, 7);
+        m.columns = 2;
         if (g_system.regstate)
             m.Add("Visit the Bank", '2', 2);
         if (e->agents > 0)

@@ -1076,6 +1076,8 @@ def main():
         dos.snaps = []
     dos.local_input = bytearray(a.local.encode('latin-1').decode('unicode_escape').encode('latin-1'))
     r = dos.run(max_steps=a.steps)
+    if getattr(dos, "tracebuf", None):
+        sys.stderr.write("".join(dos.tracebuf))
     if r == 'stopped':
         print('stopped at %04x:%04x' % (dos.reg(UC_X86_REG_CS), dos.reg(UC_X86_REG_IP)), file=sys.stderr)
     if a.out:

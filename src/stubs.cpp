@@ -18,4 +18,3 @@ void Bank(Player *, Empire *, Galaxy *) {}
 void Trade(Player *, Empire *) {}
 int16 Attack(Player *, Empire *, char) { return 0; }
 void Communications(Player *, Empire *) {}
-void Advisors(Player *, Empire *) {}
