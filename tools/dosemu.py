@@ -95,7 +95,11 @@ class Dos:
         return bytes(self.uc.mem_read(seg * 16 + off, n))
 
     def wb(self, seg, off, data):
-        self.uc.mem_write(seg * 16 + off, bytes(data))
+        a = seg * 16 + off
+        self.uc.mem_write(a, bytes(data))
+        # Code may be loaded over code (overlays): drop stale translations.
+        if len(data) >= 16:
+            self.uc.ctl_remove_cache(a, a + len(data))
 
     def rw(self, seg, off):
         return struct.unpack('<H', self.rb(seg, off, 2))[0]
