@@ -137,6 +137,7 @@ void PlayerLoad(Player *p, int16 index);
 void PlayerSave(Player *p);
 int16 PlayerFind(const String &user);
 void PlayerWhoAmI(Player *p);
+String TreatyName(int16 type);                 // 14f6:044e
 String Pronoun(int16 type, int16 male);
 String PlayerPronoun(Player *p, int16 type);
 String RandomPronoun(int16 type);
