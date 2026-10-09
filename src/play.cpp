@@ -7,8 +7,8 @@
 void TradeArrivals(Player *p, Empire *e);              // 6e3f:1f14
 void TurnReport(Player *p, Empire *e);                 // 462a:0b58
 void Advisor(Player *p, Empire *e);                    // 6572:2459
-void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 5e48:0b9f
-void PlanetMarket(Player *p, Empire *e, Galaxy *g);    // 512f:018b
+void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f
+void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 512f:018b
 void Research(Player *p, Empire *e);                   // 409c:0a6d
 void Bank(Player *p, Empire *e, Galaxy *g);            // 3e41:0000
 void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
@@ -236,11 +236,11 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         break;
     case 6:
         PrevPhase(e);
-        FoodMarket(p, e, g);
+        PayUpkeep(p, e, g);
         break;
     case 7:
         PrevPhase(e);
-        PlanetMarket(p, e, g);
+        FoodMarket(p, e, g);
         break;
     case 8:
         e->d22f[0] = 0;

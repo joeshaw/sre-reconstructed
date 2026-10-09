@@ -15,8 +15,6 @@ int16 ReadPublicMessages() { return 0; }
 void SendMessage(int16, String) {}
 Resource r_trading("Trading", (int32)1);       // 6e3f aa0a
 void TradeArrivals(Player *, Empire *) {}
-void FoodMarket(Player *, Empire *, Galaxy *) {}
-void PlanetMarket(Player *, Empire *, Galaxy *) {}
 void Research(Player *, Empire *) {}
 void Bank(Player *, Empire *, Galaxy *) {}
 void Spending(Player *, Empire *, Galaxy *) {}
