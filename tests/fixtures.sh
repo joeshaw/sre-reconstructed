@@ -70,4 +70,10 @@ python3 "$HERE/tools/sreedit.py" "$OUT/army" empire.0.154=i32:5000 empire.0.158=
     empire.1.2f0=i32:40 empire.1.227=i16:7 empire.1.22b=i32:100 empire.0.18c=i32:5000 \
     empire.1.18c=i32:5000 > /dev/null
 
+# Flavors: army, translated.
+for f in TREK DUNE MEDIEVAL WILDWEST BRE; do
+    rm -rf "$OUT/$f"; cp -r "$OUT/army" "$OUT/$f"
+    printf 'Flavor\t\t"%s"\r\n' "$f" >> "$OUT/$f/RESOURCE.DAT"
+done
+
 ls "$OUT"

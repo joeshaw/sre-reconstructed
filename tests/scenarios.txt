@@ -100,3 +100,9 @@ abdicate-wrong|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00^\x00y\x00Wrong\r{80*\x
 maint-army|remote|@attack-conv|1995-03-09T12:00:00|Joe Shaw||| 2\x001\x003\x00\r\x00q\x00q\x00\r
 maint-days|remote|@maint-army|1995-03-12T12:00:00|Ann Bee||| 2\x001\x003\x001\x00\r\x00\r\x003\x002\x00\r\x00\r\x00q\x00q\x00\r{80*\x00\r}
 maint-days-play|remote|@maint-days|1995-03-12T13:00:00|Ann Bee||| 24{80*\x00\r}
+# Flavors: a day of turns, translated.
+flavor-trek|remote|TREK||||| 2{120*\x00\r}
+flavor-dune|remote|DUNE||||| 2{120*\x00\r}
+flavor-medieval|remote|MEDIEVAL||||| 2{120*\x00\r}
+flavor-wildwest|remote|WILDWEST||||| 2{120*\x00\r}
+flavor-bre|remote|BRE||||| 2{120*\x00\r}
