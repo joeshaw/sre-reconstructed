@@ -14,7 +14,7 @@ int32 Jackpot(int32 tickets)
 }
 
 // 55e7:0713
-static void BuyTickets(Player *pl, Empire *e, Galaxy *g)
+void BuyTickets(Player *pl, Empire *e, Galaxy *g)
 {
     (void)pl;
     int32 max = e->money.get() / 10000;

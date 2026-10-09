@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-void DeleteEmpire(Empire *e);                   // 6924:057d
 
 static Resource r_deletedead("DeleteDeadPlayers", (int32)1);       // 5544
 static Resource r_ptsolar("Points.SolarMaster", (int32)5);         // 5550

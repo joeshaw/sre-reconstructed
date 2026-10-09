@@ -3,33 +3,9 @@
 #include "events.h"
 #include "battle.h"
 
-// Turn phases implemented in other modules.
-void TradeArrivals(Player *p, Empire *e);              // 6e3f:1f14
-void TurnReport(Player *p, Empire *e);                 // 462a:0b58
-void Advisor(Player *p, Empire *e);                    // 6572:2459
-void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f
-void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 512f:018b
-void CovertOps(Player *p, Empire *e, Galaxy *g);       // 409c:0a6d
-void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
-void Industry(Player *p, Empire *e);                   // 432f:006f
-void Trade(Player *p, Empire *e);                      // 6e3f:2429
-void SendMessage(int16 from, String name);             // 58b6:1ce9
-void ReadMessages(Player *p, Empire *e);               // 58b6:1eb3
-int16 Attack(Player *p, Empire *e, char how);          // 5090:0121
-void EndOfTurn(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
-void Population(Player *p, Empire *e);                 // 5f38:0000
-void Upkeep(Player *p, Empire *e);                     // 44e2:07cc
-void Growth(Player *p, Empire *e);                     // 44e2:0000
-void TreatyMessages(Player *p, Empire *e);                  // 70d2:1ddf
-void DiplomacyMenu(Player *p, Empire *e);               // 70d2:0000
-void RegeneratePlanets(Galaxy *g);                     // 1c59:0855
-extern Resource r_messages;                            // 62e8
-extern Resource r_diplomacy;                           // b01e
-extern Resource r_trading;                             // aa0a
-
 static Resource r_strict("StrictTime", (int32)0);          // a712
 static Resource r_saveoften("System.SaveOften", (int32)0); // b71e
-static Resource r_lottery("Lottery", (int32)1);            // b72a
+Resource r_lottery("Lottery", (int32)1);                   // b72a
 
 static int32 g_start = b_time(0);       // DS:d2d8 time the door started
 static int16 g_warned;                  // DS:b738

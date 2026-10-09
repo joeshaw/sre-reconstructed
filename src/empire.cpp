@@ -220,7 +220,7 @@ void EmpireInit(Empire *e)
     e->b2a3 = 0;
     e->taxrate = Clamp100(23);
     e->w1ab = 0;
-    e->b1ad = Clamp100(5);
+    e->draftrate = Clamp100(5);
     e->w1ae = 0;
     e->d1b0 = 0;
     e->phase = 0;

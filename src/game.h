@@ -97,7 +97,7 @@ struct Empire {
     int16 w1a8;                 // 1a8
     int8 taxrate;               // 1aa
     int16 w1ab;                 // 1ab
-    int8 b1ad;                  // 1ad
+    int8 draftrate;             // 1ad
     int16 w1ae;                 // 1ae
     int32 d1b0;                 // 1b0
     int32 d1b4;                 // 1b4

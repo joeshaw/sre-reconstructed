@@ -1,7 +1,6 @@
 // Temporary stand-ins for modules not yet reconstructed.
 #include "sre.h"
 
-void Preferences(Player *) {}
 void SysopMenu() {}
 void TimeStart() {}
 void InputDate(int32 *) {}
@@ -19,8 +18,7 @@ void Bank(Player *, Empire *, Galaxy *) {}
 void Industry(Player *, Empire *) {}
 void Trade(Player *, Empire *) {}
 int16 Attack(Player *, Empire *, char) { return 0; }
-void EndOfTurn(Player *, Empire *, Galaxy *) {}
-void Population(Player *, Empire *) {}
 void Upkeep(Player *, Empire *) {}
 void Growth(Player *, Empire *) {}
-void Operations(Player *, Empire *, Galaxy *) {}
+void Communications(Player *, Empire *) {}
+void Advisors(Player *, Empire *) {}

@@ -159,6 +159,36 @@ void Maintenance(Galaxy *g);                // 5681:0c52
 void GalaxyMenu(Galaxy *g);                 // 62b1:0000
 void Preferences(Player *p);                // 6a9b:09a8
 void Operations(Player *p, Empire *e, Galaxy *g);  // 6a9b:0000
+void Communications(Player *p, Empire *e);             // 58b6:2481
+void Advisors(Player *p, Empire *e);                   // 3ab7:0000
+
+// Turn phases and other game modules.
+void TradeArrivals(Player *p, Empire *e);              // 6e3f:1f14
+void TurnReport(Player *p, Empire *e);                 // 462a:0b58
+void Advisor(Player *p, Empire *e);                    // 6572:2459
+void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f
+void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 512f:018b
+void CovertOps(Player *p, Empire *e, Galaxy *g);       // 409c:0a6d
+void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
+void Industry(Player *p, Empire *e);                   // 432f:006f
+void Trade(Player *p, Empire *e);                      // 6e3f:2429
+void SendMessage(int16 from, String name);             // 58b6:1ce9
+void ReadMessages(Player *p, Empire *e);               // 58b6:1eb3
+int16 Attack(Player *p, Empire *e, char how);          // 5090:0121
+void EndOfTurn(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
+void Population(Player *p, Empire *e);                 // 5f38:0000
+void Upkeep(Player *p, Empire *e);                     // 44e2:07cc
+void Growth(Player *p, Empire *e);                     // 44e2:0000
+void TreatyMessages(Player *p, Empire *e);                  // 70d2:1ddf
+void DiplomacyMenu(Player *p, Empire *e);               // 70d2:0000
+void RegeneratePlanets(Galaxy *g);                     // 1c59:0855
+extern Resource r_messages;                            // 62e8
+extern Resource r_diplomacy;                           // b01e
+extern Resource r_trading;                             // aa0a
+
+extern Resource r_lottery;                             // b72a
+void BuyTickets(Player *p, Empire *e, Galaxy *g);      // 55e7:0713
+void DeleteEmpire(Empire *e);                          // 6924:057d
 void Bank(Player *p, Empire *e, Galaxy *g);        // 3e41:0000
 void Bulletins();                           // 5543:0918
 void MoreHelp();                            // 5543:09a5
