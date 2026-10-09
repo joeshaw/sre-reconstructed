@@ -10,7 +10,6 @@ void Advisor(Player *p, Empire *e);                    // 6572:2459
 void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f
 void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 512f:018b
 void CovertOps(Player *p, Empire *e, Galaxy *g);       // 409c:0a6d
-void Bank(Player *p, Empire *e, Galaxy *g);            // 3e41:0000
 void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
 void Industry(Player *p, Empire *e);                   // 432f:006f
 void Trade(Player *p, Empire *e);                      // 6e3f:2429

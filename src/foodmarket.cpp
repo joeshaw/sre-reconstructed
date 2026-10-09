@@ -1,7 +1,6 @@
 // The food market and feeding the people and army (segment 512f).
 #include "sre.h"
 
-void Bank(Player *p, Empire *e, Galaxy *g);            // 3e41:0000
 
 static Resource r_foodmarket("FoodMarket.Name", "the Solar Food Market");     // 3bae
 

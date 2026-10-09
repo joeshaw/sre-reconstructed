@@ -2,7 +2,6 @@
 #include "sre.h"
 #include "events.h"
 
-void Bank(Player *p, Empire *e, Galaxy *g);            // 3e41:0000
 void ViewRelationsOf(Empire *e);                       // 70d2:1787
 
 static const char *CAUGHT = "Your covert agent was caught and was publicly executed!\n";

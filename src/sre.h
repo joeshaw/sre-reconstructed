@@ -158,9 +158,12 @@ void Lottery(Player *pl, Empire *e, Galaxy *g);
 void Maintenance(Galaxy *g);                // 5681:0c52
 void GalaxyMenu(Galaxy *g);                 // 62b1:0000
 void Preferences(Player *p);                // 6a9b:09a8
+void Operations(Player *p, Empire *e, Galaxy *g);  // 6a9b:0000
+void Bank(Player *p, Empire *e, Galaxy *g);        // 3e41:0000
 void Bulletins();                           // 5543:0918
 void MoreHelp();                            // 5543:09a5
 void ShowHelpTopic(String topic);           // 5543:02c5
+void ShowHelpTopic(String prefix, String name);  // 5543:0366
 void News(int16 n);                         // 5b6a:0228
 void TimeCheck();                           // 1e7b:008d
 void CheckRegistration();                   // 68a3:0124

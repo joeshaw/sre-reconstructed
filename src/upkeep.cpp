@@ -1,7 +1,6 @@
 // Paying for the empire's upkeep at the start of a turn (segment 5e48).
 #include "sre.h"
 
-void Bank(Player *p, Empire *e, Galaxy *g);            // 3e41:0000
 
 struct Costs {
     int32 military;     // 00
