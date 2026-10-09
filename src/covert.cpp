@@ -8,7 +8,7 @@ static const char *CAUGHT = "Your covert agent was caught and was publicly execu
 
 // 14f6:05dc: the mask of empires an operation was done to this turn
 // (or today).
-static int32 *OpMask(Empire *e, int16 op)
+int32 *OpMask(Empire *e, int16 op)
 {
     switch (op) {
     case 1: return &e->d22f[0];

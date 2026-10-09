@@ -64,19 +64,23 @@ class Dos:
             start = int(os.environ['DOSEMU_TRACE_FROM'], 16)
             from capstone import Cs, CS_ARCH_X86, CS_MODE_16
             md = Cs(CS_ARCH_X86, CS_MODE_16)
+            import collections
+            self.tracebuf = collections.deque(maxlen=int(os.environ.get('DOSEMU_TRACE_KEEP', '5000')))
+            want = bytes.fromhex(os.environ.get('DOSEMU_TRACE_BYTES', ''))
             state = {'on': False}
             def tr(uc, a, sz, ud):
-                if a == start:
+                if a == start and not state['on'] and bytes(uc.mem_read(a, len(want))) == want:
                     state['on'] = True
                 if state['on']:
                     code = bytes(uc.mem_read(a, sz))
                     ins = next(md.disasm(code, 0), None)
-                    sys.stderr.write('T %04x:%04x %s %s  ax=%04x dx=%04x bx=%04x es=%04x\n' % (
+                    self.tracebuf.append('T %04x:%04x %s %s  ax=%04x dx=%04x bx=%04x es=%04x\n' % (
                         self.reg(UC_X86_REG_CS), self.reg(UC_X86_REG_IP),
                         ins.mnemonic if ins else '?', ins.op_str if ins else '',
                         self.reg(UC_X86_REG_AX), self.reg(UC_X86_REG_DX),
                         self.reg(UC_X86_REG_BX), self.reg(UC_X86_REG_ES)))
-            uc.hook_add(UC_HOOK_CODE, tr)
+            uc.hook_add(UC_HOOK_BLOCK, lambda uc, a, sz, ud: tr(uc, a, sz, ud) if a == start else None)
+            uc.hook_add(UC_HOOK_CODE, lambda uc, a, sz, ud: tr(uc, a, sz, ud) if state['on'] else None)
         if os.environ.get('DOSEMU_RING'):
             import collections
             self.ring = collections.deque(maxlen=int(os.environ['DOSEMU_RING']))
@@ -1033,6 +1037,8 @@ class Dos:
                 if self.ring:
                     for a in self.ring:
                         sys.stderr.write('  block %05x\n' % a)
+                if getattr(self, 'tracebuf', None):
+                    sys.stderr.write(''.join(self.tracebuf))
                 if os.environ.get('DOSEMU_CRASHDUMP'):
                     open(os.environ['DOSEMU_CRASHDUMP'], 'wb').write(bytes(self.uc.mem_read(0, 0x100000)))
                 raise RuntimeError('%s at %04x:%04x' % (e, cs, ip))

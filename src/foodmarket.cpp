@@ -33,7 +33,7 @@ static const char *FoodDemand(Galaxy *g, int32 extra)
 }
 
 // 512f:0105: the food needed by the people (1), the army (2), or both.
-static int32 FoodNeeded(Empire *e, int16 who)
+int32 FoodNeeded(Empire *e, int16 who)
 {
     if (who == 1)
         return 38 * e->population / 100;

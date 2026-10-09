@@ -58,6 +58,7 @@ void ScoreListAll(Galaxy *g);
 int16 MaskTest(int32 mask, int16 bit);
 void MaskSet(int32 *mask, int16 bit);
 void MaskClear(int32 *mask, int16 bit);
+int32 *OpMask(Empire *e, int16 op);     // 14f6:05dc
 void GalaxyInit(Galaxy *g);
 void GalaxyReset(Galaxy *g);
 void GalaxyOpen();
@@ -100,6 +101,9 @@ int32 GovCapacity6(Empire *e);
 const char *InsurgencyName(Empire *e);
 const char *PlanetName(int8 type);
 void InsurgencyUp(Empire *e);
+int32 FoodNeeded(Empire *e, int16 who);  // 512f:0105
+int32 Neglected(Empire *e, int16 i);
+void SetNeglected(Empire *e, int16 i, int32 v);
 void InsurgencyDown(Empire *e);
 void ClearSpending(uint8 *s);
 void SetTreaty(Treaty &t, int16 type, uint8 a);
@@ -170,15 +174,15 @@ void PayUpkeep(Player *p, Empire *e, Galaxy *g);       // 5e48:0b9f
 void FoodMarket(Player *p, Empire *e, Galaxy *g);      // 512f:018b
 void CovertOps(Player *p, Empire *e, Galaxy *g);       // 409c:0a6d
 void Spending(Player *p, Empire *e, Galaxy *g);        // 1af6:07dd
-void Industry(Player *p, Empire *e);                   // 432f:006f
+void DoubleAgents(Player *p, Empire *e);               // 432f:006f
 void Trade(Player *p, Empire *e);                      // 6e3f:2429
 void SendMessage(int16 from, String name);             // 58b6:1ce9
 void ReadMessages(Player *p, Empire *e);               // 58b6:1eb3
 int16 Attack(Player *p, Empire *e, char how);          // 5090:0121
 void EndOfTurn(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
 void Population(Player *p, Empire *e);                 // 5f38:0000
-void Upkeep(Player *p, Empire *e);                     // 44e2:07cc
-void Growth(Player *p, Empire *e);                     // 44e2:0000
+void CivilWar(Player *p, Empire *e);                   // 44e2:07cc
+void Desertion(Player *p, Empire *e);                  // 44e2:0000
 void TreatyMessages(Player *p, Empire *e);                  // 70d2:1ddf
 void DiplomacyMenu(Player *p, Empire *e);               // 70d2:0000
 void RegeneratePlanets(Galaxy *g);                     // 1c59:0855

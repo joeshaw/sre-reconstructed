@@ -236,7 +236,7 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         Spending(p, e, g);
         break;
     case 12:
-        Industry(p, e);
+        DoubleAgents(p, e);
         break;
     case 13:
         break;
@@ -256,8 +256,8 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         UpdateD1b0(e);
         break;
     case 19:
-        Upkeep(p, e);
-        Growth(p, e);
+        CivilWar(p, e);
+        Desertion(p, e);
         break;
     case 20:
         PlanetsMoveToward(e);
