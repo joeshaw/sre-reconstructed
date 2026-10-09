@@ -1,0 +1,36 @@
+# Differential test scenarios, run by tests/run.sh.
+#
+# name|mode|template|clock|player|args|input
+#   mode      remote (the player's terminal) or local (the sysop's console)
+#   template  a fixture of tests/fixtures.sh, or @name for the game as the
+#             original left it after an earlier scenario
+#   clock     the frozen time (default 1995-03-08T12:00:00)
+#   player    the BBS user, if not the template's
+#   input     printf %b escapes; \x00 holds the rest back until the game
+#             waits for a key; {N*KEYS} repeats KEYS N times; local mode
+#             takes {up}, {down}, ... too
+#
+# Setting up.
+reset|local|base|||RESET|Joe\rMyBBS\r2Andromeda\ryy\r\r\r\r\r\rq
+join|remote|reset|||| 24yJoe\rmy nAlpha Empire\ryQQ
+join2|remote|joined||Ann Bee|| 24yAnn\rfy\x00\r\x00n\x00\rBeta Realm\ryqq
+# The system menu.
+status|remote|reset|||| 1Q8Q
+rankings|remote|reset|||| 218QQ
+help|remote|joined|||| 41\r\r0\rQ
+# A day of turns.
+day|remote|fed|||| 24Q  y{50*\x00\r}
+starve|remote|joined|||| 24Q  y{38*\x00\r}\x00n{30*\x00\r}
+# Maintenance.
+maint|remote|@day|1995-03-09T12:00:00||| 1Q
+maint-cmd|local|@day|1995-03-09T12:00:00||Maintenance|
+# Attacks, by Ann Bee's Beta Realm on Joe Shaw's lpha Empire.
+attack-conv|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x001\x00A\x00y{80*\x00\r}
+attack-guerilla|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x002\x00A\x00y{80*\x00\r}
+attack-pirates|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x003\x001{80*\x00\r}
+spy-pirates|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x004\x001{80*\x00\r}
+attack-nuclear|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x005\x00A\x00y\x00y{80*\x00\r}
+attack-chemical|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x006\x00A\x00y\x00y{80*\x00\r}
+attack-psionic|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x007\x00A\x00y\x00y{80*\x00\r}
+# What the victim sees.
+victim|remote|@attack-conv||Joe Shaw|| 24Q{80*\x00\r}

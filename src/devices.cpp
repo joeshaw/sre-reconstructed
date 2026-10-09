@@ -84,12 +84,90 @@ void TermFlush()
     g_outlen = 0;
 }
 
+// The game's text is in the IBM PC character set (code page 437).  A
+// terminal that expects UTF-8 (as macOS's does) gets it translated:
+// SRE_CHARSET=utf8 or cp437 chooses; by default a UTF-8 locale on a
+// terminal does.
+static const char *const g_cp437[128] = {
+    "Ç", "ü", "é", "â", "ä", "à", "å", "ç",
+    "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å",
+    "É", "æ", "Æ", "ô", "ö", "ò", "û", "ù",
+    "ÿ", "Ö", "Ü", "¢", "£", "¥", "₧", "ƒ",
+    "á", "í", "ó", "ú", "ñ", "Ñ", "ª", "º",
+    "¿", "⌐", "¬", "½", "¼", "¡", "«", "»",
+    "░", "▒", "▓", "│", "┤", "╡", "╢", "╖",
+    "╕", "╣", "║", "╗", "╝", "╜", "╛", "┐",
+    "└", "┴", "┬", "├", "─", "┼", "╞", "╟",
+    "╚", "╔", "╩", "╦", "╠", "═", "╬", "╧",
+    "╨", "╤", "╥", "╙", "╘", "╒", "╓", "╫",
+    "╪", "┘", "┌", "█", "▄", "▌", "▐", "▀",
+    "α", "ß", "Γ", "π", "Σ", "σ", "µ", "τ",
+    "Φ", "Θ", "Ω", "δ", "∞", "φ", "ε", "∩",
+    "≡", "±", "≥", "≤", "⌠", "⌡", "÷", "≈",
+    "°", "∙", "·", "√", "ⁿ", "²", "■", " ",
+};
+
+static int Utf8Terminal()
+{
+    static int utf8 = -1;
+    if (utf8 == -1) {
+        const char *cs = getenv("SRE_CHARSET");
+        if (cs && *cs) {
+            utf8 = strstr(cs, "utf") || strstr(cs, "UTF");
+        } else {
+            const char *loc = getenv("LC_ALL");
+            if (!loc || !*loc)
+                loc = getenv("LC_CTYPE");
+            if (!loc || !*loc)
+                loc = getenv("LANG");
+            utf8 = isatty(1) && loc && (strstr(loc, "UTF-8") || strstr(loc, "utf8") ||
+                                         strstr(loc, "UTF8") || strstr(loc, "utf-8"));
+        }
+    }
+    return utf8;
+}
+
+static void TermPut(char c)
+{
+    if (g_outlen == (int)sizeof(g_outbuf))
+        TermFlush();
+    g_outbuf[g_outlen++] = c;
+}
+
 void TermWrite(const char *s, int n)
 {
+    int utf8 = Utf8Terminal();
     for (int i = 0; i < n; i++) {
-        if (g_outlen == (int)sizeof(g_outbuf))
-            TermFlush();
-        g_outbuf[g_outlen++] = s[i];
+        uint8 c = (uint8)s[i];
+        if (c >= 0x80 && utf8) {
+            for (const char *u = g_cp437[c - 0x80]; *u; u++)
+                TermPut(*u);
+        } else {
+            TermPut((char)c);
+        }
+    }
+}
+
+void TermWriteGlyphs(const char *s, int n)
+{
+    static const char *const glyphs[32] = {
+        " ", "\u263a", "\u263b", "\u2665", "\u2666", "\u2663", "\u2660", "\u2022",
+        "\u25d8", "\u25cb", "\u25d9", "\u2642", "\u2640", "\u266a", "\u266b", "\u263c",
+        "\u25ba", "\u25c4", "\u2195", "\u203c", "\u00b6", "\u00a7", "\u25ac", "\u21a8",
+        "\u2191", "\u2193", "\u2192", "\u2190", "\u221f", "\u2194", "\u25b2", "\u25bc",
+    };
+    if (!Utf8Terminal()) {
+        TermWrite(s, n);
+        return;
+    }
+    for (int i = 0; i < n; i++) {
+        uint8 c = (uint8)s[i];
+        if (c < 0x20 && c != '\r' && c != '\n' && c != 8 && c != 7) {
+            for (const char *u = glyphs[c]; *u; u++)
+                TermPut(*u);
+        } else {
+            TermWrite(s + i, 1);
+        }
     }
 }
 

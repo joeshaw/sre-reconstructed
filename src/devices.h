@@ -94,6 +94,9 @@ void Interrupt(int16 code);
 void TermInit();
 void TermFlush();
 void TermWrite(const char *s, int n);
+// Text for the screen: control characters other than CR, LF, BS and BEL
+// are the PC's glyphs.
+void TermWriteGlyphs(const char *s, int n);
 int TermReady();
 int TermGetc();         // -1 at end of input
 int TermPeek();         // the next TermGetc without taking it; -2 if none yet

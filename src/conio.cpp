@@ -12,12 +12,15 @@ static int16 g_curx = 1, g_cury = 1;   // in the window
 
 // Test scripts (SRE_TESTMARK set) get conio output bracketed by DCS ...
 // ST, to tell it from the local stream's.
-static void Write(const char *s, int n)
+static void Write(const char *s, int n, int glyphs = 0)
 {
     static int marked = getenv("SRE_TESTMARK") != 0;
     if (marked)
         TermWrite("\x1bP", 2);
-    TermWrite(s, n);
+    if (glyphs)
+        TermWriteGlyphs(s, n);
+    else
+        TermWrite(s, n);
     if (marked)
         TermWrite("\x1b\\", 2);
 }
@@ -114,7 +117,7 @@ void textattr(int16 attr)
 
 void cputs(const char *s, int16 n)
 {
-    Write(s, n);
+    Write(s, n, 1);
     for (int16 i = 0; i < n; i++) {
         if (s[i] == '\r')
             g_curx = 1;

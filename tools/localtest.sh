@@ -43,7 +43,12 @@ cmp -s "$W/orig.salts" "$W/port.salts" || { echo "data: salts differ (rand seque
 (cd "$W/port" && find . -type f | sort) > "$W/port.files"
 diff "$W/orig.files" "$W/port.files" | sed 's/^/files: /'
 while read -r f; do
-    case "$f" in ./DATA/PLAYER.II|./Data/Player.II) ;; ./DATA/*.II|./Data/*.II) continue;; esac
+    case "$f" in
+    ./DATA/PLAYER.II|./Data/Player.II)
+        python3 "$HERE/tools/playercmp.py" "$W/orig/$f" "$W/port/$f" || { echo "file differs: $f"; status=1; }
+        continue;;
+    ./DATA/*.II|./Data/*.II) continue;;
+    esac
     [ -f "$W/port/$f" ] && ! cmp -s "$W/orig/$f" "$W/port/$f" && { echo "file differs: $f"; status=1; }
 done < "$W/orig.files"
 exit $status
