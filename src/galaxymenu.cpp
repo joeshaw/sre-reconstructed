@@ -6,8 +6,8 @@ void PlayGame(Player *p);                               // 1e7b:0197
 void ReadMessages(Player *p, Empire *e);                // 58b6:1eb3
 int16 ReadPublicMessages();                             // 58b6:2901
 void SendMessage(int16 from, String name);              // 58b6:1ce9
-void Diplomacy(Player *p, Empire *e);                   // 70d2:1ddf
-void DiplomacyEnd(Player *p, Empire *e);                // 70d2:0000
+void TreatyMessages(Player *p, Empire *e);                   // 70d2:1ddf
+void DiplomacyMenu(Player *p, Empire *e);                // 70d2:0000
 void DeleteEmpire(Empire *e);                           // 6924:057d
 void PlayerInitIndex(Player *p, int16 index);           // 64d2:090c
 extern Resource r_messages;                             // 62e8
@@ -509,8 +509,8 @@ void GalaxyMenu(Galaxy *g)
         case 9: {
             Player p;
             PlayerLoad(&p, pl);
-            Diplomacy(&p, &g_empires[id]);
-            DiplomacyEnd(&p, &g_empires[id]);
+            TreatyMessages(&p, &g_empires[id]);
+            DiplomacyMenu(&p, &g_empires[id]);
             PlayerSave(&p);
             break;
         }

@@ -282,3 +282,197 @@ Resource r_failedcovert("News.FailedCovertOps", (int32)1);         // 3eb6
 Resource r_attackvictim("News.AttackVictim", (int32)1);            // 3ec2
 Resource r_pirateraids("News.PirateRaids", (int32)0);              // 3ece
 Resource r_civilwar("News.CivilWar", (int32)1);                    // 3eda
+
+void NameNormalize(String &s, int16 level);         // 7458:01de
+
+// 5222:15b5: how well a search string matches a name (0 = not at all,
+// else 1 + the normalization level needed).
+static int16 NameMatch(String search, String name)
+{
+    for (int16 level = 0; level <= 3; level++) {
+        NameNormalize(search, level);
+        NameNormalize(name, level);
+        if (name.find(search, 0) >= 0)
+            return (int16)(level + 1);
+    }
+    return 0;
+}
+
+// 5222:1666: the empire whose name matches best, or -1 (after listing
+// the matches if there are several).
+int16 SearchEmpire(String search, int32 allowed)
+{
+    int16 score[MAXEMPIRES];
+    int16 best = 0, count = 0;
+    for (int16 i = 0; i < MAXEMPIRES; i++) {
+        if (!MaskTest(allowed, i)) {
+            score[i] = 0;
+            continue;
+        }
+        score[i] = NameMatch(search, String(g_empires[i].name));
+        if (score[i] > best) {
+            best = score[i];
+            count = 1;
+        } else if (score[i] == best) {
+            count++;
+        }
+    }
+    if (count == 1) {
+        for (int16 i = 0; i < MAXEMPIRES; i++)
+            if (score[i] == best)
+                return i;
+    }
+    if (count == 0 || best == 0) {
+        kout << c_normal << "No match found.\n";
+        return -1;
+    }
+    Resource rkey("Scores.Colors.Key", (int32)14);
+    Resource rbrk("Scores.Colors.Brackets", (int32)4);
+    Resource rcol("Scores.Colors.Col0", (int32)15);
+    kout << c_normal << "Your string matches:\n";
+    for (int16 i = 0; i < MAXEMPIRES; i++) {
+        if (score[i] != best)
+            continue;
+        kout << Color((int16)rbrk.Long()) << " (" << Color((int16)rkey.Long())
+             << (char)(g_empires[i].id + 'A') << Color((int16)rbrk.Long()) << ") "
+             << Color((int16)rcol.Long()) << Untr(g_empires[i].name) << '\n';
+    }
+    return -1;
+}
+
+// 5222:19df: choose a set of empires by letter (Z toggles all); the
+// result is in *chosen.  Returns 1 when done, 0 on ESC, or the key in
+// exits that ended the choice.
+int16 ChooseEmpires(int32 allowed, int32 *chosen, String exits, void (*list)(int32),
+                    const char *prompt)
+{
+    String p(prompt ? prompt : "Select empires >> ");
+    char sel[0x28];
+    int16 n = 0;
+    kout << c_normal << p << c_input;
+    for (int16 i = 0; i < MAXEMPIRES; i++) {
+        if (MaskTest(*chosen, i)) {
+            sel[n++] = (char)(i + 'A');
+            kout << (char)(i + 'A');
+        }
+    }
+    for (;;) {
+        char c;
+        kout << c_input;
+        kin >> c;
+        if (c == '?') {
+            kout << c_normal << '\n';
+            list(allowed);
+            kout << c_normal << p << c_input;
+            for (int16 j = 0; j < n; j++)
+                kout << sel[j];
+        }
+        if (c == '/') {
+            char buf[0x100];
+            kout << c_normal << "\nEmpire search: ";
+            kin >> buf;
+            if (buf[0]) {
+                int16 k = SearchEmpire(String(buf), allowed);
+                if (k != -1)
+                    c = (char)(k + 'A');
+            }
+            kout << c_normal << p << c_input;
+            for (int16 j = 0; j < n; j++)
+                kout << sel[j];
+        }
+        if (c == 27 || exits.findch(c, 0) != -1) {
+            kout << c_normal;
+            for (int16 j = 0; j < n; j++)
+                kout << "\b \b";
+            for (int16 j = 0; DisplayLen(p) > j; j++)
+                kout << "\b \b";
+            if (c == 27)
+                return 0;
+            return (int16)c;
+        }
+        if (c == 8 && n > 0) {
+            n--;
+            kout << c_normal << "\b \b";
+        }
+        if (ctype_signed(c) & (CT_UPP | CT_LOW)) {
+            c = (char)b_toupper((int)(int8)c);
+            int16 all = c == 'Z';
+            for (char x = all ? 'A' : c; x < (all ? 'Z' : c + 1); x++) {
+                int16 found = 0;
+                for (int16 j = 0; j < n; j++) {
+                    if (sel[j] != x)
+                        continue;
+                    kout << c_normal << "\b ";
+                    for (int16 k = j; k < n; k++)
+                        kout << '\b';
+                    n--;
+                    for (int16 k = j; k < n; k++) {
+                        sel[k] = sel[k + 1];
+                        kout << c_input << sel[k];
+                    }
+                    found = 1;
+                    break;
+                }
+                if (!found && MaskTest(allowed, (int16)(x - 'A'))) {
+                    sel[n++] = x;
+                    kout << c_input << x;
+                }
+            }
+        }
+        if (c == '\r' || c == '\n') {
+            *chosen = 0;
+            for (int16 j = 0; j < n; j++)
+                MaskSet(chosen, (int16)(sel[j] - 'A'));
+            kout << c_normal << '\n';
+            return 1;
+        }
+    }
+}
+
+// 5222:1ecd: choose one empire; -1 for none.
+int16 ChooseEmpire(int32 allowed)
+{
+    static String prompt("Choose an empire: ");     // DS:3ee8
+    kout << c_normal << prompt << " (/ to search) ";
+    for (;;) {
+        char c;
+        kout << c_input;
+        kin >> c;
+        if (c == '?') {
+            kout << "List Empires" << c_normal << '\n';
+            ScoreList(&g_galaxy, allowed, 0);
+            kout << c_normal << prompt << c_input;
+        }
+        if (c == '/') {
+            char buf[0x100];
+            kout << c_normal << "Search: ";
+            kin >> buf;
+            if (buf[0]) {
+                int16 k = SearchEmpire(String(buf), allowed);
+                if (k != -1)
+                    c = (char)(k + 'A');
+            }
+            kout << c_normal << prompt << c_input;
+        }
+        if (c == 27) {
+            kout << "Abort" << c_normal << '\n';
+            return -1;
+        }
+        if (c == '\r' || c == '\n') {
+            kout << "None" << c_normal << '\n';
+            return -1;
+        }
+        if (!(ctype_signed(c) & (CT_UPP | CT_LOW)))
+            continue;
+        c = (char)b_toupper((int)(int8)c);
+        int16 id = (int16)(c - 'A');
+        Resource rkey("Scores.Colors.Key", (int32)14);
+        Resource rbrk("Scores.Colors.Brackets", (int32)4);
+        if (!MaskTest(allowed, id))
+            continue;
+        kout << Color((int16)rbrk.Long()) << '(' << Color((int16)rkey.Long()) << c
+             << Color((int16)rbrk.Long()) << ") " << c_empire << Untr(g_empires[id].name)
+             << c_normal << '\n';
+        return id;
+    }
+}

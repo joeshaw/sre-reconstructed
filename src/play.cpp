@@ -21,8 +21,8 @@ void CovertOps(Player *p, Empire *e, Galaxy *g);       // 5f38:07ae
 void Diplomats(Player *p, Empire *e);                  // 5f38:0000
 void Upkeep(Player *p, Empire *e);                     // 44e2:07cc
 void Growth(Player *p, Empire *e);                     // 44e2:0000
-void Diplomacy(Player *p, Empire *e);                  // 70d2:1ddf
-void DiplomacyEnd(Player *p, Empire *e);               // 70d2:0000
+void TreatyMessages(Player *p, Empire *e);                  // 70d2:1ddf
+void DiplomacyMenu(Player *p, Empire *e);               // 70d2:0000
 void RegeneratePlanets(Galaxy *g);                     // 1c59:0855
 extern Resource r_messages;                            // 62e8
 extern Resource r_diplomacy;                           // b01e
@@ -312,8 +312,8 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
 static void FirstTurn(Player *p, Empire *e)
 {
     if (r_diplomacy.Bool()) {
-        Diplomacy(p, e);
-        DiplomacyEnd(p, e);
+        TreatyMessages(p, e);
+        DiplomacyMenu(p, e);
     }
     int32 bonus = ProtectionBonus(e);
     StartTurn(e);
@@ -394,7 +394,7 @@ void PlayGame(Player *p)
                  << g_galaxy.grantdays << " days.\n";
         return;
     }
-    Diplomacy(p, e);
+    TreatyMessages(p, e);
     if (e->phase > 1)
         kout << "Continuing previously interrupted turn...\n";
     while (e->turnsused < e->turnsperday || g_local) {

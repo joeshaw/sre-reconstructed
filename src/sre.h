@@ -67,6 +67,10 @@ int32 EmpireMask();
 int32 ProtectedMask();
 int16 GalaxyPlayable(Galaxy *g);
 void ShowMasters(Galaxy *g);
+int16 SearchEmpire(String search, int32 allowed);
+int16 ChooseEmpires(int32 allowed, int32 *chosen, String exits, void (*list)(int32),
+                    const char *prompt);
+int16 ChooseEmpire(int32 allowed);
 extern Resource r_inactivetimeout, r_failedcovert, r_attackvictim, r_pirateraids, r_civilwar;
 
 // empire (48cc, 1c59)
