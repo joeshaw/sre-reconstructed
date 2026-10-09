@@ -589,7 +589,7 @@ class Dos:
             self.idle_polls = 0
             return
         self.idle_polls += 1
-        if self.input and self.idle_polls > 50:
+        if self.input and self.idle_polls > 500:
             del self.input[0]
             self.idle_polls = 0
             return

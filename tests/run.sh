@@ -11,7 +11,7 @@ PAT=${2:-}
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 mkdir -p "$FIX/work"
 pass=0; fail=0; failed=
-while IFS='|' read -r name mode template clock player args input; do
+while IFS='|' read -r name mode template clock player edits args input; do
     case "$name" in ''|'#'*) continue;; esac
     [ -n "$PAT" ] && ! [[ "$name" == $PAT ]] && continue
     if [[ "$template" == @* ]]; then
@@ -24,6 +24,10 @@ while IFS='|' read -r name mode template clock player args input; do
     rm -rf "$tmpl"; cp -r "$src" "$tmpl"; rm -f "$tmpl/INUSE.SR"
     if [ -n "$player" ]; then
         printf '%s\r\n1\r\n1\r\n25\r\n2400\r\n1\r\n60\r\n%s\r\n' "$player" "$player" > "$tmpl/DOORFILE.SR"
+    fi
+    if [ -n "$edits" ]; then
+        # shellcheck disable=SC2086
+        python3 "$HERE/tools/sreedit.py" "$tmpl" $edits > /dev/null
     fi
     if [ "$mode" = local ]; then
         script=$HERE/tools/localtest.sh

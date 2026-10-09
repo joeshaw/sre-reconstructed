@@ -190,7 +190,7 @@ static void Propose(Player *p, Empire *me, int16 type)
         }
         if (!CheckProposal(o, me->id, type, days))
             continue;
-        kout << Color(10) << (char)(i + 'A') << ": " << c_normal;
+        kout << Color(10) << (char)(i + 'A') << c_normal << ": ";
         Treaty *ot = &o->treaty[me->id];
         SetTreaty(*ot, type, (uint8)days);
         ot->setc(1);
@@ -221,7 +221,7 @@ static void BreakTreaty(Player *p, Empire *me)
     for (int16 i = 0; i < MAXEMPIRES; i++) {
         if (!MaskTest(chosen, i))
             continue;
-        kout << Color(10) << (char)(i + 'A') << ": " << c_normal;
+        kout << Color(10) << (char)(i + 'A') << c_normal << ": ";
         Empire *o = &g_empires[i];
         Treaty *mine = &me->treaty[i];
         Treaty *theirs = &o->treaty[me->id];

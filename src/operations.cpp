@@ -40,7 +40,7 @@ void Preferences(Player *p)
     int16 r;
     do {
         Menu m("Preferences", "Player Preferences", 0xb, 3, 3, 0xf, 0xb, 7, 7, 7, 7, 7);
-        m.Add("Redisplay Menus", '1', 1);
+        m.Add((p->prefs1 >> 2) & 1 ? "Redisplay Menus" : "Don't redisplay Menus", '1', 1);
         m.Add("Automatic Payment", '2', 2);
         m.Add("Galactic Coordinator Donations", '3', 3);
         if (g_system.regstate)

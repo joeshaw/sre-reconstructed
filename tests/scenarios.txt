@@ -1,36 +1,93 @@
 # Differential test scenarios, run by tests/run.sh.
 #
-# name|mode|template|clock|player|args|input
+# name|mode|template|clock|player|edits|args|input
 #   mode      remote (the player's terminal) or local (the sysop's console)
 #   template  a fixture of tests/fixtures.sh, or @name for the game as the
 #             original left it after an earlier scenario
 #   clock     the frozen time (default 1995-03-08T12:00:00)
 #   player    the BBS user, if not the template's
+#   edits     tools/sreedit.py changes to the template (space-separated)
 #   input     printf %b escapes; \x00 holds the rest back until the game
 #             waits for a key; {N*KEYS} repeats KEYS N times; local mode
 #             takes {up}, {down}, ... too
 #
 # Setting up.
-reset|local|base|||RESET|Joe\rMyBBS\r2Andromeda\ryy\r\r\r\r\r\rq
-join|remote|reset|||| 24yJoe\rmy nAlpha Empire\ryQQ
-join2|remote|joined||Ann Bee|| 24yAnn\rfy\x00\r\x00n\x00\rBeta Realm\ryqq
+reset|local|base||||RESET|Joe\rMyBBS\r2Andromeda\ryy\r\r\r\r\r\rq
+join|remote|reset||||| 24yJoe\rmy nAlpha Empire\ryQQ
+join2|remote|joined||Ann Bee||| 24yAnn\rfy\x00\r\x00n\x00\rBeta Realm\ryqq
 # The system menu.
-status|remote|reset|||| 1Q8Q
-rankings|remote|reset|||| 218QQ
-help|remote|joined|||| 41\r\r0\rQ
+status|remote|reset||||| 1Q8Q
+rankings|remote|reset||||| 218QQ
+help|remote|joined||||| 41\r\r0\rQ
 # A day of turns.
-day|remote|fed|||| 24Q  y{50*\x00\r}
-starve|remote|joined|||| 24Q  y{38*\x00\r}\x00n{30*\x00\r}
+day|remote|fed||||| 24Q  y{50*\x00\r}
+starve|remote|joined||||| 24Q  y{38*\x00\r}\x00n{30*\x00\r}
 # Maintenance.
-maint|remote|@day|1995-03-09T12:00:00||| 1Q
-maint-cmd|local|@day|1995-03-09T12:00:00||Maintenance|
+maint|remote|@day|1995-03-09T12:00:00|||| 1Q
+maint-cmd|local|@day|1995-03-09T12:00:00|||Maintenance|
 # Attacks, by Ann Bee's Beta Realm on Joe Shaw's lpha Empire.
-attack-conv|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x001\x00A\x00y{80*\x00\r}
-attack-guerilla|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x002\x00A\x00y{80*\x00\r}
-attack-pirates|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x003\x001{80*\x00\r}
-spy-pirates|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x004\x001{80*\x00\r}
-attack-nuclear|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x005\x00A\x00y\x00y{80*\x00\r}
-attack-chemical|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x006\x00A\x00y\x00y{80*\x00\r}
-attack-psionic|remote|army|||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x007\x00A\x00y\x00y{80*\x00\r}
+attack-conv|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x001\x00A\x00y{80*\x00\r}
+attack-guerilla|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x002\x00A\x00y{80*\x00\r}
+attack-pirates|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x003\x001{80*\x00\r}
+spy-pirates|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x004\x001{80*\x00\r}
+attack-nuclear|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x005\x00A\x00y\x00y{80*\x00\r}
+attack-chemical|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x006\x00A\x00y\x00y{80*\x00\r}
+attack-psionic|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00a\x007\x00A\x00y\x00y{80*\x00\r}
 # What the victim sees.
-victim|remote|@attack-conv||Joe Shaw|| 24Q{80*\x00\r}
+victim|remote|@attack-conv||Joe Shaw||| 24Q{80*\x00\r}
+# Spending, selling, planets, taxes.
+spend|remote|fed||||| 24Q  y\x00c\x00\r\x001\x00100\r\x002\x0050\r\x006\x00f\x003\r\x00t\x002\r\x00\r\x00s\x001\x0020\r\x006\x00o\x001\r\x00\r\x00b\x00*\x00t\x0030\r\x0010\r\x005\x00\r\x00{80*\x00\r}
+# The operations menu.
+advisors|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00a\x00\r\x00{80*\x00\r}
+ops-scores|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x008\x00\r\x00{80*\x00\r}
+ops-help|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00h\x00\r\x00\r\x00{80*\x00\r}
+ops-instr|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00i\x00\r\x00\r\x00{80*\x00\r}
+abdicate-no|remote|fed||||| 24Q  y\x00c\x00\r\x00*\x00^\x00n\x00{80*\x00\r}
+# Covert operations.
+covert-spy|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x001\x00A{80*\x00\r}
+covert-insurgent|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x002\x00A{80*\x00\r}
+covert-setup|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x003\x00A\x00B{80*\x00\r}
+covert-dissension|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x004\x00A\x00y{80*\x00\r}
+covert-demoralize|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x005\x00A\x00y{80*\x00\r}
+covert-bombing|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x006\x00A\x00y{80*\x00\r}
+covert-intercept|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x007\x001\x00A{80*\x00\r}
+covert-diplomatic|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x007\x002\x00A{80*\x00\r}
+covert-bribe|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x009\x00A{80*\x00\r}
+covert-victim|remote|@covert-bombing||Joe Shaw|empire.0.18c=i32:5000|| 24Q{80*\x00\r}
+# Trading fleets.
+trade-send|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00t\x00A\x005\x001000\r\x001\x00100\r\x00\r\x006\x00500\r\x00\r\x00y\x00y\x00Here is a deal.\r/s\r{80*\x00\r}
+trade-accept|remote|@trade-send|1995-03-08T13:00:00|Joe Shaw||| 24\x00\r\x00y{80*\x00\r}
+trade-reject|remote|@trade-send|1995-03-08T13:00:00|Joe Shaw||| 24\x00\r\x00n{80*\x00\r}
+trade-return|remote|@trade-reject|1995-03-08T14:00:00|Ann Bee||| 24{80*\x00\r}
+# Messages.
+message-send|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00m\x00A\r\x00Hello there.\rSecond line.\r/s\r{80*\x00\r}
+message-public|remote|army||||| 24Q  y\x00c\x00\r\x00\r\x00\r\x00\r\x00m\x00*\r\x00To everyone.\r/s\r{80*\x00\r}
+message-reply|remote|@message-send||Joe Shaw||| 26\x00q\x00/l\r\x00Thanks.\r/s\r{80*\x00\r}
+message-reply2|remote|@message-reply||Ann Bee||| 26\x00r\x00Edited.\r/c\rAgain.\r/l\r/s\r{80*\x00\r}
+message-delete|remote|@message-send||Joe Shaw||| 26\x00d{80*\x00\r}
+message-galaxy|remote|army||||| 27\x00A\r\x00From the galaxy menu.\r/a\x00y{80*\x00\r}
+# Diplomacy.
+treaty-propose|remote|two||||| 29\x001\x00A\r\x00\r\x003\x00A\r\x00\r\x008\x00\r\x00q\x00q\x00q
+treaty-view|remote|@treaty-propose||Joe Shaw||| 29\x008\x00\r\x00q\x00q\x00q
+treaty-accept|remote|@treaty-propose||Joe Shaw|empire.0.18c=i32:5000|| 24\x00y{80*\x00\r}
+treaty-break|remote|two||||| 29\x007\x00A\r\x00y\x00\r\x00q\x00q\x00q
+treaty-other|remote|two||||| 29\x009\x00A\r\x00\r\x0030\r\x0020\r\x008\x00\r\x00q\x00q\x00q\x00\r
+# The player's settings, and the system menu.
+settings|remote|two||||| P\x001\x002\x00n\x00n\x003\x00y\x006\x00y\x007\x00y\x008\x00y\x009\x00y\x00\r\x00q
+whoami|remote|two||||| 3\x00\r\x00q\x00\r\x00\r
+bulletins|remote|two||||| 4\x00\r\x00\r\x00q\x00\r\x00\r
+morehelp|remote|two||||| h\x003\r\x00\r\x0020\r\x00\r\x00\r\x00\r\x00q\x00\r
+news|remote|@attack-conv||Joe Shaw||| 22\x00\r\x003\x00\r\x00\r\x00\r\x00q\x00q{80*\x00\r}
+# The sysop's functions, on the local console.
+sysop-status|local|joined||||Sysop|1\r$\r  q
+sysop-register-info|local|joined||||Sysop|$\rq
+sysop-names|local|joined||||Sysop|4New Sysop\rNew BBS\rGalaxy X\ry\r\r\r\ry\rq
+sysop-tournament|local|joined||||Sysop|3New Gal\rnNewer Gal\ryyn2\r5\r35\rn04011995\r12311995\rq
+sysop-messages|local|two||||Sysop|7A\rHello from the sysop\rSecond line\r/s\r6kq
+sysop-message-delete|local|two||||Sysop|7A\rHello\r/s\ry6dq
+sysop-pirates|local|two||||Sysop|T1\x08\x08\x08Red Raiders\r12\ry2\r\r3\ry\rq
+sysop-empires|local|two||||Sysop|E{down}\rq\x1bq
+sysop-empire-edit|local|two||||Sysop|E\rPJoe Shaw\ry\rENew Name\ry\rPnobody\r\rDy\r\x1bq
+sysop-empire-keep|local|two||||Sysop|E{down}{up}b\rDn\rq\x1bq
+sysop-players|local|two||||Sysop|PL{down}{up}{down}\rE{down}\ryAnn B\ryAnnie\rD\rq\rq
+sysop-player-delete|local|two||||Sysop|PD\rq\rq

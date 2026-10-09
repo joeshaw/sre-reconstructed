@@ -247,7 +247,7 @@ struct BuyPlanetsPrompt : MenuHook {
 static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
 {
     int32 avail = g->d392;
-    if (e->year < 0 && 300 - TotalPlanets(e) < avail)
+    if (e->year < 0 && 300 - TotalPlanets(e) > avail)
         avail = 300 - TotalPlanets(e);
     if (avail + TotalPlanets(e) > 30000)
         avail = 30000 - TotalPlanets(e);
@@ -348,6 +348,7 @@ void Spending(Player *p, Empire *e, Galaxy *g)
     price[9] = PriceCarriers(e);      names[9] = "Carriers";
     for (int16 i = 1; i <= 9; i++)
         sellprice[i] = price[i] / 3;
+    sellprice[6] = 0;           // released planets bring nothing
     int16 selling = 0;
     int16 show = 1;
     for (;;) {
