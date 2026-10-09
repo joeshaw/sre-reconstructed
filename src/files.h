@@ -52,6 +52,9 @@ public:
 void ReadLine(IStream &in, String &s);
 OStream &operator<<(OStream &o, const String &s);
 
+typedef void (*FileErrorFn)(const char *);
+void SetFileErrorHandler(FileErrorFn fn);
+
 // Record file with XOR scrambling (2144:096f).
 class DataFile {
 public:

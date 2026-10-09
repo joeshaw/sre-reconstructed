@@ -55,6 +55,7 @@ void TermRestore()
 
 void TermInit()
 {
+    atexit(TermFlush);
     if (isatty(0) && tcgetattr(0, &g_saved) == 0) {
         struct termios t = g_saved;
         t.c_iflag &= ~(ICRNL | INLCR | IXON | ISTRIP);
@@ -175,7 +176,7 @@ void ModemOut::RawWrite(const char *s, int16 n)
             conv[i] = (char)c;
         }
     }
-    if (!Carrier()) {
+    if (g_peek == -1 && 0) {
         int16 port = g_remote;
         g_remote = 0;
         kout << "\a\n\xaeHANGUP:  COM" << port << ": could not write character\xaf\n";

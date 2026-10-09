@@ -124,7 +124,7 @@ void b_setrandseed(uint32 s) { g_seed = s; }
 // Time.  timezone = 5 hours (EST), daylight = 1, as Borland's tzset()
 // sets them when TZ is not defined.
 
-static const int32 TIMEZONE = 18000L;
+static const int32 TIMEZONE = 18000;
 static const int16 DAYLIGHT = 1;
 static const int8 Days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 // DS:c72c; index 0 is the word before the cumulative table.
@@ -178,12 +178,12 @@ static int16 isDST(uint16 year, uint16 month, uint16 yday, uint8 hour)
 
 int32 b_dostounix(const b_date *d, const b_dostime *t)
 {
-    int32 x = TIMEZONE + 315532800L;
+    int32 x = TIMEZONE + 315532800;
     int16 si = d->da_year - 1980;
-    x += (int32)(si >> 2) * 126230400L;
-    x += (int32)(si & 3) * 31536000L;
+    x += (int32)(si >> 2) * 126230400;
+    x += (int32)(si & 3) * 31536000;
     if (si & 3)
-        x += 86400L;
+        x += 86400;
     int16 days = 0;
     for (int16 i = d->da_mon - 1; i > 0;) {
         i--;
@@ -195,26 +195,26 @@ int32 b_dostounix(const b_date *d, const b_dostime *t)
     int16 hours = (int16)(days * 24 + t->ti_hour);
     if (DAYLIGHT && isDST((uint16)(d->da_year - 1970), 0, (uint16)days, t->ti_hour))
         hours--;
-    x += (int32)hours * 3600L;
+    x += (int32)hours * 3600;
     x += (int32)t->ti_min * 60 + t->ti_sec;
     return x;
 }
 
 void b_unixtodos(int32 time, b_date *d, b_dostime *t)
 {
-    time -= TIMEZONE + 315532800L;
+    time -= TIMEZONE + 315532800;
     t->ti_hund = 0;
     t->ti_sec = (uint8)(time % 60);
     time /= 60;
     t->ti_min = (uint8)(time % 60);
     time /= 60;
-    d->da_year = (int16)(1980 + 4 * (int16)(time / 35064L));
-    time %= 35064L;
+    d->da_year = (int16)(1980 + 4 * (int16)(time / 35064));
+    time %= 35064;
     if (time >= 8784) {
         time -= 8784;
         d->da_year++;
-        d->da_year += (int16)(time / 8760L);
-        time %= 8760L;
+        d->da_year += (int16)(time / 8760);
+        time %= 8760;
     }
     if (DAYLIGHT && isDST((uint16)(d->da_year - 1970), 0, (uint16)(time / 24), (uint8)(time % 24)))
         time++;

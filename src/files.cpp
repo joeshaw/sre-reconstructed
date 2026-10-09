@@ -26,6 +26,9 @@ std::string HostPath(const char *dospath)
         if (c == '\\' || c == '/' || c == 0) {
             if (!comp.empty() && comp != ".") {
                 std::string found = comp;
+                for (size_t k = 0; k < found.size(); k++)
+                    if (found[k] >= 'a' && found[k] <= 'z')
+                        found[k] = (char)(found[k] - 32);
                 DIR *d = opendir(out.c_str());
                 if (d) {
                     struct dirent *e;
@@ -224,7 +227,7 @@ OStream &operator<<(OStream &o, const String &s)
 // ---------------------------------------------------------------------
 // DataFile
 
-typedef void (*FileErrorFn)(const char *);
+
 static FileErrorFn g_fileerror = 0;
 
 static void FileError(const char *fmt, const char *name)

@@ -603,7 +603,7 @@ int32 IStream::GetNumber(int32 max)
                 Echo(' ');
                 Echo(8);
             }
-            if (maxval > 10000000L)
+            if (maxval > 10000000)
                 r = (maxval / 100) * v;
             else
                 r = (v * maxval) / 100;
@@ -720,14 +720,14 @@ IStream &IStream::operator>>(char *s)
 // 229f:0ad7
 IStream &IStream::operator>>(int32 &v)
 {
-    v = GetNumber(0x7fffffffL);
+    v = GetNumber(0x7fffffff);
     return *this;
 }
 
 // 229f:0b18
 IStream &IStream::operator>>(int16 &v)
 {
-    int32 r = GetNumber(0x7fffL);
+    int32 r = GetNumber(0x7fff);
     v = (r == -1) ? -1 : (int16)r;
     return *this;
 }
@@ -735,13 +735,13 @@ IStream &IStream::operator>>(int16 &v)
 // 229f:0b73
 IStream &IStream::operator>>(uint16 &v)
 {
-    v = (uint16)GetNumber(0xffffL);
+    v = (uint16)GetNumber(0xffff);
     return *this;
 }
 
 // 229f:0baf
 IStream &IStream::operator>>(uint8 &v)
 {
-    v = (uint8)GetNumber(0xffL);
+    v = (uint8)GetNumber(0xff);
     return *this;
 }

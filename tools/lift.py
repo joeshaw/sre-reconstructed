@@ -55,6 +55,65 @@ def balanced(s):
                 return False
     return d == 0
 
+def join32(h, l):
+    """Display a hi:lo word pair as one long expression."""
+    if h == l + '.hi':
+        return l
+    if h.startswith('SX(') and h[3:-1] == l:
+        return '(long)' + paren(l)
+    if h == '0':
+        return '(ulong)' + paren(l)
+    if isnum(h) and isnum(l):
+        v = ((int(h, 0) & 0xffff) << 16) | (int(l, 0) & 0xffff)
+        if v >= 0x80000000:
+            v -= 0x100000000
+        return str(v) if -10 < v < 10 else (hex(v) if v >= 0 else '-' + hex(-v))
+    if h.endswith('.hi') and h[:-3] == l:
+        return l
+    m1 = re.match(r'^(.*?)(loc_|arg_|g_|bp_)([0-9a-f]+)(\.\w)?$', l)
+    m2 = re.match(r'^(.*?)(loc_|arg_|g_|bp_)([0-9a-f]+)(\.\w)?$', h)
+    if m1 and m2 and m1.group(1) == m2.group(1) and m1.group(2) == m2.group(2):
+        a, b = int(m1.group(3), 16), int(m2.group(3), 16)
+        if m1.group(2) == 'loc_' and a == b + 2:
+            return 'L:' + m1.group(1) + 'loc_%x' % a
+        if m1.group(2) != 'loc_' and b == a + 2:
+            return m1.group(1) + m1.group(2) + m1.group(3)
+    m1 = re.match(r'^(.*)->w([0-9a-f]+)$', l)
+    m2 = re.match(r'^(.*)->w([0-9a-f]+)$', h)
+    if m1 and m2 and m1.group(1) == m2.group(1) and int(m2.group(2), 16) == int(m1.group(2), 16) + 2:
+        return '%s->d%s' % (m1.group(1), m1.group(2))
+    m1 = re.match(r'^\*w\((.*)\)$', l)
+    m2 = re.match(r'^\*w\((.*) \+ 2\)$', h)
+    if m1 and m2 and m1.group(1) == m2.group(1):
+        return '*d(%s)' % m1.group(1)
+    return '%s:%s' % (h, l)
+
+def merge_stores(lines):
+    out = []
+    i = 0
+    pat = re.compile(r'^(\s+)(.+?) = (.+);$')
+    while i < len(lines):
+        if i + 1 < len(lines):
+            m1 = pat.match(lines[i])
+            m2 = pat.match(lines[i + 1])
+            if m1 and m2:
+                a, ea = m1.group(2), m1.group(3)
+                b, eb = m2.group(2), m2.group(3)
+                for (hd, he, ld, le) in ((a, ea, b, eb), (b, eb, a, ea)):
+                    if he == le + '.hi' or (he == '0' and False):
+                        j = join32(hd, ld)
+                        if ':' not in j or j.startswith('L:'):
+                            out.append('%s%s = %s;' % (m1.group(1), j, le))
+                            i += 2
+                            break
+                else:
+                    out.append(lines[i])
+                    i += 1
+                continue
+        out.append(lines[i])
+        i += 1
+    return out
+
 JCC = {'je': '==', 'jne': '!=', 'jl': '<', 'jle': '<=', 'jg': '>', 'jge': '>=',
        'jb': '<u', 'jbe': '<=u', 'ja': '>u', 'jae': '>=u'}
 
@@ -71,14 +130,7 @@ class Lifter:
 
     # ------------------------------------------------------------------
     def l32(self, hi, lo):
-        h, l = self.rd(hi), self.rd(lo)
-        if h == l + '.hi':
-            return l
-        if h.startswith('SX(') and h[3:-1] == l:
-            return '(long)' + paren(l)
-        if h == '0':
-            return '(ulong)' + paren(l)
-        return '%s:%s' % (h, l)
+        return join32(self.rd(hi), self.rd(lo))
 
     def release(self, k):
         self.pending -= k
@@ -491,6 +543,7 @@ class Lifter:
             if m not in ('push', 'mov', 'sub') or ops[:1] not in (['bp'], ['si'], ['di'], ['sp']):
                 prologue = False
             i += 1 + (skip or 0)
+        self.out = merge_stores(self.out)
         nm = self.dis.name_of(seg, entry)
         hdr = '// %04x:%04x %s  (%s, frame %d)' % (seg, entry, nm, 'far' if far else 'near', frame)
         return [hdr, '{'] + self.out + ['}']
@@ -581,6 +634,28 @@ class Lifter:
                 self.store(x, vy)
                 self.store(y, vx)
             return
+        if m in ('add', 'sub') and i + 1 < len(ins_list) and ins_list[i + 1].mnemonic == ('adc' if m == 'add' else 'sbb') \
+                and len(ops) == 2 and ops[0] not in ('sp',):
+            n2 = ins_list[i + 1]
+            ops2 = [o.strip() for o in n2.op_str.split(', ')]
+            d1, s1 = ops
+            d2, s2 = ops2
+            opc = '+' if m == 'add' else '-'
+            src = join32(self.val(s2), self.val(s1))
+            if d1 in self.r and d2 in self.r:
+                cur = self.l32(d2, d1)
+                res = '(%s %s %s)' % (paren(cur), opc, paren(src))
+                self.wr(d1, res)
+                self.wr(d2, res + '.hi')
+                self.setflags('cmp' if m == 'sub' else 'res', cur if m == 'sub' else res, src)
+            else:
+                lo, hi = self.val(d1), self.val(d2)
+                dst = join32(hi, lo)
+                self.materialize(lo)
+                self.materialize(hi)
+                self.emit('%s %s= %s;' % (dst, opc, src))
+                self.setflags('res', dst)
+            return 1
         if m in ('add', 'sub', 'and', 'or', 'xor', 'adc', 'sbb'):
             d, s = ops
             sz = self.opsize(d, s)
@@ -626,6 +701,24 @@ class Lifter:
                 self.emit({'inc': '%s++;', 'dec': '%s--;', 'neg': '%s = -%s;', 'not': '%s = ~%s;'}[m].replace('%s', dv))
                 self.setflags('res', dv)
             return
+        if m in ('shl', 'sal', 'shr', 'sar') and i + 1 < len(ins_list) and len(ops) == 2 and ops[1] == '1' \
+                and ins_list[i + 1].mnemonic == ('rcl' if m in ('shl', 'sal') else 'rcr') and ins_list[i + 1].op_str.endswith(', 1'):
+            d1 = ops[0]
+            d2 = ins_list[i + 1].op_str.split(', ')[0]
+            if m in ('shl', 'sal'):
+                lo, hi = d1, d2
+                opc = '<<'
+            else:
+                lo, hi = d2, d1
+                opc = '>>' if m == 'sar' else '>>>'
+            if lo in self.r and hi in self.r:
+                e = '(%s %s 1)' % (paren(self.l32(hi, lo)), opc)
+                self.wr(lo, e)
+                self.wr(hi, e + '.hi')
+            else:
+                dst = join32(self.val(hi), self.val(lo))
+                self.emit('%s %s= 1;' % (dst, opc))
+            return 1
         if m in ('shl', 'sal', 'shr', 'sar', 'rol', 'ror', 'rcl', 'rcr'):
             d, s = ops if len(ops) == 2 else (ops[0], '1')
             opc = {'shl': '<<', 'sal': '<<', 'shr': '>>>', 'sar': '>>', 'rol': 'ROL', 'ror': 'ROR', 'rcl': 'RCL', 'rcr': 'RCR'}[m]
