@@ -120,14 +120,13 @@ struct Empire {
     int8 b297[6];               // 297
     int32 d29d;                 // 29d
     int16 w2a1;                 // 2a1
-    int8 b2a3;                  // 2a3
-    uint8 u_2a4[0x1f];          // 2a4
+    char bondname[0x20];        // 2a3 the empire's own bonds
     int16 bonds;                // 2c3 bonds outstanding
     int16 maxbonds;             // 2c5
-    int32 d2c7;                 // 2c7
-    int32 d2cb;                 // 2cb
-    int16 w2cf;                 // 2cf
-    int16 w2d1;                 // 2d1
+    int32 bondprice;            // 2c7
+    int32 bondpayoff;           // 2cb
+    int16 bondhours;            // 2cf
+    int16 bondturns;            // 2d1
     int8 b2d3[25];              // 2d3
     int32 d2ec;                 // 2ec
     int32 lightcruisers;        // 2f0

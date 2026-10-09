@@ -213,11 +213,11 @@ void EmpireInit(Empire *e)
     e->w1a8 = 0;
     e->bonds = 0;
     e->maxbonds = 0;
-    e->d2cb = 0;
-    e->d2c7 = 0;
-    e->w2cf = 0;
-    e->w2d1 = 0;
-    e->b2a3 = 0;
+    e->bondpayoff = 0;
+    e->bondprice = 0;
+    e->bondhours = 0;
+    e->bondturns = 0;
+    e->bondname[0] = 0;
     e->taxrate = Clamp100(23);
     e->w1ab = 0;
     e->draftrate = Clamp100(5);
