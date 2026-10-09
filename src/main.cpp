@@ -14,7 +14,7 @@ void CommInit();
 void CommPorts();
 void CommandLine();
 void LockoutCheck();
-void ResearchInit();
+int16 ResearchInit();
 void SysopMenu();
 void ResetGame();
 int16 Register();
@@ -200,6 +200,20 @@ static int RealMain()
 }
 
 // 1848 main + Borland start-up: static data, then main.
+// Testing aid: SRE_DUMP=<file> writes the empire array at exit (before
+// it is saved), to compare with the original's memory.
+static void DumpEmpires()
+{
+    const char *f = getenv("SRE_DUMP");
+    if (!f || !g_empires)
+        return;
+    FILE *fp = fopen(f, "wb");
+    if (fp) {
+        fwrite(g_empires, sizeof(Empire), MAXEMPIRES, fp);
+        fclose(fp);
+    }
+}
+
 int main(int argc, char **argv)
 {
     g_argc = argc;
@@ -224,6 +238,7 @@ int main(int argc, char **argv)
         PirateNew(&g_pirates[i]);
     GalaxyInit(&g_galaxy);
     SystemLoad();
+    atexit(DumpEmpires);
     int r = RealMain();
     exit(r);
 }

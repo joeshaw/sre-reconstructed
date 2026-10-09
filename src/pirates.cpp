@@ -52,7 +52,7 @@ int32 PiratePlanets(Pirate *p)
 // 4b60:022f
 int32 PirateNetWorth(Pirate *p)
 {
-    return 10 * PiratePlanets(p) + p->money / 34464 + 7 * p->db0 + p->d98 + p->d9c + p->d94 / 10000 +
+    return 10 * PiratePlanets(p) + p->money / 100000 + 7 * p->db0 + p->d98 + p->d9c + p->d94 / 10000 +
            3 * p->da4 + (p->da0 << 1) + (p->da8 << 1) + 5 * p->dac;
 }
 

@@ -1024,6 +1024,8 @@ def main():
     ap.add_argument('--snaps', action='store_true')
     ap.add_argument('--clock', default='1995-03-08T12:00:00')
     ap.add_argument('--frozen', action='store_true', help='date/time services always return --clock')
+    ap.add_argument('--dump-ptr', action='append', default=[],
+                    help='OFF:LEN:FILE - at exit, write LEN bytes at the far pointer stored at DS:OFF')
     a = ap.parse_args()
     script = a.input.encode('latin-1').decode('unicode_escape').encode('latin-1')
     if a.input_file:
@@ -1042,6 +1044,13 @@ def main():
     else:
         sys.stdout.buffer.write(bytes(dos.output))
     print('\n[result=%s exit=%r input_left=%d]' % (r, dos.exit_code, len(dos.input)), file=sys.stderr)
+    for spec in a.dump_ptr:
+        off, n, fn = spec.split(':', 2)
+        ds = dos.reg(UC_X86_REG_DS)
+        p = dos.uc.mem_read(ds * 16 + int(off, 16), 4)
+        poff = p[0] | p[1] << 8
+        pseg = p[2] | p[3] << 8
+        open(fn, 'wb').write(bytes(dos.uc.mem_read(pseg * 16 + poff, int(n, 16))))
     if a.snaps:
         for t in dos.snaps:
             print('=' * 80, file=sys.stderr)

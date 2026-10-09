@@ -2,7 +2,6 @@
 #include "sre.h"
 
 void Preferences(Player *) {}
-void ResearchInit() {}
 void SysopMenu() {}
 void TimeStart() {}
 void InputDate(int32 *) {}
@@ -16,8 +15,6 @@ int16 ReadPublicMessages() { return 0; }
 void SendMessage(int16, String) {}
 Resource r_trading("Trading", (int32)1);       // 6e3f aa0a
 void TradeArrivals(Player *, Empire *) {}
-void TurnReport(Player *, Empire *) {}
-void Advisor(Player *, Empire *) {}
 void FoodMarket(Player *, Empire *, Galaxy *) {}
 void PlanetMarket(Player *, Empire *, Galaxy *) {}
 void Research(Player *, Empire *) {}

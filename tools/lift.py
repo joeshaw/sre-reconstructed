@@ -447,7 +447,12 @@ class Lifter:
         if helper in ('div', 'mod'):
             args = list(reversed(self.stack[-4:]))
             del self.stack[-4:]
-            a = self.combine_args(args)
+            if len(args) == 4 and not any(x.startswith('SLOT#') for x in args):
+                # dividend lo, hi; divisor lo, hi (keeps the high word of
+                # constants such as 100000 = 1:0x86a0)
+                a = [join32(args[1], args[0]), join32(args[3], args[2])]
+            else:
+                a = self.combine_args(args)
             op = '/' if helper == 'div' else '%'
             e = '(%s %s %s)' % (paren(a[0]), op, paren(a[1] if len(a) > 1 else '?'))
             self.wr('ax', e)

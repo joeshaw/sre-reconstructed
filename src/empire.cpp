@@ -63,10 +63,10 @@ int32 NetWorth(Empire *e)
         t += 1;
     }
     int32 planets = TotalPlanets(e);
-    t = t + (10 - (int32)e->insurgency) * planets + e->money.get() / 34464 + 7 * e->agents +
+    t = t + (10 - (int32)e->insurgency) * planets + e->money.get() / 100000 + 7 * e->agents +
         e->soldiers + e->fighters + 3 * e->heavycruisers + 3 * e->lightcruisers +
         (e->stations << 1) + 3 * e->carriers + (e->generals << 1) +
-        e->population / ((int32)e->taxrate + 10) + (int32)e->cmdship + e->bank.get() / 44464 -
+        e->population / ((int32)e->taxrate + 10) + (int32)e->cmdship + e->bank.get() / 110000 -
         e->d188 + e->d16c / 2;
     if (t < 0)
         t = 0;
