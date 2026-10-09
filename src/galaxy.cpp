@@ -275,3 +275,10 @@ int32 ProtectedMask()
     GalaxyClose();
     return m;
 }
+
+// 5222:2283
+Resource r_inactivetimeout("Game.InactiveTimeOut", (int32)10);     // 3eaa
+Resource r_failedcovert("News.FailedCovertOps", (int32)1);         // 3eb6
+Resource r_attackvictim("News.AttackVictim", (int32)1);            // 3ec2
+Resource r_pirateraids("News.PirateRaids", (int32)0);              // 3ece
+Resource r_civilwar("News.CivilWar", (int32)1);                    // 3eda

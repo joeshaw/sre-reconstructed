@@ -67,6 +67,7 @@ int32 EmpireMask();
 int32 ProtectedMask();
 int16 GalaxyPlayable(Galaxy *g);
 void ShowMasters(Galaxy *g);
+extern Resource r_inactivetimeout, r_failedcovert, r_attackvictim, r_pirateraids, r_civilwar;
 
 // empire (48cc, 1c59)
 void EmpireInit(Empire *e);
@@ -96,6 +97,18 @@ const char *PlanetName(int8 type);
 void InsurgencyUp(Empire *e);
 void InsurgencyDown(Empire *e);
 void ClearSpending(uint8 *s);
+void SetTreaty(Treaty &t, int16 type);
+
+// spending (1af6)
+int32 PriceSoldiers(Empire *e);
+int32 PriceFighters(Empire *e);
+int32 PriceStations(Empire *e);
+int32 PriceGenerals(Empire *e);
+int32 PriceCmdShip(Empire *e);
+int32 PricePlanet(Empire *e);
+int32 PriceAgents(Empire *e);
+int32 PriceHeavyCruisers(Empire *e);
+int32 PriceCarriers(Empire *e);
 
 // pirates (4b60)
 void PirateInit(Pirate *p);

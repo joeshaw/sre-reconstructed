@@ -122,7 +122,8 @@ struct Empire {
     int16 w2a1;                 // 2a1
     int8 b2a3;                  // 2a3
     uint8 u_2a4[0x1f];          // 2a4
-    int32 d2c3;                 // 2c3
+    int16 bonds;                // 2c3 bonds outstanding
+    int16 maxbonds;             // 2c5
     int32 d2c7;                 // 2c7
     int32 d2cb;                 // 2cb
     int16 w2cf;                 // 2cf
@@ -258,7 +259,7 @@ CHECK_OFFSET(Empire, w26f, 0x26f);
 CHECK_OFFSET(Empire, d293, 0x293);
 CHECK_OFFSET(Empire, b297, 0x297);
 CHECK_OFFSET(Empire, w2a1, 0x2a1);
-CHECK_OFFSET(Empire, d2c3, 0x2c3);
+CHECK_OFFSET(Empire, bonds, 0x2c3);
 CHECK_OFFSET(Empire, b2d3, 0x2d3);
 CHECK_OFFSET(Empire, d2ec, 0x2ec);
 CHECK_OFFSET(Empire, bonuses, 0x2f8);

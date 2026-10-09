@@ -211,7 +211,8 @@ void EmpireInit(Empire *e)
     e->bank.set(0);
     e->d1a4 = 0;
     e->w1a8 = 0;
-    e->d2c3 = 0;
+    e->bonds = 0;
+    e->maxbonds = 0;
     e->d2cb = 0;
     e->d2c7 = 0;
     e->w2cf = 0;
@@ -544,4 +545,26 @@ int32 GovCapacity(Empire *e)
 int32 GovCapacity6(Empire *e)
 {
     return (300 * e->planets[P_GOVERNMENT].count - 6 * e->generals - e->agents) / 6;
+}
+
+// Set a treaty's type and its default terms (inlined in the original).
+void SetTreaty(Treaty &t, int16 type)
+{
+    t.settype(type);
+    t.a = 0;
+    t.sete(0);
+    t.setd(0);
+    if (t.type() == 3) {
+        t.sete(0x14);
+        t.setd(0x14);
+    }
+    if (t.type() == 4)
+        t.sete(0x3c);
+    if (t.type() == 5)
+        t.setd(0x3c);
+    if (t.type() == 6) {
+        t.sete(0x28);
+        t.setd(0x28);
+    }
+    t.setc(0);
 }
