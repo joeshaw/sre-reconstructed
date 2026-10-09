@@ -2,9 +2,6 @@
 #include "sre.h"
 
 void Preferences(Player *) {}
-void Bulletins() {}
-void MoreHelp() {}
-void ShowHelpTopic(String) {}
 void TimeCheck() {}
 void ResearchInit() {}
 void SysopMenu() {}
