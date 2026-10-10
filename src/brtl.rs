@@ -254,7 +254,10 @@ pub fn b_dostounix(d: &BDate, t: &BTime) -> i32 {
     let mut i: i16 = d.da_mon as i16 - 1;
     while i > 0 {
         i -= 1;
-        days = days.wrapping_add(DAYS[i as usize] as i16);
+        // A month past December (a mistyped date) reads on past the
+        // table, into data that depends on where DOS loaded the program;
+        // the caller rejects such a date whatever it comes to.
+        days = days.wrapping_add(DAYS.get(i as usize).map_or(0, |&n| n as i16));
     }
     days = days.wrapping_add(d.da_day as i16 - 1);
     if d.da_mon > 2 && (d.da_year & 3) == 0 {
