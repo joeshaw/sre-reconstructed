@@ -92,9 +92,10 @@ The terminal stands in for both the caller's modem and, when nobody is
 connected remotely (`sre sysop`, `sre reset`, local play), the sysop's
 screen and keyboard.
 
-The game is always registered, to the sysop: the bank, bonds,
-investments, the Super Daily lottery and the full reset options are all
-there.
+The game is always registered: the bank, bonds, investments, the Super
+Daily lottery and the full reset options are all there.  The registered
+name and the bank's name come from `STATUS.SRE` if there is one (its key
+is not checked); otherwise the game is registered to the sysop.
 
 ## Testing
 

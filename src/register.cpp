@@ -79,18 +79,25 @@ static void ReadKeyFile()
         s->regstate = 4;
 }
 
-// The game is always registered, to the sysop.  With SRE_UNREGISTERED
-// set, registration works as in the original: unregistered without a
-// valid STATUS.SRE (the tests use this to compare with the original).
+// The game is always registered.  The registered name and the bank's name
+// come from STATUS.SRE when it has them, whatever its key says; otherwise
+// the game is registered to the sysop.  With SRE_UNREGISTERED set,
+// registration works as in the original: unregistered without a valid
+// STATUS.SRE (the tests use this to compare with the original).
 void CheckRegistration()
 {
     System *s = &g_system;
-    if (getenv("SRE_UNREGISTERED")) {
-        ReadKeyFile();
+    ReadKeyFile();
+    if (s->regstate != 0 || getenv("SRE_UNREGISTERED"))
         return;
-    }
-    strcpy(s->bank, DEFAULT_BANK);
-    snprintf(s->regto, sizeof(s->regto), "%.63s", s->sysop[0] ? s->sysop : "the Sysop");
+    char line[0x100];
+    IFStream f(KEY_FILE, 0);
+    f >> line;
+    if (f.fail() || DecodeLine(line, s->regto))
+        snprintf(s->regto, sizeof(s->regto), "%.63s", s->sysop[0] ? s->sysop : "the Sysop");
+    f >> line;
+    if (f.fail() || DecodeLine(line, s->bank))
+        strcpy(s->bank, DEFAULT_BANK);
     g_regname = s->regto;
     s->regstate = 2;
 }
