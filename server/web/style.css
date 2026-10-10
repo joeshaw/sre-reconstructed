@@ -47,6 +47,7 @@ pre { margin: 0; font-family: var(--mono); }
 }
 .tagline .rule { color: var(--blue); font-weight: normal; letter-spacing: 0; }
 .byline { margin: 0; color: var(--gray); font-size: 14px; }
+.credit { color: #8a8a8a; }
 @media (max-width: 600px) {
   .tagline .rule { display: none; }
   .menu { gap: 4px 12px; }
@@ -65,12 +66,7 @@ pre { margin: 0; font-family: var(--mono); }
 .menu button:disabled .k, .menu button:disabled .br { color: var(--dark-gray); }
 
 /* The terminal, in a double-line frame. */
-.frame { position: relative; border: 4px double var(--cyan); padding: 14px 10px 10px; }
-.frame-title {
-  position: absolute; top: -0.85em; left: 50%; transform: translateX(-50%);
-  background: var(--black); padding: 0 8px; color: var(--yellow); white-space: nowrap;
-}
-.frame-title span { color: var(--light-blue); }
+.frame { border: 4px double var(--cyan); padding: 10px; }
 .term-wrap { overflow-x: auto; }
 #term { width: max-content; margin: 0 auto; }  /* centred, but scrollable from its left edge */
 .rotate { display: none; margin: 0 0 8px; text-align: center; color: var(--yellow); font-size: 14px; }

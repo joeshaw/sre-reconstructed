@@ -36,6 +36,14 @@ given with `-sysops`.  Enter the sysop's and BBS's names, then choose
 
 ## On exe.dev
 
+The game is small.  A session is one process of a few MB, using almost
+no CPU, and only one runs at a time.  The game's files are under a
+megabyte.  So the smallest VM will do.  It needs enough memory to build
+the game and the server on it (2 GB is comfortable), and the default
+disk has room to spare:
+
+    ssh exe.dev new --name=sre --cpu=1 --memory=2GB --disk=10GB
+
 An exe.dev VM has no public IP of its own.  The public reaches it
 through exe.dev's HTTPS proxy, which handles TLS.  So the server listens
 on plain HTTP and the page connects back with `wss://`.
