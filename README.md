@@ -6,10 +6,10 @@
 by Amit Patel.  In SRE, players each build an empire in one shared
 galaxy, a few turns a day.
 
-The game's source code was lost in 1996.  This repository is a C++
+The game's source code was lost in 1996.  This repository is a Rust
 reconstruction of the last release, 0.994b (March 7, 1995), made by
 reverse engineering `SRE.EXE`.  It builds on macOS and Linux and plays
-in a terminal.  There is also a Rust port in the [`rust` branch](https://github.com/joeshaw/sre-reconstructed/tree/rust).
+in a terminal.  The original C++ reconstruction is in the [`main` branch](https://github.com/joeshaw/sre-reconstructed/tree/main).
 The reverse engineering and implementation was done using Claude Code
 and the Opus 5.5 model over the course of about a day.
 
@@ -26,18 +26,17 @@ reverse engineered with Claude Code, see [How it was made](#how-it-was-made).
 
 ## Getting started
 
-You need `make` and a C++ compiler: the Xcode command line tools on
-macOS (`xcode-select --install`), or `build-essential` on Debian and
-Ubuntu.
+You need `make` and a Rust toolchain ([rustup](https://rustup.rs/)).
 
     git clone https://github.com/joeshaw/sre-reconstructed
     cd sre-reconstructed
+    git checkout rust
     make
     tools/newgame.sh ~/sre "Your Name"
     SRE_DIR=~/sre ./sre reset      # once, as the sysop
     SRE_DIR=~/sre ./sre            # play
 
-`make` builds `./sre`.  `tools/newgame.sh` copies the original release's
+`make` builds `./sre` (with `cargo build --release`).  `tools/newgame.sh` copies the original release's
 data files (help text, screens, flavors, and the research table) from
 `game/` into a new game directory, and writes a door file for you.
 
@@ -211,7 +210,7 @@ Here is my original prompt in an empty repository:
 >
 > Use this repository to build it
 
-The work went in five steps.
+The work went in six steps.
 
 1. Taking the binary apart.  `SRE.EXE` is a Borland C++ large-model
    program, and most of its code is in VROOMM overlays, Borland's system
@@ -252,11 +251,16 @@ The work went in five steps.
    for the field at that offset in a record.  Once everything worked,
    each name was replaced with one based on how the game uses it
    (`pollution`), and the tests confirmed that nothing changed.
+6. Porting.  The C++ was then ported to Rust, module by module, and the
+   port was checked against the C++ build the same way.  That was quick,
+   because the C++ build answers in milliseconds where the emulated
+   original takes seconds.
 
 ## Repository layout
 
 - `src/`: the reconstructed game, with the original's addresses in the
-  comments.
+  comments.  The arithmetic is the original's 16- and 32-bit wrapping
+  arithmetic, so overflow checks are off in every build profile.
 - `game/`: the original release's data files and documentation.
 - `server/`: `sre-server`, the web front end.
 - `tests/`: the smoke test and its recordings, the scenarios, and the
@@ -274,13 +278,13 @@ The work went in five steps.
   show calls to them by name.  `globals.txt` is for names of data
   addresses, and is empty.
 
-## Rust port
+## C++ reconstruction
 
-The `rust` branch has the same game ported to Rust, module by module
-from the C++.  Its output and files are byte for byte the same as the
-C++ build's, and so the original's, in every scenario and in thousands
-of random games.  It needs only Rust and Cargo (`git checkout rust`,
-then `make`), and has no dependencies beyond `libc`.
+This branch is a port of the reconstruction, which is in C++ on the
+`main` branch, to Rust, module by module.  Its output and files are byte
+for byte the same as the C++ build's, and so the original's, in every
+scenario and in thousands of random games.  It has no dependencies
+beyond `libc`.
 
 ## License
 

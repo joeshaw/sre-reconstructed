@@ -1,0 +1,18 @@
+[package]
+name = "sre"
+version = "0.994.0"
+edition = "2021"
+description = "Solar Realms Elite 0.994b, reconstructed"
+publish = false
+
+[dependencies]
+libc = "0.2"
+
+# The game's arithmetic wraps (16- and 32-bit two's complement), as the
+# original's did.
+[profile.dev]
+overflow-checks = false
+
+[profile.release]
+overflow-checks = false
+debug = 1

@@ -1,20 +1,10 @@
-# Solar Realms Elite reconstruction.  Builds ./sre with the system C++
-# compiler (clang on macOS).  `make server` builds server/sre-server, the
-# web front end, with Go.
-CXX ?= c++
-CXXFLAGS ?= -O2 -g
-CXXFLAGS += -std=c++11 -fwrapv -fno-strict-aliasing -Wall -Wno-unused-variable -Wno-unused-but-set-variable
-SRCS := $(wildcard src/*.cpp)
-OBJS := $(SRCS:src/%.cpp=build/%.o)
+# Solar Realms Elite reconstruction, Rust port.  Builds ./sre with Cargo.
+# `make server` builds server/sre-server, the web front end, with Go.
+CARGO ?= cargo
 
-sre: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
-
-build/%.o: src/%.cpp src/*.h | build
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-build:
-	mkdir -p build
+sre: Cargo.toml $(wildcard src/*.rs)
+	$(CARGO) build --release
+	cp target/release/sre $@
 
 server: server/sre-server
 
@@ -22,6 +12,7 @@ server/sre-server: $(wildcard server/*.go server/web/* server/web/vendor/*) serv
 	cd server && go build -o sre-server .
 
 clean:
-	rm -rf build sre server/sre-server
+	$(CARGO) clean
+	rm -f sre server/sre-server
 
 .PHONY: clean server
