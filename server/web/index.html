@@ -5,21 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Solar Realms Elite</title>
 <link rel="stylesheet" href="vendor/xterm.css">
-<style>
-  :root { --bg: #000; --fg: #ccc; --accent: #5af; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font-family: sans-serif; }
-  header { padding: 8px 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  #status { color: var(--accent); }
-  #term { padding: 0 16px 16px; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<main class="screen">
 <header>
-  <button id="play">Play</button>
-  <button id="sysop">Sysop menu</button>
-  <span id="status"></span>
+<pre class="stars" aria-hidden="true">      <span class="s3">*</span> <span class="s2">∙</span>            <span class="s2">∙</span>            <span class="s4">☼</span>                     <span class="s2">∙</span>             <span class="s4">☼</span>       <span class="s1">·</span>   <span class="s4">☼</span>
+                    <span class="s1">·</span>        <span class="s3">*</span>             <span class="s3">*</span><span class="s1">·</span>   <span class="s1">·</span>                 <span class="s1">·</span>    <span class="s1">·</span></pre>
+<h1 class="logo"><span class="sr-only">Solar Realms Elite</span><pre aria-hidden="true"><span class="l1">▄▀▀▀ ▄▀▀▄ █    ▄▀▀▄ █▀▀▄    █▀▀▄ █▀▀▀ ▄▀▀▄ █    █▄ ▄█ ▄▀▀▀    █▀▀▀ █    ▀█▀ ▀▀█▀▀ █▀▀▀</span>
+<span class="l2">▀▄▄  █  █ █    █▄▄█ █▄▄▀    █▄▄▀ █▀▀  █▄▄█ █    █ ▀ █ ▀▄▄     █▀▀  █     █    █   █▀▀</span>
+<span class="l3">▄▄▄▀ ▀▄▄▀ █▄▄▄ █  █ █ ▀▄    █ ▀▄ █▄▄▄ █  █ █▄▄▄ █   █ ▄▄▄▀    █▄▄▄ █▄▄▄ ▄█▄   █   █▄▄▄</span>
+</pre></h1>
+<pre class="stars" aria-hidden="true">               <span class="s2">∙</span>     <span class="s1">·</span> <span class="s4">☼</span>  <span class="s1">·</span>                       <span class="s1">·</span>                <span class="s4">☼</span></pre>
+<p class="tagline"><span class="rule">──────[</span> Interstellar Imperialists <span class="rule">]──────</span></p>
+<p class="byline">A BBS door game by Amit Patel &middot; version 0.994b, 1995</p>
 </header>
-<div id="term"></div>
+
+<nav class="menu" aria-label="Game">
+  <button id="play" data-key="p"><span class="br">[</span><span class="k">P</span><span class="br">]</span> Play the game</button>
+  <button id="sysop" data-key="s"><span class="br">[</span><span class="k">S</span><span class="br">]</span> Sysop menu</button>
+</nav>
+
+<section class="frame" aria-label="Game terminal">
+  <div class="frame-title"><span>[</span> Node 1 <span>]</span></div>
+  <p class="rotate">Turn your phone sideways to see the whole screen.</p>
+  <div class="term-wrap"><div id="term"></div></div>
+</section>
+
+<footer class="statusbar" role="status">
+  <span class="seg seg-name">&laquo;SRE:II 0.994b&raquo;</span>
+  <span class="seg" id="status">Press P to play</span>
+</footer>
+</main>
 <script src="vendor/xterm.js"></script>
 <script src="client.js"></script>
 </body>

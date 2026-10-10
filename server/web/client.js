@@ -2,9 +2,29 @@
 // in this browser, and a terminal connected to a session of the game.
 'use strict';
 
-const term = new Terminal({ cols: 80, rows: 25 });
+// The PC's sixteen colours, the darkest two lifted to be readable on black.
+const VGA = {
+  black: '#000000', red: '#aa0000', green: '#00aa00', yellow: '#aa5500',
+  blue: '#3a4fd8', magenta: '#aa00aa', cyan: '#00aaaa', white: '#aaaaaa',
+  brightBlack: '#6e6e6e', brightRed: '#ff5555', brightGreen: '#55ff55',
+  brightYellow: '#ffff55', brightBlue: '#5f7bff', brightMagenta: '#ff55ff',
+  brightCyan: '#55ffff', brightWhite: '#ffffff',
+  background: '#000000', foreground: '#aaaaaa', cursor: '#aaaaaa',
+};
+
+// 80 columns at a readable size: as large as fits, but never under 12px
+// (narrow screens scroll the terminal sideways instead).
+const fontSize = () => Math.max(12, Math.min(18, Math.floor((window.innerWidth - 64) / 48)));
+const term = new Terminal({
+  cols: 80, rows: 25, theme: VGA, fontSize: fontSize(),
+  fontFamily: getComputedStyle(document.body).fontFamily,
+  drawBoldTextInBrightColors: true, cursorBlink: true,
+});
 term.open(document.getElementById('term'));
+window.addEventListener('resize', () => { term.options.fontSize = fontSize(); });
 const status = (s) => { document.getElementById('status').textContent = s; };
+const buttons = document.querySelectorAll('.menu button');
+const setConnected = (on) => buttons.forEach((b) => { b.disabled = on; });
 
 // The player's key: ECDSA P-256, made once and kept in IndexedDB.  It is
 // not extractable, so this page can sign with it but nothing can read it.
@@ -53,7 +73,8 @@ async function connect(mode) {
   const spki = await crypto.subtle.exportKey('spki', pair.publicKey);
   term.reset();
   term.focus();
-  status('connecting');
+  setConnected(true);
+  status('Connecting...');
   const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/session';
   ws = new WebSocket(url);
   ws.binaryType = 'arraybuffer';
@@ -68,17 +89,25 @@ async function connect(mode) {
                                            unb64(msg.nonce));
       ws.send(JSON.stringify({ type: 'auth', key: b64(spki), sig: b64(sig), mode,
                                rows: term.rows }));
+      status('Connected');
     } else if (msg.type === 'hello') {
-      status('connected as ' + msg.name);
+      status('Connected as ' + msg.name);
     }
   };
   ws.onclose = () => {
     ws = null;
-    status('disconnected');
-    term.write('\r\n\x1b[0m[Disconnected]\r\n');
+    setConnected(false);
+    status('Disconnected.  Press P to play again');
+    term.write('\r\n\x1b[0;1;34m[\x1b[37mNO CARRIER\x1b[34m]\x1b[0m\r\n');
   };
 }
 
 document.getElementById('play').onclick = () => connect('play');
 document.getElementById('sysop').onclick = () => connect('sysop');
-status('press Play to connect');
+// The menu's keys, while not connected (once connected, keys go to the game).
+document.addEventListener('keydown', (e) => {
+  if (ws || e.ctrlKey || e.metaKey || e.altKey) return;
+  const b = document.querySelector(`.menu button[data-key="${e.key.toLowerCase()}"]`);
+  if (b) { e.preventDefault(); b.click(); }
+});
+term.write('\x1b[1;36mWelcome!\x1b[0m  Press \x1b[1;34m[\x1b[37mP\x1b[34m]\x1b[0m to play.\r\n');
