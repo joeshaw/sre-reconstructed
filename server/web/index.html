@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solar Realms Elite</title>
+<link rel="stylesheet" href="vendor/xterm.css">
+<style>
+  :root { --bg: #000; --fg: #ccc; --accent: #5af; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: sans-serif; }
+  header { padding: 8px 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  #status { color: var(--accent); }
+  #term { padding: 0 16px 16px; }
+</style>
+</head>
+<body>
+<header>
+  <button id="play">Play</button>
+  <button id="sysop">Sysop menu</button>
+  <span id="status"></span>
+</header>
+<div id="term"></div>
+<script src="vendor/xterm.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
