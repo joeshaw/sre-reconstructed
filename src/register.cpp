@@ -35,7 +35,7 @@ static int16 DecodeLine(const char *in, char *out)
 }
 
 // 68a3:0124: read STATUS.SRE.
-void CheckRegistration()
+static void ReadKeyFile()
 {
     System *s = &g_system;
     char line[0x100];
@@ -77,6 +77,22 @@ void CheckRegistration()
     s->regstate = (key[(int8)key[0] - 0x4f] == 'I') ? 2 : 0;
     if (strcmp(key, KEY_BETA) == 0)
         s->regstate = 4;
+}
+
+// The game is always registered, to the sysop.  With SRE_UNREGISTERED
+// set, registration works as in the original: unregistered without a
+// valid STATUS.SRE (the tests use this to compare with the original).
+void CheckRegistration()
+{
+    System *s = &g_system;
+    if (getenv("SRE_UNREGISTERED")) {
+        ReadKeyFile();
+        return;
+    }
+    strcpy(s->bank, DEFAULT_BANK);
+    snprintf(s->regto, sizeof(s->regto), "%.63s", s->sysop[0] ? s->sysop : "the Sysop");
+    g_regname = s->regto;
+    s->regstate = 2;
 }
 
 // 68a3:039f: read a registration line, colouring as it is typed.

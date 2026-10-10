@@ -70,13 +70,16 @@ Settings from the original's `RESOURCE.DAT` and command line options
   multiple of 4 after that, and don't change it during a game.
 - `SRE_CLOCK`: a fixed time (seconds since 1970) instead of the clock,
   for testing.
+- `SRE_UNREGISTERED`: if set, registration works as in the original:
+  unregistered without a valid `STATUS.SRE` (the tests use this to
+  compare with the original).
 
 ## What is reconstructed
 
 All of the game: joining, turns, the economy, food, population, the
 spending, selling and planet menus, operations, covert operations,
 attacks of every kind, pirates, trading fleets, diplomacy, messages,
-news, the lottery, the bank, bonds and investments (registered games),
+news, the lottery, the bank, bonds and investments,
 events, research, maintenance, scores, the sysop menu and its editors,
 resources, translations and flavors.  The source follows the original's
 structure: one file per part of the program, with the original's
@@ -89,8 +92,9 @@ The terminal stands in for both the caller's modem and, when nobody is
 connected remotely (`sre sysop`, `sre reset`, local play), the sysop's
 screen and keyboard.
 
-The original's registration is reproduced: an unregistered game behaves
-as the original's unregistered version.
+The game is always registered, to the sysop: the bank, bonds,
+investments, the Super Daily lottery and the full reset options are all
+there.
 
 ## Testing
 
@@ -107,7 +111,8 @@ files, and the random number sequence.
     tests/fuzz.sh /tmp/srefix army 1 20 # random play, seeds 1 to 20
     tests/fuzzchain.sh /tmp/srefix two 1 # two players taking turns over days
 
-With `SRE_STATUS=path/to/STATUS.SRE`, `tests/fixtures.sh` also makes
+The original is unregistered without a registration file; with
+`SRE_STATUS=path/to/STATUS.SRE`, `tests/fixtures.sh` also makes
 registered games, for the scenarios of the bank, bonds and lottery.
 
 `tools/difftest.sh` and `tools/localtest.sh` compare one run; the other
