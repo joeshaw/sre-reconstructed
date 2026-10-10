@@ -21,8 +21,7 @@ session of the game on a terminal in their browser.
 
 ## Building
 
-    make                                  # ../sre, the game
-    cd server && go build -o sre-server . # the server, with the page built in
+    make sre server     # ./sre, the game, and server/sre-server, with the page built in
 
 ## Running
 
