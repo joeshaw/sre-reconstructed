@@ -1,10 +1,10 @@
 // Double agents planted by other empires (segment 432f).
 
-use crate::covert::{opmask, set_opmask};
+use crate::covert::{opmask, set_opmask, OP_BRIBE};
 use crate::prelude::*;
 
 fn spies(g: &Sre, o: usize, e: usize) -> bool {
-    g.emp[o].exists() && mask_test(opmask(g, o, 8), g.emp[e].id)
+    g.emp[o].exists() && mask_test(opmask(g, o, OP_BRIBE), g.emp[e].id)
 }
 
 fn opmask_clear(g: &mut Sre, o: usize, op: i16, bit: i16) {
@@ -25,7 +25,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
         let i = random(25) as usize;
         if spies(g, i, e) {
             let id = g.emp[e].id;
-            opmask_clear(g, i, 8, id);
+            opmask_clear(g, i, OP_BRIBE, id);
             n += 1;
         }
     }
@@ -59,7 +59,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
         for i in 1..=3 {
             m.find(i).unwrap().add_column_num(cost[i as usize]);
         }
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             m.add(g, b"", b'V', 0x50);
         }
         let r = m.run(g, true, -1);
@@ -76,7 +76,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
                     if spies(g, i, e) && random(3) != 0 {
                         mask_set(&mut found, i as i16);
                         let id = g.emp[e].id;
-                        opmask_clear(g, i, 8, id);
+                        opmask_clear(g, i, OP_BRIBE, id);
                         n += 1;
                     }
                 }
@@ -103,7 +103,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
                 for i in 0..25usize {
                     if g.emp[i].exists() {
                         let id = g.emp[e].id;
-                        opmask_clear(g, i, 8, id);
+                        opmask_clear(g, i, OP_BRIBE, id);
                         n += 1;
                     }
                 }
@@ -137,11 +137,11 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
                         continue;
                     }
                     let id = g.emp[e].id;
-                    opmask_clear(g, i, 8, id);
+                    opmask_clear(g, i, OP_BRIBE, id);
                     let oid = g.emp[i].id;
-                    let mut m = opmask(g, e, 8);
+                    let mut m = opmask(g, e, OP_BRIBE);
                     mask_set(&mut m, oid);
-                    set_opmask(g, e, 8, m);
+                    set_opmask(g, e, OP_BRIBE, m);
                     kout!(g; "You hired an agent from ", cemp(g), uname(g, i), cn(g), ".\n");
                     break;
                 }

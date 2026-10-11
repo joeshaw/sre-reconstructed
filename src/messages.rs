@@ -693,9 +693,9 @@ fn send_message_with(g: &mut Sre, m: &mut Message, from: i16, name: &[u8]) -> bo
     if from != -1 {
         // Spies planted in the sender's court get copies.
         for i in 0..25usize {
-            if g.emp[from as usize].b2d3[i] as u8 > 0 && !m.receives(i as i16) {
+            if g.emp[from as usize].intercepts[i] as u8 > 0 && !m.receives(i as i16) {
                 m.add_recipient(i as i16);
-                g.emp[from as usize].b2d3[i] = g.emp[from as usize].b2d3[i].wrapping_sub(1);
+                g.emp[from as usize].intercepts[i] = g.emp[from as usize].intercepts[i].wrapping_sub(1);
             }
         }
     }

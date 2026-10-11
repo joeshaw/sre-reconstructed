@@ -1,6 +1,6 @@
 // Reports: messages to empires, kept in stream files (segment 69d7).
 
-use crate::game::{Player, MAXEMPIRES};
+use crate::game::{has_pref, Player, MAXEMPIRES, PF2_REPORTDATES};
 use crate::layout::{record, Le};
 use crate::sre::Sre;
 use crate::streamfile::{append_object, StreamFile, Streamable};
@@ -271,7 +271,7 @@ pub fn show_new_reports(g: &mut Sre, p: &Player, e: usize) -> i16 {
     }
     g.newreports = 0;
     let id = g.emp[e].id;
-    show_reports(g, id, REPORT_FILE, (p.prefs2 >> 3) & 1 != 0, 1, 3)
+    show_reports(g, id, REPORT_FILE, has_pref(p.prefs2, PF2_REPORTDATES), 1, 3)
 }
 
 // 69d7:07bb

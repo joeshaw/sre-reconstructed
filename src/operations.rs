@@ -20,7 +20,7 @@ fn tax_rates(g: &mut Sre, p: &mut Player, e: usize) {
             x.taxrate = 100;
         }
     }
-    if (p.prefs1 >> 3) & 1 == 0 {
+    if !has_pref(p.prefs1, PF1_TERSE) {
         kout!(g; tax, "now ", cnum(g), g.emp[e].taxrate as i16, cn(g), "%.\n");
     }
     let t = g.emp[e].taxrate as i16;
@@ -46,24 +46,24 @@ fn tax_rates(g: &mut Sre, p: &mut Player, e: usize) {
             x.draftrate = 100;
         }
     }
-    if (p.prefs1 >> 3) & 1 == 0 {
+    if !has_pref(p.prefs1, PF1_TERSE) {
         kout!(g; draft, "now ", cnum(g), g.emp[e].draftrate as i16, cn(g), "%.\n");
     }
 }
 
-fn bit(v: u8, b: u8) -> i16 {
-    ((v >> b) & 1) as i16
+fn pf(prefs: u8, f: u8) -> i16 {
+    has_pref(prefs, f) as i16
 }
 
 // 6a9b:09a8
 pub fn preferences(g: &mut Sre, p: &mut Player) {
     loop {
         let mut m = Menu::new(g, b"Preferences", b"Player Preferences", [0xb, 3, 3, 0xf, 0xb, 7, 7, 7, 7, 7]);
-        let t: &[u8] = if bit(p.prefs1, 2) != 0 { b"Redisplay Menus" } else { b"Don't redisplay Menus" };
+        let t: &[u8] = if pf(p.prefs1, PF1_SHORTMENUS) != 0 { b"Redisplay Menus" } else { b"Don't redisplay Menus" };
         m.add(g, t, b'1', 1);
         m.add(g, b"Automatic Payment", b'2', 2);
         m.add(g, b"Galactic Coordinator Donations", b'3', 3);
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             m.add(g, b"Bank Deposits", b'4', 4);
         }
         m.add(g, b"Report Dates", b'6', 6);
@@ -76,8 +76,8 @@ pub fn preferences(g: &mut Sre, p: &mut Player) {
         match r {
             1 => {
                 kout!(g; "Spending and Planet menus are now ", cnum(g));
-                p.prefs1 ^= 4;
-                if bit(p.prefs1, 2) != 0 {
+                p.prefs1 ^= PF1_SHORTMENUS;
+                if pf(p.prefs1, PF1_SHORTMENUS) != 0 {
                     kout!(g; "SHORT");
                 } else {
                     kout!(g; "LONG");
@@ -86,61 +86,61 @@ pub fn preferences(g: &mut Sre, p: &mut Player) {
             }
             2 => {
                 kout!(g; "SRE can pay your expenses automatically if you wish.  ");
-                ask = yes_no(g, bit(p.prefs2, 0), b"Do you want the system to ask about automatic payment") as i16;
+                ask = yes_no(g, pf(p.prefs2, PF2_ASKPAY), b"Do you want the system to ask about automatic payment") as i16;
                 if ask != 0 {
-                    yes = yes_no(g, bit(p.prefs2, 1), b"Do you want the default to be YES") as i16;
+                    yes = yes_no(g, pf(p.prefs2, PF2_AUTOPAY), b"Do you want the default to be YES") as i16;
                 } else {
-                    yes = yes_no(g, bit(p.prefs2, 1), b"Do you want it to automatically pay whenever possible") as i16;
+                    yes = yes_no(g, pf(p.prefs2, PF2_AUTOPAY), b"Do you want it to automatically pay whenever possible") as i16;
                 }
-                p.prefs2 = (p.prefs2 & !1) | (ask as u8 & 1);
-                p.prefs2 = (p.prefs2 & !2) | ((yes as u8 & 1) << 1);
+                set_pref(&mut p.prefs2, PF2_ASKPAY, ask & 1 != 0);
+                set_pref(&mut p.prefs2, PF2_AUTOPAY, yes & 1 != 0);
             }
             3 => {
                 kout!(g; "The Galactic Coordinator appreciates donations.  At the end of each turn, you have the option of donating a portion of your funds to It.  ");
                 let (a, y);
-                if yes_no(g, (bit(p.prefs1, 6) == 0 && bit(p.prefs1, 7) != 0) as i16, b"Do you want to always donate") {
+                if yes_no(g, (pf(p.prefs1, PF1_ASKDONATE) == 0 && pf(p.prefs1, PF1_DONATE) != 0) as i16, b"Do you want to always donate") {
                     a = 0;
                     y = 1;
-                } else if yes_no(g, (bit(p.prefs1, 6) == 0 && bit(p.prefs1, 7) == 0) as i16, b"Do you want to never donate") {
+                } else if yes_no(g, (pf(p.prefs1, PF1_ASKDONATE) == 0 && pf(p.prefs1, PF1_DONATE) == 0) as i16, b"Do you want to never donate") {
                     a = 0;
                     y = 0;
                 } else {
                     a = 1;
-                    y = yes_no(g, bit(p.prefs1, 7),
+                    y = yes_no(g, pf(p.prefs1, PF1_DONATE),
                                b"The system will ask whether you want to donate.  Do you want the default to be YES") as u8;
                 }
-                p.prefs1 = (p.prefs1 & !0x40) | ((a & 1) << 6);
-                p.prefs1 = (p.prefs1 & 0x7f) | ((y & 1) << 7);
+                set_pref(&mut p.prefs1, PF1_ASKDONATE, a & 1 != 0);
+                set_pref(&mut p.prefs1, PF1_DONATE, y & 1 != 0);
             }
             4 => {
                 kout!(g; "At the end of each turn, you can deposit the rest of your money into the bank if you wish.  ");
                 let (a, y);
-                if yes_no(g, (bit(p.prefs1, 4) == 0 && bit(p.prefs1, 5) != 0) as i16, b"Do you want to always deposit") {
+                if yes_no(g, (pf(p.prefs1, PF1_ASKDEPOSIT) == 0 && pf(p.prefs1, PF1_DEPOSIT) != 0) as i16, b"Do you want to always deposit") {
                     a = 0;
                     y = 1;
-                } else if yes_no(g, (bit(p.prefs1, 4) == 0 && bit(p.prefs1, 5) == 0) as i16, b"Do you want to never deposit") {
+                } else if yes_no(g, (pf(p.prefs1, PF1_ASKDEPOSIT) == 0 && pf(p.prefs1, PF1_DEPOSIT) == 0) as i16, b"Do you want to never deposit") {
                     a = 0;
                     y = 0;
                 } else {
                     a = 1;
-                    y = yes_no(g, bit(p.prefs1, 5),
+                    y = yes_no(g, pf(p.prefs1, PF1_DEPOSIT),
                                b"The system will ask whether you want to deposit.  Do you want the default to be YES") as u8;
                 }
-                p.prefs1 = (p.prefs1 & !0x10) | ((a & 1) << 4);
-                p.prefs1 = (p.prefs1 & !0x20) | ((y & 1) << 5);
+                set_pref(&mut p.prefs1, PF1_ASKDEPOSIT, a & 1 != 0);
+                set_pref(&mut p.prefs1, PF1_DEPOSIT, y & 1 != 0);
             }
             5 => {
                 kout!(g; "When you win a battle, SRE can attach a message to the other empire.  ");
-                let y = yes_no(g, bit(p.prefs2, 2), b"Would you like to do this") as u8;
-                p.prefs2 = (p.prefs2 & !4) | ((y & 1) << 2);
+                let y = yes_no(g, pf(p.prefs2, PF2_BATTLEMSG), b"Would you like to do this") as u8;
+                set_pref(&mut p.prefs2, PF2_BATTLEMSG, y & 1 != 0);
             }
             6 => {
-                let y = yes_no(g, bit(p.prefs2, 3), b"Do you want the date to be displayed on reports") as u8;
-                p.prefs2 = (p.prefs2 & !8) | ((y & 1) << 3);
+                let y = yes_no(g, pf(p.prefs2, PF2_REPORTDATES), b"Do you want the date to be displayed on reports") as u8;
+                set_pref(&mut p.prefs2, PF2_REPORTDATES, y & 1 != 0);
             }
             7 => {
-                let y = yes_no(g, (bit(p.prefs2, 4) == 0) as i16, b"Do you want Enter to exit from the spending menu");
-                p.prefs2 = (p.prefs2 & !0x10) | ((if y { 0 } else { 1 }) << 4);
+                let y = yes_no(g, (pf(p.prefs2, PF2_ENTERSTAYS) == 0) as i16, b"Do you want Enter to exit from the spending menu");
+                set_pref(&mut p.prefs2, PF2_ENTERSTAYS, !y);
             }
             8 => {
                 let a = g.dev.ansi;
@@ -173,7 +173,7 @@ fn supply_production(g: &mut Sre, e: usize) {
         if SLOT[i] == 0 {
             continue;
         }
-        let v = g.emp[e].b297[(SLOT[i] - 1) as usize] as i16;
+        let v = g.emp[e].supplyrates[(SLOT[i] - 1) as usize] as i16;
         let it = m.find(i as i16).unwrap();
         it.add_column_num(v as i32);
         it.add_column_str(b"%");
@@ -186,7 +186,7 @@ fn supply_production(g: &mut Sre, e: usize) {
             continue;
         }
         let k = (SLOT[i] - 1) as usize;
-        let mut def = g.emp[e].b297[k] as i16 as u16;
+        let mut def = g.emp[e].supplyrates[k] as i16 as u16;
         if def > left {
             def = left;
         }
@@ -197,7 +197,7 @@ fn supply_production(g: &mut Sre, e: usize) {
         set_defval(g, KIN, def as i32);
         let v = in_i16(g, KIN);
         left = left.wrapping_sub(v as u16);
-        let slot = &mut g.emp[e].b297[k];
+        let slot = &mut g.emp[e].supplyrates[k];
         *slot = v as i8;
         if *slot < 0 {
             *slot = 0;
@@ -214,7 +214,7 @@ pub fn operations(g: &mut Sre, p: &mut Player, e: usize) {
         crate::play::time_check(g);
         let mut m = Menu::new(g, b"Operations", b"Operations Menu", [0xe, 4, 4, 0xc, 0xf, 7, 7, 7, 7, 7]);
         m.columns = 2;
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             m.add(g, b"Visit the Bank", b'2', 2);
         }
         if g.emp[e].agents > 0 {
@@ -227,7 +227,7 @@ pub fn operations(g: &mut Sre, p: &mut Player, e: usize) {
         if g.grb(&crate::messages::R_MESSAGES) {
             m.add(g, b"Communications", b'6', 6);
         }
-        if g.system.regstate != 0 && g.grb(&crate::play::R_LOTTERY) {
+        if g.system.regstate != RS_UNREGISTERED && g.grb(&crate::play::R_LOTTERY) {
             m.add(g, b"Buy Super Lottery Tickets", b'7', 7);
         }
         m.add(g, b"See Scores", b'8', 8);

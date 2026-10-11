@@ -21,38 +21,38 @@ pub fn ask_number(g: &mut Sre, prompt: &[u8], min: i16, max: i16, def: i16) -> i
 // 6924:0128: set up a new game.
 pub fn reset_galaxy(g: &mut Sre) {
     let mut localonly = Resource::num(b"System.LocalOnly", 0);
-    g.galaxy.w386 = localonly.bool(&mut g.resdb) as i16;
+    g.galaxy.localonly = localonly.bool(&mut g.resdb) as i16;
     host_mkdir(b"DATA");
     host_mkdir(b"BACKUP");
-    if g.galaxy.w386 != 0 {
+    if g.galaxy.localonly != 0 {
         kout!(g; "This game is configured for LOCAL PLAY ONLY.\n\n");
         kout!(g; "You will be able to play an unlimited number of turns.\n");
     }
     let help = crate::help::show_help_topic;
     help(g, b"reset-inflation");
-    g.galaxy.w384 = yes_no(g, 1, b"Do you want Inflation") as i16;
+    g.galaxy.inflation = yes_no(g, 1, b"Do you want Inflation") as i16;
     help(g, b"reset-maintenance-interval");
-    g.galaxy.grantdays = ask_number(g, b"How many days before maintenance runs", 1, 14, 1);
-    if g.system.regstate >= 2 {
+    g.galaxy.daylength = ask_number(g, b"How many days before maintenance runs", 1, 14, 1);
+    if g.system.regstate >= RS_REGISTERED {
         g.galaxy.grantturns = ask_number(g, b"How many turns should be allowed per maintenance interval", 1, 12, 5);
         g.galaxy.protection = ask_number(g, b"How many turns of protection", 0, 30, 20);
     }
-    if g.system.regstate >= 2 {
+    if g.system.regstate >= RS_REGISTERED {
         help(g, b"reset-galactic-coordinator-taxes");
-        g.galaxy.w3b0 = ask_number(g, b"What is the galactic tax rate [per 1000 credits]", 0, 100, 15);
+        g.galaxy.coordtax = ask_number(g, b"What is the galactic tax rate [per 1000 credits]", 0, 100, 15);
     }
-    if g.system.regstate >= 2 {
+    if g.system.regstate >= RS_REGISTERED {
         help(g, b"reset-planet-market");
-        g.galaxy.d392 = ask_number(g, b"How many planets are initially available", 0, 25000, 100) as i32;
+        g.galaxy.marketplanets = ask_number(g, b"How many planets are initially available", 0, 25000, 100) as i32;
     }
     help(g, b"reset-planet-limit");
-    g.galaxy.d38e = ask_number(g, b"How many planets per turn can be bought", -1, 25000, -1) as i32;
-    if g.system.regstate >= 2 {
+    g.galaxy.planetsperturn = ask_number(g, b"How many planets per turn can be bought", -1, 25000, -1) as i32;
+    if g.system.regstate >= RS_REGISTERED {
         help(g, b"reset-planet-regeneration");
-        g.galaxy.w38c = ask_number(g, b"How many seconds", 1, 32000, 60);
+        g.galaxy.regenseconds = ask_number(g, b"How many seconds", 1, 32000, 60);
     }
     help(g, b"reset-food-market");
-    g.galaxy.d388 = 1000 * ask_number(g, b"How many thousands of megatons of food", 0, 1000, 70) as i32;
+    g.galaxy.marketfood = 1000 * ask_number(g, b"How many thousands of megatons of food", 0, 1000, 70) as i32;
     for i in 0..=9u8 {
         let mut name = b"NEWS/NEWS_.MSG".to_vec();
         name[9] = b'0' + i;
@@ -83,7 +83,7 @@ pub fn reset_galaxy(g: &mut Sre) {
 // 6924:052c
 pub fn ask_game_dates(g: &mut Sre) {
     kout!(g; "\nEnter the date that users can start playing:  ");
-    g.galaxy.t44 = input_date(g);
+    g.galaxy.startdate = input_date(g);
     kout!(g; "\nEnter the last date that users can play:      ");
     g.galaxy.enddate = input_date(g);
 }

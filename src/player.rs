@@ -11,15 +11,15 @@ pub fn player_reset(g: &Sre, p: &mut Player) {
     p.name[0] = 0;
     p.b42[0] = 0;
     p.male = 0;
-    p.prefs1 &= !0x0f;
-    p.prefs1 |= 0xf0;
-    p.prefs2 |= 0x03;
-    p.prefs2 &= !0x1c;
+    p.prefs1 &= !(0x03 | PF1_SHORTMENUS | PF1_TERSE);
+    p.prefs1 |= PF1_ASKDEPOSIT | PF1_DEPOSIT | PF1_ASKDONATE | PF1_DONATE;
+    p.prefs2 |= PF2_ASKPAY | PF2_AUTOPAY;
+    p.prefs2 &= !(PF2_BATTLEMSG | PF2_REPORTDATES | PF2_ENTERSTAYS);
     p.prefs2 &= 0x1f;
     p.w6e = 0;
     p.lastplay = g.time.now;
     p.created = g.time.now;
-    p.w70 = 0;
+    p.seenplanets = 0;
 }
 
 fn read_into(f: &mut DataFile, rec: i32, p: &mut Player) -> bool {

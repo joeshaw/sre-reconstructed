@@ -16,17 +16,17 @@ pub fn jackpot(_g: &Sre, tickets: i32) -> i32 {
 pub fn buy_tickets(g: &mut Sre, _p: &mut Player, e: usize) {
     let mut max = g.emp[e].money.get() / 10000;
     let lim = |v: i32| v as i16 as i32;
-    if lim(32000 - g.galaxy.w3a4 as i32) < max {
-        max = lim(32000 - g.galaxy.w3a4 as i32);
+    if lim(32000 - g.galaxy.lotterytickets as i32) < max {
+        max = lim(32000 - g.galaxy.lotterytickets as i32);
     }
-    if lim(2000 - g.emp[e].w172 as i32) < max {
-        max = lim(2000 - g.emp[e].w172 as i32);
+    if lim(2000 - g.emp[e].tickets as i32) < max {
+        max = lim(2000 - g.emp[e].tickets as i32);
     }
-    if g.emp[e].year < 0 && lim(100 - g.emp[e].w172 as i32) < max {
-        max = lim(100 - g.emp[e].w172 as i32);
+    if g.emp[e].year < 0 && lim(100 - g.emp[e].tickets as i32) < max {
+        max = lim(100 - g.emp[e].tickets as i32);
     }
-    kout!(g; "You currently have ", cnum(g), g.emp[e].w172, cn(g), " tickets.\n");
-    let jp = jackpot(g, g.galaxy.w3a4 as i32);
+    kout!(g; "You currently have ", cnum(g), g.emp[e].tickets, cn(g), " tickets.\n");
+    let jp = jackpot(g, g.galaxy.lotterytickets as i32);
     kout!(g; "The jackpot is currently ", cnum(g), jp, cn(g), " credits.\n");
     kout!(g; "At ", 10000i32, " credits each, how many tickets would you like to buy?  \n");
     put_max(g, max);
@@ -37,29 +37,29 @@ pub fn buy_tickets(g: &mut Sre, _p: &mut Player, e: usize) {
         return;
     }
     g.emp[e].money.sub(10000 * n as i32);
-    g.emp[e].w172 = g.emp[e].w172.wrapping_add(n);
-    g.galaxy.w3a4 = g.galaxy.w3a4.wrapping_add(n);
+    g.emp[e].tickets = g.emp[e].tickets.wrapping_add(n);
+    g.galaxy.lotterytickets = g.galaxy.lotterytickets.wrapping_add(n);
     kout!(g; "You have bought ", cnum(g), n, cn(g), " tickets for tomorrow's lottery.\n");
 }
 
 // 55e7:001d
 pub fn lottery(g: &mut Sre, p: &mut Player, e: usize) {
-    if g.galaxy.w3a6 == g.emp[e].id {
+    if g.galaxy.lotterywinner == g.emp[e].id {
         kout!(g; cn(g), "\nYou've won the ", col(14), "Super Daily Lottery", cn(g), "!!!\n");
-        kout!(g; cnum(g), g.galaxy.d3a8, cn(g), " credits has been placed in your bank account.\n\n");
-    } else if g.galaxy.w3a6 != -1 && g.emp[g.galaxy.w3a6 as usize].exists() {
-        let w = g.galaxy.w3a6 as usize;
+        kout!(g; cnum(g), g.galaxy.jackpot, cn(g), " credits has been placed in your bank account.\n\n");
+    } else if g.galaxy.lotterywinner != -1 && g.emp[g.galaxy.lotterywinner as usize].exists() {
+        let w = g.galaxy.lotterywinner as usize;
         kout!(g; b'\n', cnum(g));
         let n = ename(g, w);
         put_untranslated(g, KOUT, &n);
         kout!(g; cn(g));
         kout!(g; " has won the Super Daily Lottery today!\n");
-        kout!(g; "(", cnum(g), g.galaxy.d3a8, cn(g), " credits)\n");
+        kout!(g; "(", cnum(g), g.galaxy.jackpot, cn(g), " credits)\n");
     }
     if g.emp[e].money.get() < 2000 {
         return;
     }
-    if g.system.regstate == 0 && !g.grb(&R_UNREGISTERED) {
+    if g.system.regstate == RS_UNREGISTERED && !g.grb(&R_UNREGISTERED) {
         return;
     }
     kout!(g; col(14), "\nPick-5 Lottery\n", cn(g));
@@ -130,7 +130,7 @@ pub fn lottery(g: &mut Sre, p: &mut Player, e: usize) {
             kout!(g; "\nYou didn't win this time.  Better luck next time!\n\n");
         }
     }
-    if g.system.regstate != 0 && yes_no(g, 1, b"Would you like to buy Super Daily Lottery Tickets") {
+    if g.system.regstate != RS_UNREGISTERED && yes_no(g, 1, b"Would you like to buy Super Daily Lottery Tickets") {
         buy_tickets(g, p, e);
     }
 }

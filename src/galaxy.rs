@@ -10,13 +10,13 @@ pub fn galaxy_init(g: &mut Sre) {
     let x = &mut g.galaxy;
     x.name[0] = 0;
     x.created = today;
-    x.t3ba = today;
-    x.t44 = today;
-    x.t48 = now;
-    x.t4c = never;
+    x.lasthourly = today;
+    x.startdate = today;
+    x.lastregen = now;
+    x.joindeadline = never;
     x.enddate = never;
-    x.w384 = 0;
-    x.w386 = 0;
+    x.inflation = 0;
+    x.localonly = 0;
     x.interest = 3;
     for c in x.empire.iter_mut() {
         c.clear();
@@ -30,21 +30,21 @@ pub fn galaxy_init(g: &mut Sre) {
     x.grantturns = 5;
     x.protection = 20;
     x.w3a2 = 0;
-    x.w3a4 = 0;
-    x.w3a6 = -1;
-    x.d3a8 = 0;
-    x.d3ac = 10000;
-    x.w3b0 = 15;
-    x.w3b2 = 300;
-    x.w3b4 = 20;
-    x.d3c2 = 10000000;
-    x.w3c0 = 0;
-    x.grantdays = 1;
-    x.d388 = 7000000;
-    x.w38c = 3;
-    x.d392 = 100;
-    x.d38e = -1;
-    x.d3b6 = 0;
+    x.lotterytickets = 0;
+    x.lotterywinner = -1;
+    x.jackpot = 0;
+    x.coordfund = 10000;
+    x.coordtax = 15;
+    x.nukelimit = 300;
+    x.nukepercent = 20;
+    x.psionicprice = 10000000;
+    x.newspaper = 0;
+    x.daylength = 1;
+    x.marketfood = 7000000;
+    x.regenseconds = 3;
+    x.marketplanets = 100;
+    x.planetsperturn = -1;
+    x.oilprice = 0;
 }
 
 // 5222:0339
@@ -79,7 +79,7 @@ pub fn galaxy_oil_price(g: &mut Sre) {
     if v > 100000 {
         v = 100000;
     }
-    g.galaxy.d3b6 = v;
+    g.galaxy.oilprice = v;
 }
 
 // 5222:04a8
@@ -257,7 +257,7 @@ pub fn score_list(g: &mut Sre, mask: i32, o: Option<Sid>) {
         let nw = net_worth(g, i);
         out!(g, o; setw(13 - t), nw, setw(0));
         if tourney(g) {
-            let p = g.emp[i].d178;
+            let p = g.emp[i].points;
             out!(g, o; col(c4), setw(7), p, setw(0));
         }
         out!(g, o; cn(g), b'\n');
@@ -272,9 +272,9 @@ pub fn score_list(g: &mut Sre, mask: i32, o: Option<Sid>) {
 
 // 5222:13bb
 pub fn galaxy_playable(g: &mut Sre) -> bool {
-    if g.time.today < g.galaxy.t44 {
+    if g.time.today < g.galaxy.startdate {
         kout!(g; "This game cannot be played until ", cnum(g));
-        let t = g.galaxy.t44;
+        let t = g.galaxy.startdate;
         put_time(g, KOUT, t);
         kout!(g; cn(g), b'\n');
         return false;

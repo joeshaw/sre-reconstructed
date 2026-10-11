@@ -308,10 +308,10 @@ impl Event {
             attack_message(g, rv, &tn, sev);
             attack_news(g, t, v, false, sev);
             let (tid, vid) = (g.emp[t].id as usize, g.emp[v].id as usize);
-            set_treaty(&mut g.emp[t].treaty[vid], 0, 0);
-            g.emp[t].treaty[vid].setc(0);
-            set_treaty(&mut g.emp[v].treaty[tid], 0, 0);
-            g.emp[v].treaty[tid].setc(0);
+            set_treaty(&mut g.emp[t].treaty[vid], TT_NONE, 0);
+            g.emp[t].treaty[vid].setstatus(TS_NONE);
+            set_treaty(&mut g.emp[v].treaty[tid], TT_NONE, 0);
+            g.emp[v].treaty[tid].setstatus(TS_NONE);
             g.emp[a].agents += 1;
             report_done(g, rv);
             report_done(g, ra);
@@ -586,7 +586,7 @@ pub fn clear_covert_reports(g: &mut Sre) {
 // 4c48:32bd
 pub fn show_covert_reports(g: &mut Sre, p: &Player, e: usize) -> i16 {
     let id = g.emp[e].id;
-    show_reports(g, id, COVERT_FILE, (p.prefs2 >> 3) & 1 != 0, 5, 13)
+    show_reports(g, id, COVERT_FILE, has_pref(p.prefs2, PF2_REPORTDATES), 5, 13)
 }
 
 fn as_event(o: &mut Box<dyn Streamable>) -> &mut Event {

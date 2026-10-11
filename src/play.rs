@@ -96,18 +96,18 @@ fn key(g: &mut Sre, c: u8) {
 // The start of a turn's phases (inlined in 1e7b:0731 and 1e7b:0f61).
 fn start_turn(g: &mut Sre, e: usize) {
     let x = &mut g.emp[e];
-    x.phase = 0;
-    x.m1bc.set(0);
-    x.b1c4 &= !1;
-    x.b1c4 &= !2;
-    x.b1c4 &= !4;
-    x.b1c4 &= !8;
-    clear_spending(&mut x.u_1c7);
-    x.b1c6 = 0;
-    x.b1c5 = 0;
+    x.phase = PH_START;
+    x.income.set(0);
+    x.shortfalls &= !SF_NEGLECT;
+    x.shortfalls &= !SF_STARVED;
+    x.shortfalls &= !SF_UNUSED;
+    x.shortfalls &= !SF_ARMY;
+    clear_shortages(x);
+    x.effnext = 0;
+    x.effchange = 0;
 }
 
-// Phase 14: attacks, trades and messages.
+// PH_ACTION: attacks, trades and messages.
 fn action_phase(g: &mut Sre, p: &mut Player, e: usize) {
     let cantrade = g.grb(&crate::trading::R_TRADING) && g.emp[e].year >= 0;
     let mut canattack = true;
@@ -196,72 +196,72 @@ fn action_phase(g: &mut Sre, p: &mut Player, e: usize) {
 // 1e7b:0731: one phase of a turn; false when the player is done.
 fn phase(g: &mut Sre, p: &mut Player, ph: i16, e: usize) -> bool {
     match ph {
-        0 => start_turn(g, e),
-        1 => {
-            g.emp[e].w192 = 0;
+        PH_START => start_turn(g, e),
+        PH_INTEREST => {
+            g.emp[e].planetsbought = 0;
             build_cmd_ship(g, e);
             bank_interest(g, e);
         }
-        2 => {
+        PH_REPORTS => {
             crate::trading::trade_arrivals(g, p, e);
             crate::events::process_events(g);
             prev_phase(g, e);
             show_new_reports(g, p, e);
             hline(g, col(8), 0x4b);
         }
-        3 => crate::income::turn_report(g, p, e),
-        4 => {
+        PH_TURNREPORT => crate::income::turn_report(g, p, e),
+        PH_ADVISOR => {
             prev_phase(g, e);
             crate::turnevents::advisor(g, p, e);
             pause_prompt(g);
         }
-        5 => {
+        PH_STATUS => {
             prev_phase(g, e);
             show_status(g, e);
         }
-        6 => {
+        PH_UPKEEP => {
             prev_phase(g, e);
             crate::upkeep::pay_upkeep(g, p, e);
         }
-        7 => {
+        PH_FOOD => {
             prev_phase(g, e);
             crate::foodmarket::food_market(g, p, e);
         }
-        8 => {
-            g.emp[e].d22f[0] = 0;
-            g.emp[e].d22f[1] = 0;
-            g.emp[e].d22f[2] = 0;
+        PH_TURNOPS => {
+            g.emp[e].aidmask = 0;
+            g.emp[e].dissensionmask = 0;
+            g.emp[e].demoralizemask = 0;
         }
-        9 => {
+        PH_COVERT => {
             prev_phase(g, e);
             crate::covert::covert_ops(g, p, e);
         }
-        10 => {
+        PH_BANK => {
             prev_phase(g, e);
-            if g.system.regstate != 0 {
+            if g.system.regstate != RS_UNREGISTERED {
                 crate::bank::bank(g, p, e);
             }
         }
-        11 => {
+        PH_SPENDING => {
             prev_phase(g, e);
             crate::spending::spending(g, p, e);
         }
-        12 => crate::doubleagents::double_agents(g, p, e),
-        13 => {}
-        14 => action_phase(g, p, e),
-        15 => {}
-        16 => crate::population::end_of_turn(g, p, e),
-        17 => crate::population::population(g, p, e),
-        18 => {
+        PH_DOUBLEAGENTS => crate::doubleagents::double_agents(g, p, e),
+        PH_UNUSED13 => {}
+        PH_ACTION => action_phase(g, p, e),
+        PH_UNUSED15 => {}
+        PH_ENDTURN => crate::population::end_of_turn(g, p, e),
+        PH_POPULATION => crate::population::population(g, p, e),
+        PH_SCORE => {
             update_score(g, e);
-            update_d1b0(g, e);
+            drift_favor(g, e);
         }
-        19 => {
+        PH_CIVILWAR => {
             crate::civilwar::civil_war(g, p, e);
             crate::civilwar::desertion(g, p, e);
         }
-        20 => planets_move_toward(g, e),
-        21 => {
+        PH_PLANETS => planets_move_toward(g, e),
+        PH_CONTINUE => {
             let mut done = g.emp[e].turnsused >= g.emp[e].turnsperday && g.m.local == 0;
             if done {
                 pause_prompt(g);
@@ -319,15 +319,15 @@ pub fn play_game(g: &mut Sre, p: &mut Player) {
         return;
     }
     g.current = id;
-    g.emp[e].flags |= g.galaxy.w386;
-    g.m.local = g.emp[e].flags;
+    g.emp[e].localplay |= g.galaxy.localonly;
+    g.m.local = g.emp[e].localplay;
     {
         let dn = cs(&g.door.name);
         let name = ename(g, e);
         let c = (g.emp[e].id as u8).wrapping_add(b'A');
         status_bar(g, &dn, &name, c);
     }
-    if g.emp[e].flags != 0 && g.door.port != 0 {
+    if g.emp[e].localplay != 0 && g.door.port != 0 {
         kout!(g; "This game is configured to be a local-only game.  Remote players are not allowed to play.\n");
         galaxy_close(g);
         return;
@@ -360,24 +360,24 @@ pub fn play_game(g: &mut Sre, p: &mut Player) {
     }
     crate::events::show_covert_reports(g, p, e);
     crate::battle::show_battle_reports(g, p, e);
-    if g.emp[e].phase == 0 && g.emp[e].turnsused == 0 {
+    if g.emp[e].phase == PH_START && g.emp[e].turnsused == 0 {
         first_turn(g, p, e);
     }
     g.emp[e].lastplay = g.time.now;
     p.lastplay = g.time.now;
-    g.emp[e].w2a1 = g.grl(&R_INACTIVETIMEOUT) as i16;
+    g.emp[e].inactivedays = g.grl(&R_INACTIVETIMEOUT) as i16;
     if g.grb(&crate::messages::R_MESSAGES) {
         crate::messages::read_messages(g, p, e);
     }
     if g.emp[e].turnsused >= g.emp[e].turnsperday && g.m.local == 0 {
         kout!(g; "You have used all of your turns for today.\n\n");
-        if g.emp[e].year < 0 && g.galaxy.grantdays > 1 {
-            kout!(g; "(You receive ", g.galaxy.grantturns, " turns every ", g.galaxy.grantdays, " days.\n");
+        if g.emp[e].year < 0 && g.galaxy.daylength > 1 {
+            kout!(g; "(You receive ", g.galaxy.grantturns, " turns every ", g.galaxy.daylength, " days.\n");
         }
         return;
     }
     crate::diplomacy::treaty_messages(g, p, e);
-    if g.emp[e].phase > 1 {
+    if g.emp[e].phase > PH_INTEREST {
         kout!(g; "Continuing previously interrupted turn...\n");
     }
     while g.emp[e].turnsused < g.emp[e].turnsperday || g.m.local != 0 {

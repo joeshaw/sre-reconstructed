@@ -12,14 +12,14 @@ pub fn population(g: &mut Sre, _p: &mut Player, e: usize) {
     let mut deaths = x.population * (x.population / (random(10) as i32 + 17)) / (total_planets(g, e) + 1) / 10;
     let mut emigrants = x.population * (ins2 + 1) / 80;
     let mut immigrants =
-        (36 * (x.planets[P_EDUCATION].b * x.planets[P_EDUCATION].count) + x.population) / (ins2 + 50);
+        (36 * (x.planets[P_EDUCATION].output * x.planets[P_EDUCATION].count) + x.population) / (ins2 + 50);
     let untaxed = 100 - x.taxrate as i32;
     immigrants = untaxed * (immigrants * untaxed) / 10000;
     emigrants += emigrants * (x.taxrate as i32 * x.taxrate as i32 + 1) / 200;
     emigrants += x.planets[P_TOURISM].count * total_planets(g, e) / 100000;
-    emigrants += x.d188 / 100;
+    emigrants += x.pollution / 100;
     deaths += x.planets[P_ORE].count / 10;
-    let mut pollution = 10 * x.d188 / (total_planets(g, e) + 1);
+    let mut pollution = 10 * x.pollution / (total_planets(g, e) + 1);
     if pollution < 0 {
         pollution = 0;
     }
@@ -64,12 +64,12 @@ pub fn population(g: &mut Sre, _p: &mut Player, e: usize) {
     hline(g, col(8), 0x4b);
     let x = &g.emp[e];
     if random(10) == 0
-        && x.b1c4 & 1 == 0
-        && (x.b1c4 >> 1) & 1 == 0
-        && (x.b1c4 >> 3) & 1 == 0
-        && (x.b1c4 >> 2) & 1 == 0
-        && x.d188 == 0
-        && x.d1b0 > 0
+        && x.shortfalls & SF_NEGLECT == 0
+        && x.shortfalls & SF_STARVED == 0
+        && x.shortfalls & SF_ARMY == 0
+        && x.shortfalls & SF_UNUSED == 0
+        && x.pollution == 0
+        && x.favor > 0
         && x.insurgency == 0
     {
         kout!(g; "Your people love thee and hope you rule forever!\n\n");
@@ -106,13 +106,13 @@ pub fn end_of_turn(g: &mut Sre, p: &mut Player, e: usize) {
         kout!(g; "This is your last turn today.\n");
     }
     let mut money = g.emp[e].money.get();
-    let mut donate = (p.prefs1 >> 7) & 1 != 0;
+    let mut donate = has_pref(p.prefs1, PF1_DONATE);
     let mut gift = money;
-    let m = g.emp[e].m1bc.get();
+    let m = g.emp[e].income.get();
     if 1000i32.wrapping_mul(m) / 100 < gift {
         gift = 1000i32.wrapping_mul(m) / 100;
     }
-    if (p.prefs1 >> 6) & 1 != 0 && money > 0 {
+    if has_pref(p.prefs1, PF1_ASKDONATE) && money > 0 {
         donate = yes_no(g, donate as i16, b"Donate to the Galactic Coordinator");
         if donate {
             kout!(g; "Donate how much?  ");
@@ -124,9 +124,9 @@ pub fn end_of_turn(g: &mut Sre, p: &mut Player, e: usize) {
     if donate {
         money = money.wrapping_sub(gift);
     }
-    if g.system.regstate != 0 {
-        let mut deposit = (p.prefs1 >> 5) & 1 != 0;
-        if (p.prefs1 >> 4) & 1 != 0 && money > 0 {
+    if g.system.regstate != RS_UNREGISTERED {
+        let mut deposit = has_pref(p.prefs1, PF1_DEPOSIT);
+        if has_pref(p.prefs1, PF1_ASKDEPOSIT) && money > 0 {
             deposit = yes_no(g, deposit as i16, b"Deposit the rest of your funds into the bank");
         }
         if deposit {
@@ -136,9 +136,9 @@ pub fn end_of_turn(g: &mut Sre, p: &mut Player, e: usize) {
         }
     }
     if donate {
-        g.galaxy.d3ac += gift / 1000;
+        g.galaxy.coordfund += gift / 1000;
         // The original divides by zero (and aborts) when there was no income.
-        let m = g.emp[e].m1bc.get();
+        let m = g.emp[e].income.get();
         let mut k = if m != 0 { gift / m / 10 } else { 0 };
         if k > 10 {
             k = 10;
@@ -146,7 +146,7 @@ pub fn end_of_turn(g: &mut Sre, p: &mut Player, e: usize) {
         if k < 0 {
             k = 0;
         }
-        g.emp[e].d1b0 += k;
+        g.emp[e].favor += k;
     }
     g.emp[e].money.set(money);
 }

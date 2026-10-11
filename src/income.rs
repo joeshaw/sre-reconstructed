@@ -22,20 +22,20 @@ struct Income {
 }
 
 // 462a:0000: produce everything; the total income (in thousands) is kept
-// in m1bc.
+// in Empire::income.
 fn produce(g: &mut Sre, e: usize, r: &mut Income) {
     *r = Income::default();
     let mut total: i32 = 0;
     let p = |g: &Sre, t: usize| g.emp[e].planets[t];
     if p(g, P_FOOD).count != 0 {
-        r.food = p(g, P_FOOD).count * p(g, P_FOOD).b - g.emp[e].d188 / 10;
+        r.food = p(g, P_FOOD).count * p(g, P_FOOD).output - g.emp[e].pollution / 10;
         if r.food < 0 {
             r.food = 0;
         }
         g.emp[e].food += r.food;
     }
     if p(g, P_ORE).count != 0 {
-        r.ore = p(g, P_ORE).count * p(g, P_ORE).b;
+        r.ore = p(g, P_ORE).count * p(g, P_ORE).output;
         if p(g, P_ORE).count < 100 {
             let mut i: i32 = 0;
             while i < p(g, P_ORE).count {
@@ -51,13 +51,13 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
     }
     if p(g, P_SUPPLY).count != 0 {
         let x = &mut g.emp[e];
-        let c = x.planets[P_SUPPLY].count * x.planets[P_SUPPLY].b;
-        let soldiers = c * x.b297[0] as i32 / 100;
-        let fighters = c * x.b297[1] as i32 / 130;
-        let stations = c * x.b297[2] as i32 / 170;
-        let generals = c * x.b297[5] as i32 / 700;
-        let carriers = c * x.b297[4] as i32 / 950;
-        let cruisers = c * x.b297[3] as i32 / 1200;
+        let c = x.planets[P_SUPPLY].count * x.planets[P_SUPPLY].output;
+        let soldiers = c * x.supplyrates[0] as i32 / 100;
+        let fighters = c * x.supplyrates[1] as i32 / 130;
+        let stations = c * x.supplyrates[2] as i32 / 170;
+        let generals = c * x.supplyrates[5] as i32 / 700;
+        let carriers = c * x.supplyrates[4] as i32 / 950;
+        let cruisers = c * x.supplyrates[3] as i32 / 1200;
         let rest = c - (10 * soldiers + 13 * fighters + 17 * stations + 70 * generals + 95 * carriers + 120 * cruisers) / 10;
         let credits = 100 * rest;
         r.soldiers = soldiers;
@@ -77,11 +77,11 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         total += credits / 1000;
     }
     if p(g, P_TOURISM).count != 0 {
-        let a = random(1000) as i32;
-        let b = random(1000) as i32;
+        let up = random(1000) as i32;
+        let down = random(1000) as i32;
         let x = &mut g.emp[e];
         r.tourism = x.planets[P_TOURISM].count
-            * (x.planets[P_TOURISM].b + a - b - 350 * x.insurgency as i32 - x.d188 / 10);
+            * (x.planets[P_TOURISM].output + up - down - 350 * x.insurgency as i32 - x.pollution / 10);
         if r.tourism < 0 {
             r.tourism = 0;
         }
@@ -91,7 +91,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
     if p(g, P_URBAN).count != 0 {
         let x = &mut g.emp[e];
         r.urban = x.planets[P_URBAN].count
-            * (x.planets[P_URBAN].b - (x.insurgency as i32 * x.insurgency as i32) as i16 as i32);
+            * (x.planets[P_URBAN].output - (x.insurgency as i32 * x.insurgency as i32) as i16 as i32);
         if r.urban < 0 {
             r.urban = 0;
         }
@@ -113,42 +113,42 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         if r.pollution < 0 {
             r.pollution = 0;
         }
-        g.emp[e].d188 += r.pollution;
+        g.emp[e].pollution += r.pollution;
     }
     if p(g, P_ANTIPOLLUTION).count != 0 {
         let x = &mut g.emp[e];
-        r.cleaned = x.planets[P_ANTIPOLLUTION].b * x.planets[P_ANTIPOLLUTION].count;
+        r.cleaned = x.planets[P_ANTIPOLLUTION].output * x.planets[P_ANTIPOLLUTION].count;
         if r.cleaned < 0 {
             r.cleaned = 0;
         }
-        if x.d188 - r.cleaned < 0 {
-            r.cleaned = x.d188;
+        if x.pollution - r.cleaned < 0 {
+            r.cleaned = x.pollution;
         }
         if r.cleaned < 0 {
             r.cleaned = 0;
         }
-        x.d188 -= r.cleaned;
-        if x.d188 < 0 {
-            x.d188 = 0;
+        x.pollution -= r.cleaned;
+        if x.pollution < 0 {
+            x.pollution = 0;
         }
     }
     if p(g, P_RESEARCH).count != 0 {
         let x = &mut g.emp[e];
-        let mut v = x.planets[P_RESEARCH].count * x.planets[P_RESEARCH].b;
+        let mut v = x.planets[P_RESEARCH].count * x.planets[P_RESEARCH].output;
         if v < 0 {
             v = 0;
         }
-        if v + x.d293 > 100000 {
-            x.d293 = 100000;
+        if v + x.researchpoints > 100000 {
+            x.researchpoints = 100000;
         } else {
-            x.d293 += v;
+            x.researchpoints += v;
         }
     }
     if g.emp[e].population > 0 {
         let x = &g.emp[e];
         r.taxes = 3 * (x.population * x.taxrate as i32) / (x.insurgency as i32 + 1);
         for i in 0..MAXEMPIRES {
-            if g.emp[e].treaty[i].typ() != 2 {
+            if g.emp[e].treaty[i].typ() != TT_FREETRADE {
                 continue;
             }
             if g.emp[i].exists() {
@@ -162,7 +162,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         g.emp[e].money.add(r.taxes);
         total += r.taxes / 1000;
     }
-    g.emp[e].m1bc.set(total);
+    g.emp[e].income.set(total);
 }
 
 // 462a:0b58: the report of the production.

@@ -3,13 +3,13 @@
 use crate::lottery::put_max;
 use crate::prelude::*;
 
-// Prices.  The galaxy's w384 flag selects the formulas that grow with
+// Prices.  The galaxy's inflation flag selects the formulas that grow with
 // the empire's year and forces instead of only its net worth.
 
 // 1af6:0006
 pub fn price_soldiers(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 1000 + 180;
     }
     (((x.year as i32) << 1) + 180) as i16 as i32 + x.soldiers / 1800 + x.fighters / 12400 + net_worth(g, e) / 5000
@@ -18,7 +18,7 @@ pub fn price_soldiers(g: &Sre, e: usize) -> i32 {
 // 1af6:00b8
 pub fn price_fighters(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 800 + 240;
     }
     (((x.year as i32 * 5) as i16 as i32) / 2 + 240) as i16 as i32 + x.soldiers / 7000 + x.fighters / 1690
@@ -28,7 +28,7 @@ pub fn price_fighters(g: &Sre, e: usize) -> i32 {
 // 1af6:0172
 pub fn price_stations(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 700 + 320;
     }
     (x.year as i32 * 3 + 320) as i16 as i32 + x.soldiers / 7500 + x.fighters / 9000 + x.stations / 1460
@@ -38,7 +38,7 @@ pub fn price_stations(g: &Sre, e: usize) -> i32 {
 // 1af6:024c
 pub fn price_generals(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 300 + 670;
     }
     14 * x.year as i32 + x.soldiers / 1790 + x.generals / 170 + total_planets(g, e) / 10 + 670
@@ -47,7 +47,7 @@ pub fn price_generals(g: &Sre, e: usize) -> i32 {
 // 1af6:0307
 pub fn price_cmd_ship(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 100 + 8800;
     }
     x.soldiers / 850 + x.fighters / 950 + 5000
@@ -56,7 +56,7 @@ pub fn price_cmd_ship(g: &Sre, e: usize) -> i32 {
 // 1af6:0379
 pub fn price_planet(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 100 + total_planets(g, e) + 13000;
     }
     let k: i32 = if x.year < 0 {
@@ -73,7 +73,7 @@ pub fn price_planet(g: &Sre, e: usize) -> i32 {
 // 1af6:0495
 pub fn price_agents(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 200 + 4300;
     }
     x.agents + 18 * x.year as i32 + 7 * total_planets(g, e) + x.score / 10 + 2218
@@ -82,7 +82,7 @@ pub fn price_agents(g: &Sre, e: usize) -> i32 {
 // 1af6:0542
 pub fn price_heavy_cruisers(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 600 + 1100;
     }
     7 * x.year as i32 + x.fighters / 1220 + total_planets(g, e) / 5 + x.stations / 2500 + net_worth(g, e) / 150 + 1100
@@ -91,7 +91,7 @@ pub fn price_heavy_cruisers(g: &Sre, e: usize) -> i32 {
 // 1af6:0624
 pub fn price_carriers(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         return net_worth(g, e) / 700 + 850;
     }
     7 * x.year as i32 + total_planets(g, e) / 10 + net_worth(g, e) / 100 + 850
@@ -231,7 +231,7 @@ fn how_many(g: &mut Sre, max: i32) -> i32 {
 fn release_planets(g: &mut Sre, p: &mut Player, e: usize) {
     let mut show = true;
     while total_planets(g, e) > 0 {
-        if (p.prefs1 >> 2) & 1 == 0 {
+        if !has_pref(p.prefs1, PF1_SHORTMENUS) {
             show = true;
         }
         let mut m = Menu::new(g, b"SellPlanets", b"Release Planets", [7, 8, 1, 9, 7, 3, 7, 7, 7, 7]);
@@ -247,9 +247,9 @@ fn release_planets(g: &mut Sre, p: &mut Player, e: usize) {
         }
         let k = k as usize;
         let n = how_many(g, g.emp[e].planets[k].count);
-        g.emp[e].w192 = g.emp[e].w192.wrapping_sub(n as i16);
+        g.emp[e].planetsbought = g.emp[e].planetsbought.wrapping_sub(n as i16);
         g.emp[e].planets[k].count -= n;
-        g.galaxy.d392 += n;
+        g.galaxy.marketplanets += n;
         show = false;
     }
 }
@@ -269,7 +269,7 @@ fn buy_planets(g: &mut Sre, e: usize, price: i32, max: &mut i32) -> i32 {
 
 // 61a7:0b7f
 fn colonize(g: &mut Sre, p: &mut Player, e: usize, price: i32) {
-    let mut avail = g.galaxy.d392;
+    let mut avail = g.galaxy.marketplanets;
     if g.emp[e].year < 0 && 300 - total_planets(g, e) > avail {
         avail = 300 - total_planets(g, e);
     }
@@ -285,21 +285,21 @@ fn colonize(g: &mut Sre, p: &mut Player, e: usize, price: i32) {
         max = avail;
     }
     kout!(g; "There are ", cnum(g), avail, cn(g), " planets available.\n");
-    if g.galaxy.d38e >= 0 && g.galaxy.d38e - (g.emp[e].w192 as i32) < max {
-        max = g.galaxy.d38e - g.emp[e].w192 as i32;
-        kout!(g; "You may buy ", cnum(g), g.galaxy.d38e, cn(g), " planets per turn.\n");
+    if g.galaxy.planetsperturn >= 0 && g.galaxy.planetsperturn - (g.emp[e].planetsbought as i32) < max {
+        max = g.galaxy.planetsperturn - g.emp[e].planetsbought as i32;
+        kout!(g; "You may buy ", cnum(g), g.galaxy.planetsperturn, cn(g), " planets per turn.\n");
     }
     let mut show = true;
     while max > 0 {
-        if (p.prefs1 >> 2) & 1 == 0 {
+        if !has_pref(p.prefs1, PF1_SHORTMENUS) {
             show = true;
         }
         let mut m = Menu::new(g, b"BuyPlanets", b"Buy Planets", [7, 1, 1, 9, 0xf, 0xb, 7, 7, 7, 7]);
         // 61a7:0aab
         m.prompt = Some(Box::new(move |g: &mut Sre| {
             kout!(g; cn(g), "Current earnings:  [Ore = ");
-            kout!(g; cnum(g), g.emp[e].planets[P_ORE].b, cn(g), "] [Tourism = ");
-            kout!(g; cnum(g), g.emp[e].planets[P_TOURISM].b, cn(g), "] [Petroleum = ");
+            kout!(g; cnum(g), g.emp[e].planets[P_ORE].output, cn(g), "] [Tourism = ");
+            kout!(g; cnum(g), g.emp[e].planets[P_TOURISM].output, cn(g), "] [Petroleum = ");
             let oil = oil_price(g);
             kout!(g; cnum(g), oil, cn(g), "].\n");
             1
@@ -310,29 +310,29 @@ fn colonize(g: &mut Sre, p: &mut Player, e: usize, price: i32) {
             return;
         }
         show = false;
-        if p.w70 & (1 << k) == 0 {
+        if p.seenplanets & (1 << k) == 0 {
             let s = cat(&[b"Planet", &[k as u8]]);
             show_screen(g, None, &s, false);
-            p.w70 |= (1i32 << k) as i16;
+            p.seenplanets |= (1i32 << k) as i16;
             crate::help::show_help_topic2(g, b"planet", planet_name(k as i8));
         }
-        if k == 9 && g.emp[e].d188 > 0 {
-            kout!(g; "There are ", cnum(g), g.emp[e].d188, cn(g), " exatons of pollution in the atmosphere.\n");
+        if k == P_ANTIPOLLUTION as i16 && g.emp[e].pollution > 0 {
+            kout!(g; "There are ", cnum(g), g.emp[e].pollution, cn(g), " exatons of pollution in the atmosphere.\n");
         }
-        if k == 3 {
-            kout!(g; "Each food planet can produce ", cnum(g), g.emp[e].planets[3].b, cn(g),
+        if k == P_FOOD as i16 {
+            kout!(g; "Each food planet can produce ", cnum(g), g.emp[e].planets[P_FOOD].output, cn(g),
                   " megatons of food each year.\n");
         }
-        if k == 8 {
-            kout!(g; "Each supply planet can train ", cnum(g), g.emp[e].planets[8].b, cn(g),
+        if k == P_SUPPLY as i16 {
+            kout!(g; "Each supply planet can train ", cnum(g), g.emp[e].planets[P_SUPPLY].output, cn(g),
                   " military units per year.  Soldiers count as 1 unit, fighters 1.3, defense stations 1.7, generals 7, carriers 9.5, and cruisers 12.\n");
         }
         let n = buy_planets(g, e, price, &mut max);
-        g.emp[e].w192 = g.emp[e].w192.wrapping_add(n as i16);
+        g.emp[e].planetsbought = g.emp[e].planetsbought.wrapping_add(n as i16);
         g.emp[e].planets[k as usize].count += n;
-        g.galaxy.d392 -= n;
-        if g.galaxy.d392 < 0 {
-            g.galaxy.d392 = 0;
+        g.galaxy.marketplanets -= n;
+        if g.galaxy.marketplanets < 0 {
+            g.galaxy.marketplanets = 0;
         }
     }
 }
@@ -420,11 +420,11 @@ pub fn spending(g: &mut Sre, p: &mut Player, e: usize) {
         buym.add(g, b"Operations", b'*', 11);
         sellm.add(g, b"Buy", b'B', 10);
         sellm.add(g, b"Operations", b'*', 11);
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             buym.add(g, b"", b'V', 0x50);
             sellm.add(g, b"", b'V', 0x50);
         }
-        if (p.prefs2 >> 4) & 1 != 0 {
+        if has_pref(p.prefs2, PF2_ENTERSTAYS) {
             buym.add(g, b"Quit", b'Q', 0x63);
         }
         let x = &g.emp[e];
@@ -463,7 +463,7 @@ pub fn spending(g: &mut Sre, p: &mut Player, e: usize) {
                 s.add_column_num(owned[i]);
             }
         }
-        if (p.prefs1 >> 2) & 1 == 0 {
+        if !has_pref(p.prefs1, PF1_SHORTMENUS) {
             show = true;
         }
         let mut r;
@@ -478,7 +478,7 @@ pub fn spending(g: &mut Sre, p: &mut Player, e: usize) {
         } else {
             r = buym.run(g, show, -1);
         }
-        if r == -1 && (p.prefs2 >> 4) & 1 == 0 {
+        if r == -1 && !has_pref(p.prefs2, PF2_ENTERSTAYS) {
             return;
         }
         if r == 0x63 {
@@ -488,7 +488,7 @@ pub fn spending(g: &mut Sre, p: &mut Player, e: usize) {
         match r {
             1 | 2 | 3 | 8 | 9 => buy(g, e, price[r as usize], r as usize, names[r as usize], -1),
             4 => {
-                let cap = gov_capacity6(g, e);
+                let cap = gov_capacity_generals(g, e);
                 if cap <= 0 {
                     kout!(g; "One government planet is required for every 50 generals.  You don't have space on your planets for more generals.\n");
                 } else {

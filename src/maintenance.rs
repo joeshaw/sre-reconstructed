@@ -47,7 +47,7 @@ fn backup(g: &mut Sre, from: &[u8], to: &[u8]) {
 
 // 5681:0160: one of three newspapers, with random headlines.
 fn newspaper(g: &mut Sre) {
-    let paper = g.galaxy.w3c0;
+    let paper = g.galaxy.newspaper;
     let today = g.time.today;
     if paper == 2 {
         out!(g, NEWS; b'\\', col(14), "   Farmer Bob's Guide to the Galaxy        ", col(7), "Printed Annually\n");
@@ -76,7 +76,7 @@ fn newspaper(g: &mut Sre) {
             }
         }
         if random(10) == 0 {
-            g.galaxy.w3c0 = 3;
+            g.galaxy.newspaper = 3;
             out!(g, NEWS; "Centurion Rahad has come out of retirement to take over this news agency.\n");
         }
     } else if paper == 3 {
@@ -124,7 +124,7 @@ fn newspaper(g: &mut Sre) {
             }
         }
         if random(10) == 0 {
-            g.galaxy.w3c0 = 1;
+            g.galaxy.newspaper = 1;
             out!(g, NEWS; "Centurion Rahad is considering retiring!\n");
         }
     } else {
@@ -156,7 +156,7 @@ fn newspaper(g: &mut Sre) {
             }
         }
         if random(10) == 0 {
-            g.galaxy.w3c0 = 2;
+            g.galaxy.newspaper = 2;
             out!(g, NEWS; "The Galactic Star is on the verge of bankrupcy.  Can another newspaper take over?\n");
         }
     }
@@ -166,18 +166,18 @@ fn newspaper(g: &mut Sre) {
 pub fn regenerate_planets(g: &mut Sre) {
     let now = b_time();
     let x = &mut g.galaxy;
-    if x.d392 < 0 {
-        x.d392 = 0;
+    if x.marketplanets < 0 {
+        x.marketplanets = 0;
     }
-    if now > x.t48 && x.w38c > 0 {
-        if x.d392 < 30000 {
-            let n = now.wrapping_sub(x.t48) / (x.w38c as i32 + 1);
+    if now > x.lastregen && x.regenseconds > 0 {
+        if x.marketplanets < 30000 {
+            let n = now.wrapping_sub(x.lastregen) / (x.regenseconds as i32 + 1);
             if n > 0 {
-                x.d392 += n;
-                x.t48 = x.t48.wrapping_add(n.wrapping_mul(x.w38c as i32));
+                x.marketplanets += n;
+                x.lastregen = x.lastregen.wrapping_add(n.wrapping_mul(x.regenseconds as i32));
             }
         } else {
-            x.t48 = now;
+            x.lastregen = now;
         }
     }
 }
@@ -190,14 +190,14 @@ fn daily_empire(g: &mut Sre, e: usize) {
         let x = &mut g.emp[e];
         x.turnsperday = gt;
         x.turnsused = 0;
-        x.w2a1 = x.w2a1.wrapping_sub(1);
-        x.w229 = 0;
-        x.d22f[3] = 0;
-        x.d22f[4] = 0;
-        x.d22f[6] = 0;
+        x.inactivedays = x.inactivedays.wrapping_sub(1);
+        x.attacks = 0;
+        x.bombmask = 0;
+        x.hostagemask = 0;
+        x.setupmask = 0;
         for i in 0..MAXEMPIRES {
-            if x.treaty[i].a > 0 {
-                x.treaty[i].a -= 1;
+            if x.treaty[i].days > 0 {
+                x.treaty[i].days -= 1;
             }
         }
     }
@@ -211,7 +211,7 @@ fn daily_empire(g: &mut Sre, e: usize) {
         }
         crate::sysop::delete_empire(g, e);
         empire_init(g, e);
-    } else if g.grb(&R_DELETEDEAD) && g.emp[e].w2a1 <= 0 {
+    } else if g.grb(&R_DELETEDEAD) && g.emp[e].inactivedays <= 0 {
         let days = g.grl(&R_INACTIVETIMEOUT);
         out!(g, NEWS; "Empire ", cemp(g), uname(g, e), cn(g), " erased - inactive for ", days, " days.\n");
         crate::sysop::delete_empire(g, e);
@@ -228,21 +228,21 @@ pub fn maintenance(g: &mut Sre) {
     }
     regenerate_planets(g);
     let now = g.time.now;
-    if now.wrapping_sub(g.galaxy.t3ba) >= 3600 {
+    if now.wrapping_sub(g.galaxy.lasthourly) >= 3600 {
         let msg = b"Running hourly maintenance...";
         status(g, msg);
-        if midnight(g.galaxy.t3ba) < g.galaxy.created {
-            g.galaxy.t3ba = g.galaxy.created;
+        if midnight(g.galaxy.lasthourly) < g.galaxy.created {
+            g.galaxy.lasthourly = g.galaxy.created;
         }
-        while now.wrapping_sub(g.galaxy.t3ba) > 3600 {
+        while now.wrapping_sub(g.galaxy.lasthourly) > 3600 {
             for i in 0..MAXPIRATES {
                 crate::pirates::pirate_hourly(g, i);
             }
-            g.galaxy.t3ba = g.galaxy.t3ba.wrapping_add(3600);
+            g.galaxy.lasthourly = g.galaxy.lasthourly.wrapping_add(3600);
         }
         status_end(g, msg);
     }
-    if g.time.today.wrapping_sub(midnight(g.galaxy.created)) < 86400i32.wrapping_mul(g.galaxy.grantdays as i32) {
+    if g.time.today.wrapping_sub(midnight(g.galaxy.created)) < 86400i32.wrapping_mul(g.galaxy.daylength as i32) {
         galaxy_close(g);
         return;
     }
@@ -289,19 +289,19 @@ pub fn maintenance(g: &mut Sre) {
     status(g, msg);
     {
         let x = &mut g.galaxy;
-        if x.w3b2 > 400 {
-            x.w3b2 += 2;
-        } else if x.w3b2 > 300 {
-            x.w3b2 += 5;
+        if x.nukelimit > 400 {
+            x.nukelimit += 2;
+        } else if x.nukelimit > 300 {
+            x.nukelimit += 5;
         } else {
-            x.w3b2 += 15;
+            x.nukelimit += 15;
         }
-        if x.w3b4 < 30 {
-            x.w3b4 += 1;
+        if x.nukepercent < 30 {
+            x.nukepercent += 1;
         }
-        x.d3c2 = 15 * (x.d3c2 / 20);
-        if x.d3c2 < 5000000 {
-            x.d3c2 = 5000000;
+        x.psionicprice = 15 * (x.psionicprice / 20);
+        if x.psionicprice < 5000000 {
+            x.psionicprice = 5000000;
         }
     }
     status_end(g, msg);
@@ -317,18 +317,18 @@ pub fn maintenance(g: &mut Sre) {
     g.galaxy.solarmaster = -1;
     g.galaxy.weaponsmaster = -1;
     g.galaxy.planetmaster = -1;
-    let tickets = g.galaxy.w3a4;
+    let tickets = g.galaxy.lotterytickets;
     let mut winner = ((tickets as i32 * b_rand() as i32) / 0x8000) as i16;
-    if g.galaxy.w3a4 <= 0 {
+    if g.galaxy.lotterytickets <= 0 {
         winner = -1;
-        g.galaxy.w3a4 = 0;
+        g.galaxy.lotterytickets = 0;
     }
     for i in 0..MAXEMPIRES {
         if !g.emp[i].exists() {
             continue;
         }
-        if g.emp[i].lastplay < g.galaxy.t44 {
-            g.emp[i].lastplay = g.galaxy.t44;
+        if g.emp[i].lastplay < g.galaxy.startdate {
+            g.emp[i].lastplay = g.galaxy.startdate;
         }
         daily_empire(g, i);
     }
@@ -336,22 +336,22 @@ pub fn maintenance(g: &mut Sre) {
         if !g.emp[i].exists() {
             continue;
         }
-        if winner >= 0 && g.emp[i].w172 > winner {
-            g.galaxy.w3a6 = g.emp[i].id;
-            g.galaxy.d3a8 = crate::lottery::jackpot(g, g.galaxy.w3a4 as i32);
-            let j = g.galaxy.d3a8;
+        if winner >= 0 && g.emp[i].tickets > winner {
+            g.galaxy.lotterywinner = g.emp[i].id;
+            g.galaxy.jackpot = crate::lottery::jackpot(g, g.galaxy.lotterytickets as i32);
+            let j = g.galaxy.jackpot;
             if g.emp[i].bank.get() < 2000000000 {
                 g.emp[i].bank.add(j);
             } else if g.emp[i].money.get() < 2000000000 {
                 g.emp[i].money.add(j);
             }
-            g.galaxy.w3a4 = 0;
+            g.galaxy.lotterytickets = 0;
             winner = -1;
         }
         if winner >= 0 {
-            winner = winner.wrapping_sub(g.emp[i].w172);
+            winner = winner.wrapping_sub(g.emp[i].tickets);
         }
-        g.emp[i].w172 = 0;
+        g.emp[i].tickets = 0;
         let sc = empire_score(g, i);
         if sc > 3 * bestscore / 2 {
             bestscore = sc;
@@ -377,28 +377,28 @@ pub fn maintenance(g: &mut Sre) {
             bestworth = nw;
         }
     }
-    g.galaxy.w3a4 = 0;
+    g.galaxy.lotterytickets = 0;
     if g.galaxy.solarmaster != -1 {
-        if g.galaxy.d3ac < 0 {
-            g.galaxy.d3ac = 0;
+        if g.galaxy.coordfund < 0 {
+            g.galaxy.coordfund = 0;
         }
         let e = g.galaxy.solarmaster as usize;
         let pts = g.grl(&R_PTSOLAR);
-        g.emp[e].d178 = g.emp[e].d178.wrapping_add(pts);
+        g.emp[e].points = g.emp[e].points.wrapping_add(pts);
         out!(g, NEWS; cemp(g), uname(g, e), cn(g), " has been ");
         if g.galaxy.solarmaster == oldsolar {
             out!(g, NEWS; "once again ");
         }
         out!(g, NEWS; "chosen today's Solar Master, and has received a ");
-        let bonus = 10i32.wrapping_mul(g.galaxy.d3ac);
+        let bonus = 10i32.wrapping_mul(g.galaxy.coordfund);
         out!(g, NEWS; cnum(g), bonus, cn(g), " credit bonus!\n");
         g.emp[e].money.add(bonus);
-        g.galaxy.d3ac -= g.galaxy.d3ac / 100;
+        g.galaxy.coordfund -= g.galaxy.coordfund / 100;
     }
     if g.galaxy.planetmaster != -1 {
         let e = g.galaxy.planetmaster as usize;
         let pts = g.grl(&R_PTPLANET);
-        g.emp[e].d178 = g.emp[e].d178.wrapping_add(pts);
+        g.emp[e].points = g.emp[e].points.wrapping_add(pts);
         out!(g, NEWS; cemp(g), uname(g, e), cn(g));
         if g.galaxy.planetmaster == oldplanet {
             out!(g, NEWS; " is still the");
@@ -411,20 +411,20 @@ pub fn maintenance(g: &mut Sre) {
         let mut lost = false;
         let e = g.galaxy.weaponsmaster as usize;
         let pts = g.grl(&R_PTWEAPONS);
-        g.emp[e].d178 = g.emp[e].d178.wrapping_add(pts);
+        g.emp[e].points = g.emp[e].points.wrapping_add(pts);
         if g.galaxy.weaponsmaster != oldweapons {
             out!(g, NEWS; cemp(g), uname(g, e), cn(g), " has been chosen the new Weapons Master");
         }
         if total_planets(g, e) > 500 {
             for i in 0..MAXEMPIRES {
-                if g.emp[e].treaty[i].e() > 0 || g.emp[e].treaty[i].d() > 0 {
-                    let a = g.emp[e].treaty[i].a;
+                if g.emp[e].treaty[i].soldierpct() > 0 || g.emp[e].treaty[i].cruiserpct() > 0 {
+                    let days = g.emp[e].treaty[i].days;
                     lost = true;
                     let eid = g.emp[e].id as usize;
-                    set_treaty(&mut g.emp[i].treaty[eid], 1, a);
+                    set_treaty(&mut g.emp[i].treaty[eid], TT_NEUTRALITY, days);
                     let oid = g.emp[i].id;
                     if oid >= 0 {
-                        set_treaty(&mut g.emp[e].treaty[oid as usize], 1, a);
+                        set_treaty(&mut g.emp[e].treaty[oid as usize], TT_NEUTRALITY, days);
                     }
                 }
             }
@@ -437,7 +437,7 @@ pub fn maintenance(g: &mut Sre) {
         }
     }
     status_end(g, msg);
-    if g.system.regstate != 0 {
+    if g.system.regstate != RS_UNREGISTERED {
         if g.galaxy.interest < 3 {
             g.galaxy.interest += 2;
             out!(g, NEWS; "Interest rates go up to ", g.galaxy.interest, "% as the galaxy's economy booms!\n");
@@ -456,6 +456,6 @@ pub fn maintenance(g: &mut Sre) {
         }
     }
     g.galaxy.created = g.time.today;
-    g.galaxy.t3ba = g.time.today;
+    g.galaxy.lasthourly = g.time.today;
     galaxy_close(g);
 }

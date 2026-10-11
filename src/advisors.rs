@@ -14,7 +14,7 @@ pub fn advisors(g: &mut Sre, _p: &mut Player, e: usize) {
     let hint = b"hint";
     kout!(g; b'\n');
     let need = crate::foodmarket::food_needed(g, e, 0);
-    let grown = g.emp[e].planets[P_FOOD].count * g.emp[e].planets[P_FOOD].b;
+    let grown = g.emp[e].planets[P_FOOD].count * g.emp[e].planets[P_FOOD].output;
     let mut food = g.emp[e].food;
     advisor(g, "Agricultural Advisor");
     kout!(g; " reports that your food planets produce ", cnum(g), grown, cn(g),
@@ -33,9 +33,9 @@ pub fn advisors(g: &mut Sre, _p: &mut Player, e: usize) {
         kout!(g; " is not in her office.  Her employees say that she is out playing tennis, and she will be back shortly.\n\n");
     } else {
         advisor(g, "Economic Advisor");
-        kout!(g; "'s report states that your empire has an efficiency of ", cnum(g), g.emp[e].d1b4, cn(g),
+        kout!(g; "'s report states that your empire has an efficiency of ", cnum(g), g.emp[e].efficiency, cn(g),
               " credits per planet (profit).");
-        let d = g.emp[e].d1b4;
+        let d = g.emp[e].efficiency;
         if d > 2000 {
             kout!(g; "  Congratulations!");
         } else if d > 1500 {
@@ -89,7 +89,7 @@ pub fn advisors(g: &mut Sre, _p: &mut Player, e: usize) {
         kout!(g; " asks you to buy more generals to command your forces.  You have ", cnum(g), g.emp[e].soldiers, cn(g),
               " soldiers and your generals can lead ", cnum(g), 50i32.wrapping_mul(g.emp[e].generals), cn(g), " to battle.\n\n");
     }
-    if !sick && g.emp[e].carriers + (((g.emp[e].weapons >> 3) & 1) as i32) < (g.emp[e].fighters + 99) / 100 {
+    if !sick && g.emp[e].carriers + (g.emp[e].has_weapon(W_MOTHERSHIP) as i32) < (g.emp[e].fighters + 99) / 100 {
         advisor(g, "Chief of Military Maneuvers");
         kout!(g; " asks you to buy more carriers to carry your fighters.  You have ", cnum(g), g.emp[e].fighters, cn(g),
               " fighters and your carriers can take ", cnum(g), 100i32.wrapping_mul(g.emp[e].carriers), cn(g), " to battle.\n\n");
@@ -112,8 +112,8 @@ pub fn advisors(g: &mut Sre, _p: &mut Player, e: usize) {
         advisor(g, "Chief of Intelligence");
         kout!(g; " reports that your covert agent / planet ratio is ", cnum(g), a, cn(g), b':', cnum(g), b, cn(g), ".\n\n");
     }
-    if g.emp[e].d1b0 > 100 || g.emp[e].d1b0 < -50 {
-        let un = if g.emp[e].d1b0 < 0 { "un" } else { "" };
+    if g.emp[e].favor > 100 || g.emp[e].favor < -50 {
+        let un = if g.emp[e].favor < 0 { "un" } else { "" };
         advisor(g, "Chief of Relations");
         kout!(g; " says that the Galactic Coordinator looks ", un, "favorably upon you.\n\n");
     }
@@ -129,13 +129,13 @@ pub fn advisors(g: &mut Sre, _p: &mut Player, e: usize) {
     if g.emp[e].stations == 0 {
         show_help_topic2(g, hint, b"defense-stations");
     }
-    if g.emp[e].d188 != 0 {
+    if g.emp[e].pollution != 0 {
         show_help_topic2(g, hint, b"pollution");
     }
-    if g.emp[e].w172 == 0 {
+    if g.emp[e].tickets == 0 {
         show_help_topic2(g, hint, b"lottery");
     }
-    if g.emp[e].d293 == 0 {
+    if g.emp[e].researchpoints == 0 {
         show_help_topic2(g, hint, b"research");
     }
     pause_prompt(g);

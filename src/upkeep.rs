@@ -12,15 +12,6 @@ struct Costs {
     donation: i32, // 14 to the Galactic Coordinator
 }
 
-// The planets neglected this turn (e+0x1c7, ten longs).
-pub fn neglected(g: &Sre, e: usize, i: i16) -> i32 {
-    get_i32(&g.emp[e].u_1c7, 4 * i as usize)
-}
-
-pub fn set_neglected(g: &mut Sre, e: usize, i: i16, v: i32) {
-    set_i32(&mut g.emp[e].u_1c7, 4 * i as usize, v);
-}
-
 // 5e48:0000
 fn compute_costs(g: &Sre, e: usize) -> Costs {
     let x = &g.emp[e];
@@ -35,12 +26,12 @@ fn compute_costs(g: &Sre, e: usize) -> Costs {
     c.violence = (((x.insurgency as i32 + 1) as i16 / 2) as i32) * (total_planets(g, e) + 2 * x.population);
     c.loan = 0;
     if x.bank.get() < 0 {
-        c.loan = x.d1a4;
+        c.loan = x.loanpayment;
         if c.loan + x.bank.get() > 0 {
             c.loan = -x.bank.get();
         }
     }
-    if g.galaxy.w384 == 0 {
+    if g.galaxy.inflation == 0 {
         // Upkeep per planet grows with the logarithm of the size.
         const FRACTION: [i16; 8] = [0, 86, 266, 422, 533, 619, 689, 748];
         let mut per: i32 = -1400;
@@ -57,8 +48,8 @@ fn compute_costs(g: &Sre, e: usize) -> Costs {
     if c.planets < 0 {
         c.planets = 0;
     }
-    c.donation = x.m1bc.get() * g.galaxy.w3b0 as i32;
-    if g.galaxy.d3ac > 1500000000 {
+    c.donation = x.income.get() * g.galaxy.coordtax as i32;
+    if g.galaxy.coordfund > 1500000000 {
         c.donation = 0;
     }
     c
@@ -69,9 +60,9 @@ fn consequences(g: &mut Sre, e: usize, c: &Costs, paid: &mut Costs) {
     {
         let x = &mut g.emp[e];
         if paid.military < c.military {
-            x.b1c5 = ((paid.military - c.military) / (c.military / 100 + 1)) as i8;
-            x.b1c6 = (x.b1c5 as i32 + x.effectiveness as i32) as i8;
-            x.b1c4 |= 8;
+            x.effchange = ((paid.military - c.military) / (c.military / 100 + 1)) as i8;
+            x.effnext = (x.effchange as i32 + x.effectiveness as i32) as i8;
+            x.shortfalls |= SF_ARMY;
         }
         let mut per = c.effect;
         if x.effectiveness < 100 {
@@ -100,7 +91,7 @@ fn consequences(g: &mut Sre, e: usize, c: &Costs, paid: &mut Costs) {
         }
         x.bank.add(paid.loan);
         if x.bank.get() >= 0 {
-            x.d1a4 = 0;
+            x.loanpayment = 0;
         }
     }
     if paid.planets < c.planets {
@@ -116,19 +107,19 @@ fn consequences(g: &mut Sre, e: usize, c: &Costs, paid: &mut Costs) {
             } else {
                 k as i16
             };
-            g.emp[e].b1c4 |= 1;
+            g.emp[e].shortfalls |= SF_NEGLECT;
             let mut total: i32 = 0;
             for i in 0..10i16 {
                 let v = g.emp[e].planets[i as usize].count / every as i32;
-                set_neglected(g, e, i, v);
-                total += neglected(g, e, i);
+                g.emp[e].neglected[i as usize] = v;
+                total += g.emp[e].neglected[i as usize];
             }
             let mut j: i16 = 0;
             while j < 100 && total < n {
                 let t = ((10 * b_rand() as i32) / 0x8000) as i16;
-                if g.emp[e].planets[t as usize].count > neglected(g, e, t) {
-                    let v = neglected(g, e, t) + 1;
-                    set_neglected(g, e, t, v);
+                if g.emp[e].planets[t as usize].count > g.emp[e].neglected[t as usize] {
+                    let v = g.emp[e].neglected[t as usize] + 1;
+                    g.emp[e].neglected[t as usize] = v;
                     total += 1;
                 }
                 j += 1;
@@ -136,18 +127,18 @@ fn consequences(g: &mut Sre, e: usize, c: &Costs, paid: &mut Costs) {
         }
     }
     if paid.donation > c.donation {
-        let mut v = (paid.donation - c.donation) / (g.emp[e].m1bc.get() + 1);
+        let mut v = (paid.donation - c.donation) / (g.emp[e].income.get() + 1);
         if v > 1000 {
             v -= 1000;
         }
         if v > 0 {
-            g.emp[e].d1b0 += v as i16 as i32;
+            g.emp[e].favor += v as i16 as i32;
         }
     }
-    g.galaxy.d3ac += paid.donation / 1000;
-    if total_planets(g, e) > 0 && g.emp[e].m1bc.get() < 2000000 {
+    g.galaxy.coordfund += paid.donation / 1000;
+    if total_planets(g, e) > 0 && g.emp[e].income.get() < 2000000 {
         let tp = total_planets(g, e);
-        g.emp[e].d1b4 = (1000i32.wrapping_mul(g.emp[e].m1bc.get())
+        g.emp[e].efficiency = (1000i32.wrapping_mul(g.emp[e].income.get())
             - c.military
             - c.effect
             - c.violence
@@ -199,8 +190,8 @@ pub fn pay_upkeep(g: &mut Sre, p: &mut Player, e: usize) {
         kout!(g; "Your empire requires ", cnum(g), total, cn(g), " credits this year.  You have ", cnum(g),
               g.emp[e].money.get(), cn(g), " credits.\n");
         if g.emp[e].money.get() >= total {
-            let mut autopay = (p.prefs2 >> 1) & 1 != 0;
-            if p.prefs2 & 1 != 0 {
+            let mut autopay = has_pref(p.prefs2, PF2_AUTOPAY);
+            if has_pref(p.prefs2, PF2_ASKPAY) {
                 autopay = yes_no(g, autopay as i16, b"Pay everything automatically");
             }
             if autopay {
@@ -209,7 +200,7 @@ pub fn pay_upkeep(g: &mut Sre, p: &mut Player, e: usize) {
                 break;
             }
         }
-        if g.system.regstate != 0 && yes_no(g, 0, b"Do you wish to visit the bank") {
+        if g.system.regstate != RS_UNREGISTERED && yes_no(g, 0, b"Do you wish to visit the bank") {
             crate::bank::bank(g, p, e);
         }
         let mut avail = g.emp[e].money;

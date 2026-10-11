@@ -110,32 +110,32 @@ fn key(g: &mut Sre, c: u8) {
 fn galaxy_info(g: &mut Sre) {
     kout!(g; cn(g), "\nThis is ", col(15), cs(&g.galaxy.name), cn(g), ".\n");
     kout!(g; "There are ", cnum(g), g.galaxy.grantturns, cn(g), " turns per day.\n");
-    if g.galaxy.grantdays > 1 {
-        kout!(g; "Each \"day\" (maintenance interval) lasts for ", cnum(g), g.galaxy.grantdays, cn(g), " real days.\n");
+    if g.galaxy.daylength > 1 {
+        kout!(g; "Each \"day\" (maintenance interval) lasts for ", cnum(g), g.galaxy.daylength, cn(g), " real days.\n");
     }
     kout!(g; "Each empire receives ", cnum(g), g.galaxy.protection, cn(g), " turns of protection.\n");
-    kout!(g; cnum(g), g.galaxy.d392, cn(g), " planets are available.\n");
-    kout!(g; cnum(g), g.galaxy.d388, cn(g), " megatons of food are available.\n");
-    if g.galaxy.d38e >= 0 {
-        kout!(g; cnum(g), g.galaxy.d38e, cn(g), " planets can be bought each turn.\n");
+    kout!(g; cnum(g), g.galaxy.marketplanets, cn(g), " planets are available.\n");
+    kout!(g; cnum(g), g.galaxy.marketfood, cn(g), " megatons of food are available.\n");
+    if g.galaxy.planetsperturn >= 0 {
+        kout!(g; cnum(g), g.galaxy.planetsperturn, cn(g), " planets can be bought each turn.\n");
     }
-    if g.system.regstate != 0 {
+    if g.system.regstate != RS_UNREGISTERED {
         kout!(g; "The interest rate is ", g.galaxy.interest, "%.\n");
     }
     kout!(g; "This game is set up with ");
-    if g.galaxy.w384 != 0 {
+    if g.galaxy.inflation != 0 {
         kout!(g; "traditional inflationary economics.\n");
     } else {
         kout!(g; "non-inflationary prices.\n");
     }
     if g.galaxy.enddate < midnight(0x7fffffff) {
         kout!(g; "This is a tournament game that ");
-        if g.galaxy.t44 <= g.time.today {
+        if g.galaxy.startdate <= g.time.today {
             kout!(g; "started ");
         } else {
             kout!(g; "starts ");
         }
-        let t = g.galaxy.t44;
+        let t = g.galaxy.startdate;
         put_time(g, KOUT, t);
         kout!(g; ", and ends ");
         let t = g.galaxy.enddate;
@@ -151,21 +151,21 @@ fn new_news(g: &mut Sre, id: i16) {
         return;
     }
     kout!(g; "New news since ");
-    let t = g.emp[e].d2ec;
+    let t = g.emp[e].lastnews;
     put_time(g, KOUT, t);
     kout!(g; ":\n");
     let mut c = b'9';
     loop {
         let mut name = b"News/NEWS0.MSG".to_vec();
         name[9] = c;
-        let since = g.emp[e].d2ec;
+        let since = g.emp[e].lastnews;
         show_news(g, &name, since);
         if c == b'0' {
             break;
         }
         c -= 1;
     }
-    g.emp[e].d2ec = b_time();
+    g.emp[e].lastnews = b_time();
 }
 
 // 62b1:0a82
@@ -204,7 +204,7 @@ fn emperor(male: i16) -> &'static [u8] {
 
 // 62b1:0c07
 fn join_game(g: &mut Sre) {
-    if g.time.today >= g.galaxy.t4c {
+    if g.time.today >= g.galaxy.joindeadline {
         kout!(g; "No new players can join this game.\n\n");
         return;
     }
@@ -396,7 +396,7 @@ fn join_game(g: &mut Sre) {
         }
         empire_set_name(g, e, &name);
     }
-    g.emp[e].flags = g.galaxy.w386;
+    g.emp[e].localplay = g.galaxy.localonly;
     g.emp[e].player = p.index;
     kout!(g; "You are:  ", emperor(p.male), col(14), b' ', Untr(cs(&p.name)), cn(g));
     kout!(g; ", and you now rule ", cemp(g), uname(g, e), cn(g), ".\n");
@@ -408,7 +408,7 @@ fn tournament_results(g: &mut Sre) {
     kout!(g; col(14), "\nTournament Results\n");
     hline(g, col(4), 0x4b);
     kout!(g; cn(g), "Tournament started:  ", col(12));
-    let t = midnight(g.galaxy.t44);
+    let t = midnight(g.galaxy.startdate);
     put_time(g, KOUT, t);
     kout!(g; b'\n');
     kout!(g; cn(g), "Tournament ended:    ", col(12));
@@ -425,7 +425,7 @@ fn tournament_results(g: &mut Sre) {
             continue;
         }
         if g.emp[i].exists() && total_planets(g, i) > 0 && g.emp[i].population > 0 {
-            pts[i] = g.emp[i].d178;
+            pts[i] = g.emp[i].points;
         }
     }
     pts[25] = 0;

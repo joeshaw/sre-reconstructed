@@ -22,8 +22,8 @@ fn bad(g: &mut Sre) {
 // 6572:0080
 fn appeased(g: &mut Sre, e: usize, p: usize) {
     let id = g.emp[e].id as usize;
-    if g.pir[p].wd4[id] > 0 {
-        g.pir[p].wd4[id] -= 1;
+    if g.pir[p].hatred[id] > 0 {
+        g.pir[p].hatred[id] -= 1;
     }
 }
 
@@ -98,7 +98,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
             if pir {
                 pirate(g, p);
                 for i in 0..10 {
-                    g.pir[p].wb4[i] = g.pir[p].wb4[i].wrapping_add(lost[i]);
+                    g.pir[p].planets[i] = g.pir[p].planets[i].wrapping_add(lost[i]);
                 }
                 appeased(g, e, p);
             }
@@ -125,7 +125,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let n = (g.emp[e].heavycruisers / 100).wrapping_mul(random(10) as i32);
         if n > 0 && g.emp[e].heavycruisers / 5 >= n {
             g.emp[e].heavycruisers -= n;
-            add_clamp(&mut g.pir[p].da4, n);
+            add_clamp(&mut g.pir[p].heavycruisers, n);
             bad(g);
             kout!(g; cnum(g), n, cn(g), " cruisers were stolen by ");
             pirate(g, p);
@@ -197,7 +197,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
                 4 => kout!(g; col(15), "Your hungry Sysop", ", ", cs(&g.system.sysop), b',', cn(g), " ate ", cnum(g), n, cn(g),
                            " megatons of food!\n"),
                 _ => {
-                    add_clamp(&mut g.pir[p].d94, n);
+                    add_clamp(&mut g.pir[p].food, n);
                     appeased(g, e, p);
                     if random(15) == 0 && show_screen(g, None, b"FoodLost", false) {
                         pause_prompt(g);
@@ -239,7 +239,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let k = g.emp[e].planets[P_PETROLEUM].count as i16;
         let n = (((k as i32 * b_rand() as i32) / 0x8000) / 3) as i16 as i32;
         if n > 0 {
-            g.emp[e].d188 += n;
+            g.emp[e].pollution += n;
             bad(g);
             kout!(g; cnum(g), n, cn(g), " exatons of toxic fumes were released due to a pumping accident.\n");
         }
@@ -248,7 +248,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let k = g.emp[e].planets[P_PETROLEUM].count as i16;
         let n = (((k as i32 * b_rand() as i32) / 0x8000) / 10) as i16 as i32;
         if n > 0 {
-            g.emp[e].d188 += n;
+            g.emp[e].pollution += n;
             bad(g);
             kout!(g; cnum(g), n, cn(g), " exatons of toxic fumes were released when one of your advisors burped.\n");
         }
@@ -257,7 +257,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let n = (g.emp[e].planets[P_SUPPLY].count / 3).wrapping_mul(random(25) as i32);
         if n > 0 && g.emp[e].soldiers >= n {
             g.emp[e].soldiers -= n;
-            add_clamp(&mut g.pir[p].d98, n);
+            add_clamp(&mut g.pir[p].soldiers, n);
             bad(g);
             kout!(g; cnum(g), n, cn(g), " soldiers desert your training camps.\n");
         }
@@ -271,7 +271,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         }
     }
     if random(1000) <= 50 && g.emp[e].generals > 50 && g.emp[e].year > 0 {
-        add_clamp(&mut g.pir[p].dac, 1);
+        add_clamp(&mut g.pir[p].generals, 1);
         g.emp[e].generals -= 1;
         bad(g);
         kout!(g; cnum(g), 1i16, cn(g), " general was captured by ");
@@ -292,7 +292,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let k: i16 = if g.emp[e].agents > 3000 { 200 } else { (g.emp[e].agents / 20) as i16 };
         let n = ((k as i32 * b_rand() as i32) / 0x8000) as u16;
         if n > 0 {
-            add_clamp(&mut g.pir[p].db0, n as i32);
+            add_clamp(&mut g.pir[p].agents, n as i32);
             g.emp[e].agents -= n as i32;
             bad(g);
             kout!(g; cnum(g), n, cn(g), " covert agents were captured by ");
@@ -305,7 +305,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let k = (g.emp[e].soldiers / 20) as i16;
         let n = rand_of(k) as i32;
         if n > 0 {
-            add_clamp(&mut g.pir[p].d98, n);
+            add_clamp(&mut g.pir[p].soldiers, n);
             g.emp[e].soldiers -= n;
             bad(g);
             kout!(g; cnum(g), n, cn(g), " soldiers have been forced to join the ");
@@ -349,7 +349,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
                     kout!(g; "captured by ");
                     pirate(g, p);
                     for i in 0..10 {
-                        g.pir[p].wb4[i] = g.pir[p].wb4[i].wrapping_add(lost[i]);
+                        g.pir[p].planets[i] = g.pir[p].planets[i].wrapping_add(lost[i]);
                     }
                     appeased(g, e, p);
                 }
@@ -363,18 +363,20 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
 fn choose_pirate(g: &Sre, id: i16) -> i16 {
     let mut sum: i32 = 0;
     for k in 1..=9i32 {
-        let h = g.pir[(k - 1) as usize].wd4[id as usize] as i32;
+        let h = g.pir[(k - 1) as usize].hatred[id as usize] as i32;
         if h > 0 {
             sum += h * k;
         }
     }
+    // A random number up to sum, from two 15-bit halves (truncated to
+    // 16 bits, as in the original).
     let hi = ((sum >> 15) + 1) as i16;
-    let a = rand_of(hi);
+    let rhi = rand_of(hi);
     let lo = ((sum & 0x7fff) + 1) as i16;
-    let b = rand_of(lo);
-    let mut r = ((((a as i32) << 15) as u16) | (b as u16)) as i16 as i32;
+    let rlo = rand_of(lo);
+    let mut r = ((((rhi as i32) << 15) as u16) | (rlo as u16)) as i16 as i32;
     for k in 1..=9i32 {
-        let h = g.pir[(k - 1) as usize].wd4[id as usize] as i32;
+        let h = g.pir[(k - 1) as usize].hatred[id as usize] as i32;
         if h > 0 {
             r -= h * k;
         }
@@ -386,7 +388,7 @@ fn choose_pirate(g: &Sre, id: i16) -> i16 {
 }
 
 // A weapon for sale on the underground market.
-fn offer(g: &mut Sre, e: usize, price: i32, buyprompt: &[u8], bought: &str, cannot: &str, bit: u16) {
+fn offer(g: &mut Sre, e: usize, price: i32, buyprompt: &[u8], bought: &str, cannot: &str, weapon: u16) {
     if g.emp[e].money.get() >= price || g.emp[e].money.get().wrapping_add(g.emp[e].bank.get()) >= price {
         if !yes_no(g, 2, buyprompt) {
             return;
@@ -397,7 +399,7 @@ fn offer(g: &mut Sre, e: usize, price: i32, buyprompt: &[u8], bought: &str, cann
         }
         kout!(g; bought);
         let x = &mut g.emp[e];
-        x.weapons |= bit;
+        x.weapons |= weapon;
         if x.money.get() >= price {
             x.money.sub(price);
         } else {
@@ -426,27 +428,27 @@ pub fn advisor(g: &mut Sre, _p: &mut Player, e: usize) {
             out!(g, ERRLOG; "R.index( ", idx, " ) in random() is ", d.typ, "/", rc, ".\n");
         } else {
             let t = d.typ as usize;
-            if d.cost.wrapping_mul(g.emp[e].planets[t].count) <= g.emp[e].d293
+            if d.cost.wrapping_mul(g.emp[e].planets[t].count) <= g.emp[e].researchpoints
                 && g.emp[e].planets[t].count > 0
                 && random(2) == 0
             {
                 let ps = &mut g.emp[e].planets[t];
-                ps.a = (ps.a as i16).wrapping_add(d.permanent() as i16) as i32;
-                ps.b = (ps.b as i16).wrapping_add(d.temporary() as i16) as i32;
+                ps.target = (ps.target as i16).wrapping_add(d.permanent() as i16) as i32;
+                ps.output = (ps.output as i16).wrapping_add(d.temporary() as i16) as i32;
                 let c = d.cost.wrapping_mul(g.emp[e].planets[t].count);
-                g.emp[e].d293 -= c;
+                g.emp[e].researchpoints -= c;
                 kout!(g; b'\n');
                 d.show(g);
             }
         }
-    } else if g.emp[e].d293 >= 10000 && g.emp[e].weapons & 8 == 0 {
-        g.emp[e].weapons |= 8;
+    } else if g.emp[e].researchpoints >= 10000 && !g.emp[e].has_weapon(W_MOTHERSHIP) {
+        g.emp[e].weapons |= W_MOTHERSHIP;
         kout!(g; col(14), "Your research planets develop a Mothership carrier capable of carrying 100,000 fighters into battle.\n",
               cn(g));
     }
-    if gov_capacity6(g, e) < 0 || gov_capacity(g, e) < 0 {
+    if gov_capacity_generals(g, e) < 0 || gov_capacity(g, e) < 0 {
         let mut agents = gov_capacity(g, e).wrapping_neg();
-        let mut generals = gov_capacity6(g, e).wrapping_neg();
+        let mut generals = gov_capacity_generals(g, e).wrapping_neg();
         if agents < 0 {
             agents = 0;
         }
@@ -473,9 +475,9 @@ pub fn advisor(g: &mut Sre, _p: &mut Player, e: usize) {
                   " generals kill each other in military conflicts caused by overpopulation of generals.\n");
         }
     }
-    if g.system.regstate != 0 && g.grb(&R_NUCLEAR) {
+    if g.system.regstate != RS_UNREGISTERED && g.grb(&R_NUCLEAR) {
         let v = (2i32.wrapping_mul(g.emp[e].agents)) / (total_planets(g, e) + 200);
-        if v > random(20) as i32 && g.emp[e].weapons & 1 == 0 && g.emp[e].year > 0 {
+        if v > random(20) as i32 && !g.emp[e].has_weapon(W_NUCLEAR) && g.emp[e].year > 0 {
             maybe_screen(g, 3, b"Nuclear");
             kout!(g; "You are approached by ");
             match random(5) {
@@ -489,24 +491,24 @@ pub fn advisor(g: &mut Sre, _p: &mut Player, e: usize) {
             kout!(g; " who offers you a ", col(14), "Nuclear Bomb", cn(g), "!\n");
             offer(g, e, 3000000, b"Buy a nuclear bomb for 3,000,000 credits",
                   "You have bought one nuclear bomb from the underground trading market.\n",
-                  "But you can't afford it right now.\n", 1);
+                  "But you can't afford it right now.\n", W_NUCLEAR);
         }
     }
-    if g.system.regstate != 0 && g.grb(&R_CHEMICAL) {
+    if g.system.regstate != RS_UNREGISTERED && g.grb(&R_CHEMICAL) {
         let v = (2i32.wrapping_mul(g.emp[e].agents)) / (total_planets(g, e) + 200);
-        if v > random(20) as i32 && g.emp[e].weapons & 2 == 0 && g.emp[e].year > 0 {
+        if v > random(20) as i32 && !g.emp[e].has_weapon(W_CHEMICAL) && g.emp[e].year > 0 {
             maybe_screen(g, 3, b"Chemical");
             kout!(g; "A well-dressed trader approaches you and offers to sell a megaton of ", col(14), "Chemicals", cn(g),
                   " for chemical warfare.\n");
             offer(g, e, 1000000, b"Buy a barrel of chemicals for 1,000,000 credits",
                   "You have bought one barrel of chemicals from the underground trading market.\n",
-                  "But you can't afford it.\n", 2);
+                  "But you can't afford it.\n", W_CHEMICAL);
         }
     }
-    if g.system.regstate != 0 && g.grb(&R_PSIONIC) {
+    if g.system.regstate != RS_UNREGISTERED && g.grb(&R_PSIONIC) {
         let v = (4i32.wrapping_mul(g.emp[e].agents)) / (total_planets(g, e) + 200);
-        if v > random(20) as i32 && g.emp[e].weapons & 4 == 0 && g.emp[e].year > 0 {
-            let price = g.galaxy.d3c2;
+        if v > random(20) as i32 && !g.emp[e].has_weapon(W_PSIONIC) && g.emp[e].year > 0 {
+            let price = g.galaxy.psionicprice;
             maybe_screen(g, 3, b"Psionic");
             kout!(g; "A well-known smuggler approaches you and offers to sell a one-pound ", col(14), "Psionic Bomb", cn(g),
                   " to you.\n");
@@ -519,7 +521,7 @@ pub fn advisor(g: &mut Sre, _p: &mut Player, e: usize) {
                     }
                     kout!(g; "You have bought a psionic bomb from the smuggler.\n");
                     let x = &mut g.emp[e];
-                    x.weapons |= 4;
+                    x.weapons |= W_PSIONIC;
                     if x.money.get() >= price {
                         x.money.sub(price);
                     } else {
@@ -527,7 +529,7 @@ pub fn advisor(g: &mut Sre, _p: &mut Player, e: usize) {
                         x.bank.sub(price.wrapping_sub(m));
                         x.money.set(0);
                     }
-                    g.galaxy.d3c2 = g.galaxy.d3c2.wrapping_add(2i32.wrapping_mul(g.galaxy.d3c2).wrapping_add(1000000));
+                    g.galaxy.psionicprice = g.galaxy.psionicprice.wrapping_add(2i32.wrapping_mul(g.galaxy.psionicprice).wrapping_add(1000000));
                 }
             } else {
                 kout!(g; "You tell him that you cannot afford it.\n");

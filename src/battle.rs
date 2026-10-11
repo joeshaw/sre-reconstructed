@@ -42,7 +42,7 @@ pub fn attack_message(g: &mut Sre, o: Sid, attacker: &[u8], severity: i16) {
 // 3f62:01c1
 pub fn show_battle_reports(g: &mut Sre, p: &Player, e: usize) -> i16 {
     let id = g.emp[e].id;
-    show_reports(g, id, BATTLE_FILE, (p.prefs2 >> 3) & 1 != 0, 4, 12)
+    show_reports(g, id, BATTLE_FILE, has_pref(p.prefs2, PF2_REPORTDATES), 4, 12)
 }
 
 // 3f62:01f5

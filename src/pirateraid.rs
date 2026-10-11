@@ -82,24 +82,24 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
         return false;
     }
     g.emp[e].money.sub(credits);
-    let ps = s.wrapping_add(g.pir[pt].d98);
-    let pf = f.wrapping_add(g.pir[pt].d9c);
-    let pc = c.wrapping_add(g.pir[pt].da4);
+    let ps = s.wrapping_add(g.pir[pt].soldiers);
+    let pf = f.wrapping_add(g.pir[pt].fighters);
+    let pc = c.wrapping_add(g.pir[pt].heavycruisers);
     kout!(g; col(13));
     let chance = chance as i16;
     loop {
-        if random(1100) < chance && g.pir[pt].d98 > 0 {
-            shrink(&mut g.pir[pt].d98, -ps / 80 - 1);
+        if random(1100) < chance && g.pir[pt].soldiers > 0 {
+            shrink(&mut g.pir[pt].soldiers, -ps / 80 - 1);
         }
-        if random(1300) < chance && g.pir[pt].da4 > 0 {
-            shrink(&mut g.pir[pt].da4, -pc / 80 - 1);
+        if random(1300) < chance && g.pir[pt].heavycruisers > 0 {
+            shrink(&mut g.pir[pt].heavycruisers, -pc / 80 - 1);
         }
-        if random(1200) < chance && g.pir[pt].d9c > 0 {
-            shrink(&mut g.pir[pt].d9c, -pf / 80 - 1);
+        if random(1200) < chance && g.pir[pt].fighters > 0 {
+            shrink(&mut g.pir[pt].fighters, -pf / 80 - 1);
         }
-        if random(1200) < chance && g.pir[pt].da0 > 0 {
-            let d = g.pir[pt].da0;
-            shrink(&mut g.pir[pt].da0, -d / 80 - 1);
+        if random(1200) < chance && g.pir[pt].stations > 0 {
+            let d = g.pir[pt].stations;
+            shrink(&mut g.pir[pt].stations, -d / 80 - 1);
         }
         if random(500) < 80 && s > 0 {
             s -= ps / 80 + 1;
@@ -119,7 +119,7 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
             break;
         }
         let x = &g.pir[pt];
-        if !(x.d98 > 0 || x.da4 > 0 || x.d9c > 0) {
+        if !(x.soldiers > 0 || x.heavycruisers > 0 || x.fighters > 0) {
             break;
         }
         if (ps + pc + pf) / 5 > s + c + f {
@@ -142,13 +142,13 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
     let mut score: i16 = 0;
     {
         let x = &g.pir[pt];
-        if x.d9c > 0 {
+        if x.fighters > 0 {
             score -= 1;
         }
-        if x.d98 > 0 {
+        if x.soldiers > 0 {
             score -= 1;
         }
-        if x.da4 > 0 {
+        if x.heavycruisers > 0 {
             score -= 1;
         }
         if s > 0 {
@@ -160,43 +160,43 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
         if f > 0 {
             score += 1;
         }
-        if x.d9c > f {
+        if x.fighters > f {
             score -= 1;
         }
-        if x.d98 > s {
+        if x.soldiers > s {
             score -= 1;
         }
-        if x.da4 > c {
+        if x.heavycruisers > c {
             score -= 1;
         }
-        if x.d9c < f {
+        if x.fighters < f {
             score += 1;
         }
-        if x.d98 < s {
+        if x.soldiers < s {
             score += 1;
         }
-        if x.da4 < c {
+        if x.heavycruisers < c {
             score += 1;
         }
-        if 2 * f < x.d9c {
+        if 2 * f < x.fighters {
             score -= 1;
         }
-        if 2 * s < x.d98 {
+        if 2 * s < x.soldiers {
             score -= 1;
         }
-        if 2 * c < x.da4 {
+        if 2 * c < x.heavycruisers {
             score -= 1;
         }
-        if 2 * x.d9c < f {
+        if 2 * x.fighters < f {
             score += 1;
         }
-        if 2 * x.d98 < s {
+        if 2 * x.soldiers < s {
             score += 1;
         }
-        if 2 * x.da4 < c {
+        if 2 * x.heavycruisers < c {
             score += 1;
         }
-        if 2 * x.d9c + x.d98 + 13 * x.da4 > 2 * f + s + 13 * c {
+        if 2 * x.fighters + x.soldiers + 13 * x.heavycruisers > 2 * f + s + 13 * c {
             score -= 5;
         } else {
             score += 5;
@@ -238,7 +238,7 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
             div = 2;
         }
         for k in 0..10 {
-            let mut take = g.pir[pt].wb4[k] / div;
+            let mut take = g.pir[pt].planets[k] / div;
             if take > 100 {
                 take = 100;
             }
@@ -246,9 +246,9 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
                 take = 0;
             }
             g.emp[e].planets[k].count += take as i32;
-            g.pir[pt].wb4[k] = g.pir[pt].wb4[k].wrapping_sub(take);
-            if g.pir[pt].wb4[k] < 0 {
-                g.pir[pt].wb4[k] = 0;
+            g.pir[pt].planets[k] = g.pir[pt].planets[k].wrapping_sub(take);
+            if g.pir[pt].planets[k] < 0 {
+                g.pir[pt].planets[k] = 0;
             }
             total += take as i32;
         }
@@ -257,45 +257,45 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
         got.skip_zero();
         let x = g.pir[pt].clone();
         got.add(total, b"planet");
-        got.add_plural(x.d94, b"megatons of food", b"");
-        got.add(x.d98 / d, b"soldier");
-        got.add(x.d9c / d, b"fighter");
-        got.add(x.da0 / d, b"defense station");
-        got.add(x.da4 / d, b"heavy cruiser");
-        got.add(x.da8 / d, b"carrier");
-        got.add(x.dac / d, b"general");
-        got.add(x.db0 / d, b"covert agent");
+        got.add_plural(x.food, b"megatons of food", b"");
+        got.add(x.soldiers / d, b"soldier");
+        got.add(x.fighters / d, b"fighter");
+        got.add(x.stations / d, b"defense station");
+        got.add(x.heavycruisers / d, b"heavy cruiser");
+        got.add(x.carriers / d, b"carrier");
+        got.add(x.generals / d, b"general");
+        got.add(x.agents / d, b"covert agent");
         got.add(x.money, b"credit");
         {
             let y = &mut g.emp[e];
-            y.soldiers += x.d98 / d;
-            y.fighters += x.d9c / d;
-            y.generals += x.dac / d;
-            y.heavycruisers += x.da4 / d;
-            y.carriers += x.da8 / d;
-            y.stations += x.da0 / d;
-            y.agents += x.db0 / d;
-            y.food = y.food.wrapping_add(x.d94);
+            y.soldiers += x.soldiers / d;
+            y.fighters += x.fighters / d;
+            y.generals += x.generals / d;
+            y.heavycruisers += x.heavycruisers / d;
+            y.carriers += x.carriers / d;
+            y.stations += x.stations / d;
+            y.agents += x.agents / d;
+            y.food = y.food.wrapping_add(x.food);
             y.money.add(x.money);
         }
         let id = g.emp[e].id as usize;
         let p = &mut g.pir[pt];
-        p.wd4[id] = p.wd4[id].wrapping_add(1);
-        let v = p.d98;
-        shrink(&mut p.d98, -v / d);
-        let v = p.d9c;
-        shrink(&mut p.d9c, -v / d);
-        let v = p.dac;
-        shrink(&mut p.dac, -v / d);
-        let v = p.da4;
-        shrink(&mut p.da4, -v / d);
-        let v = p.da8;
-        shrink(&mut p.da8, -v / d);
-        let v = p.da0;
-        shrink(&mut p.da0, -v / d);
-        let v = p.db0;
-        shrink(&mut p.db0, -v / d);
-        p.d94 = 0;
+        p.hatred[id] = p.hatred[id].wrapping_add(1);
+        let v = p.soldiers;
+        shrink(&mut p.soldiers, -v / d);
+        let v = p.fighters;
+        shrink(&mut p.fighters, -v / d);
+        let v = p.generals;
+        shrink(&mut p.generals, -v / d);
+        let v = p.heavycruisers;
+        shrink(&mut p.heavycruisers, -v / d);
+        let v = p.carriers;
+        shrink(&mut p.carriers, -v / d);
+        let v = p.stations;
+        shrink(&mut p.stations, -v / d);
+        let v = p.agents;
+        shrink(&mut p.agents, -v / d);
+        p.food = 0;
         p.money = 0;
         if g.grb(&R_PIRATERAIDS) {
             let name = pirate_name(g, pt);

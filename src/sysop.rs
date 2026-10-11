@@ -85,7 +85,7 @@ pub fn sysop_menu(g: &mut Sre) {
         m.add(g, b"Empire Viewer", b'E', 10);
         m.add(g, b"Player Editor", b'P', 11);
         m.add(g, b"Pirate Editor", b'T', 12);
-        if g.system.regstate == 0 {
+        if g.system.regstate == RS_UNREGISTERED {
             m.add(g, b"What happens if I register", b'$', 13);
         }
         let r = m.run(g, true, -1);
@@ -131,12 +131,16 @@ pub fn delete_empire(g: &mut Sre, e: usize) {
     }
     for i in 0..MAXEMPIRES {
         let o = &mut g.emp[i];
-        for k in [5, 0, 1, 2, 3, 4, 6] {
-            mask_clear(&mut o.d22f[k], id);
-        }
-        set_treaty(&mut o.treaty[id as usize], 0, 0);
-        o.treaty[id as usize].setc(0);
-        o.b2d3[id as usize] = 0;
+        mask_clear(&mut o.bribemask, id);
+        mask_clear(&mut o.aidmask, id);
+        mask_clear(&mut o.dissensionmask, id);
+        mask_clear(&mut o.demoralizemask, id);
+        mask_clear(&mut o.bombmask, id);
+        mask_clear(&mut o.hostagemask, id);
+        mask_clear(&mut o.setupmask, id);
+        set_treaty(&mut o.treaty[id as usize], TT_NONE, 0);
+        o.treaty[id as usize].setstatus(TS_NONE);
+        o.intercepts[id as usize] = 0;
     }
     for j in 0..10 {
         g.emp[e].planets[j].count = 0;

@@ -49,7 +49,7 @@ fn decode_line(inp: &[u8], out: &mut [u8]) -> bool {
 fn read_key_file(g: &mut Sre) {
     let f = ifstream(g, KEY_FILE, false);
     let mut kind = 0;
-    g.system.regstate = 0;
+    g.system.regstate = RS_UNREGISTERED;
     strcpy(&mut g.system.bank, DEFAULT_BANK);
     let done = |g: &mut Sre| ifstream_done(g, f);
     if ifstream_fail(g, f) {
@@ -91,9 +91,9 @@ fn read_key_file(g: &mut Sre) {
     }
     let k = kb[0] as i8 as i32 - 0x4f;
     let iok = k >= 0 && kb.get(k as usize) == Some(&b'I');
-    g.system.regstate = if iok { 2 } else { 0 };
+    g.system.regstate = if iok { RS_REGISTERED } else { RS_UNREGISTERED };
     if key == KEY_BETA {
-        g.system.regstate = 4;
+        g.system.regstate = RS_BETA;
     }
     done(g)
 }
@@ -105,7 +105,7 @@ fn read_key_file(g: &mut Sre) {
 // STATUS.SRE (the tests use this to compare with the original).
 pub fn check_registration(g: &mut Sre) {
     read_key_file(g);
-    if g.system.regstate != 0 || std::env::var_os("SRE_UNREGISTERED").is_some() {
+    if g.system.regstate != RS_UNREGISTERED || std::env::var_os("SRE_UNREGISTERED").is_some() {
         return;
     }
     let f = ifstream(g, KEY_FILE, false);
@@ -121,7 +121,7 @@ pub fn check_registration(g: &mut Sre) {
     }
     ifstream_done(g, f);
     g.regname = cs(&g.system.regto);
-    g.system.regstate = 2;
+    g.system.regstate = RS_REGISTERED;
 }
 
 // 68a3:039f: read a registration line, colouring as it is typed.
@@ -174,7 +174,7 @@ pub fn register(g: &mut Sre) -> bool {
         if bad {
             kout!(g; col(14), "\nInvalid registration line.\n");
             kout!(g; cn(g), "SRE is currently unregistered.\n");
-            g.system.regstate = 0;
+            g.system.regstate = RS_UNREGISTERED;
             ofstream_done(g, f);
             return false;
         }
@@ -182,9 +182,9 @@ pub fn register(g: &mut Sre) -> bool {
     }
     kout!(g; "\n ");
     hline(g, col(12), 0x4e);
-    g.system.regstate = 2;
+    g.system.regstate = RS_REGISTERED;
     if cstr(&lines[3]) == KEY_BETA {
-        g.system.regstate = 4;
+        g.system.regstate = RS_BETA;
     }
     kout!(g; cn(g), "This program is registered to:  ", col(14), cs(&lines[1]), b'\n');
     kout!(g; cn(g), "Bank name is:  \"", col(11), cs(&lines[2]), cn(g), "\"\n");
