@@ -61,7 +61,7 @@ pub struct Menu {
     pub columns: i16,             // +12
     pub prompt: Option<MenuHook>, // +14
     pub display: Option<MenuHook>, // +18
-    pub colors: [u8; 10],         // +1c
+    pub colors: [u8; 10],         // +1c title, frame, then the items' (bracket, key, text, columns 1..5)
     pub items: Vec<MenuItem>,     // +26
 }
 

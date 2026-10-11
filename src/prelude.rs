@@ -6,7 +6,7 @@ pub use crate::crypt::*;
 pub use crate::devices::*;
 pub use crate::files::*;
 pub use crate::game::*;
-pub use crate::layout::{get_i32, set_i32, Le};
+pub use crate::layout::Le;
 pub use crate::menu::*;
 pub use crate::news::*;
 pub use crate::report::*;

@@ -76,11 +76,3 @@ macro_rules! record {
     };
 }
 pub(crate) use record;
-
-// Little-endian access to bytes kept as raw areas of a record.
-pub fn get_i32(b: &[u8], off: usize) -> i32 {
-    i32::from_le_bytes([b[off], b[off + 1], b[off + 2], b[off + 3]])
-}
-pub fn set_i32(b: &mut [u8], off: usize, v: i32) {
-    b[off..off + 4].copy_from_slice(&v.to_le_bytes());
-}

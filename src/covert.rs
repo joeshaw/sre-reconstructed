@@ -4,36 +4,50 @@ use crate::events::*;
 use crate::player::random_pronoun;
 use crate::prelude::*;
 
+// Covert operations (the menu's items are one more).
+pub const OP_SPY: i16 = 0;
+pub const OP_INSURGENTAID: i16 = 1;
+pub const OP_SETUP: i16 = 2;
+pub const OP_DISSENSION: i16 = 3;
+pub const OP_DEMORALIZE: i16 = 4;
+pub const OP_BOMBING: i16 = 5;
+pub const OP_INFILTRATION: i16 = 6;
+pub const OP_HOSTAGES: i16 = 7;
+pub const OP_BRIBE: i16 = 8;
+
 const CAUGHT: &str = "Your covert agent was caught and was publicly executed!\n";
 
 // 14f6:05dc: the mask of empires an operation was done to this turn
 // (or today).
+fn opmask_ref(x: &mut Empire, op: i16) -> &mut i32 {
+    match op {
+        OP_INSURGENTAID => &mut x.aidmask,
+        OP_SETUP => &mut x.setupmask,
+        OP_DISSENSION => &mut x.dissensionmask,
+        OP_DEMORALIZE => &mut x.demoralizemask,
+        OP_BOMBING => &mut x.bombmask,
+        OP_HOSTAGES => &mut x.hostagemask,
+        OP_BRIBE => &mut x.bribemask,
+        _ => &mut x.othermask,
+    }
+}
+
 pub fn opmask(g: &Sre, e: usize, op: i16) -> i32 {
     let x = &g.emp[e];
     match op {
-        1 => x.d22f[0],
-        2 => x.d22f[6],
-        3 => x.d22f[1],
-        4 => x.d22f[2],
-        5 => x.d22f[3],
-        7 => x.d22f[4],
-        8 => x.d22f[5],
-        _ => get_i32(&x.u_24b, 0x20),
+        OP_INSURGENTAID => x.aidmask,
+        OP_SETUP => x.setupmask,
+        OP_DISSENSION => x.dissensionmask,
+        OP_DEMORALIZE => x.demoralizemask,
+        OP_BOMBING => x.bombmask,
+        OP_HOSTAGES => x.hostagemask,
+        OP_BRIBE => x.bribemask,
+        _ => x.othermask,
     }
 }
 
 pub fn set_opmask(g: &mut Sre, e: usize, op: i16, v: i32) {
-    let x = &mut g.emp[e];
-    match op {
-        1 => x.d22f[0] = v,
-        2 => x.d22f[6] = v,
-        3 => x.d22f[1] = v,
-        4 => x.d22f[2] = v,
-        5 => x.d22f[3] = v,
-        7 => x.d22f[4] = v,
-        8 => x.d22f[5] = v,
-        _ => set_i32(&mut x.u_24b, 0x20, v),
-    }
+    *opmask_ref(&mut g.emp[e], op) = v;
 }
 
 pub fn opmask_set_bit(g: &mut Sre, e: usize, op: i16, bit: i16) {
@@ -48,76 +62,80 @@ fn alive(g: &Sre, e: usize) -> bool {
 
 // 409c:0000: the odds of a covert operation.
 fn chance(g: &Sre, me: usize, t: usize) -> &'static str {
-    let mut a = g.emp[me].agents.wrapping_mul(total_planets(g, t) + 300);
-    let mut b = g.emp[t].agents.wrapping_mul(total_planets(g, me) + 300);
-    let a0 = a;
-    a = a.wrapping_add(b / 5);
-    b = b.wrapping_add(a0 / 5);
-    while a > 1 && b > 1 {
-        a >>= 1;
-        b >>= 1;
+    let mut ours = g.emp[me].agents.wrapping_mul(total_planets(g, t) + 300);
+    let mut theirs = g.emp[t].agents.wrapping_mul(total_planets(g, me) + 300);
+    let ours0 = ours;
+    ours = ours.wrapping_add(theirs / 5);
+    theirs = theirs.wrapping_add(ours0 / 5);
+    // Halve both until one is down to 1: what is left of the other is the
+    // ratio of the two, in powers of two.
+    while ours > 1 && theirs > 1 {
+        ours >>= 1;
+        theirs >>= 1;
     }
-    if a == b {
+    if ours == theirs {
         return "FAIR";
     }
-    if a <= 1 {
-        if b > 15 {
+    if ours <= 1 {
+        if theirs > 15 {
             return "NONEXISTENT";
         }
-        if b > 7 {
+        if theirs > 7 {
             return "VERY SLIM";
         }
-        if b > 3 {
+        if theirs > 3 {
             return "SLIM";
         }
         return "UNFAVORABLE";
     }
-    if a > 15 {
+    if ours > 15 {
         return "ALMOST CERTAIN";
     }
-    if a > 7 {
+    if ours > 7 {
         return "FAIRLY GOOD";
     }
-    if a > 3 {
+    if ours > 3 {
         return "GOOD";
     }
     "FAVORABLE"
 }
 
-// 409c:0197: does a covert operation of me against t succeed?
+// 409c:0197: does ours covert operation of me against t succeed?
 pub fn spy_succeeds(g: &Sre, me: usize, t: usize) -> bool {
     if me == t {
         return true;
     }
-    let mut a = g.emp[me].agents.wrapping_mul(total_planets(g, t) + 300);
-    let mut b = g.emp[t].agents.wrapping_mul(total_planets(g, me) + 300);
-    let a0 = a;
-    a = a.wrapping_add(b / 5);
-    b = b.wrapping_add(a0 / 5);
-    while a > 32000 || b > 32000 {
-        a /= 2;
-        b /= 2;
+    // Each side's strength: its agents, against the size of the other.
+    let mut ours = g.emp[me].agents.wrapping_mul(total_planets(g, t) + 300);
+    let mut theirs = g.emp[t].agents.wrapping_mul(total_planets(g, me) + 300);
+    let ours0 = ours;
+    ours = ours.wrapping_add(theirs / 5);
+    theirs = theirs.wrapping_add(ours0 / 5);
+    while ours > 32000 || theirs > 32000 {
+        ours /= 2;
+        theirs /= 2;
     }
-    let ea = a as u16;
-    let eb = b as u16;
-    if ea == 0 {
+    let us = ours as u16;
+    let them = theirs as u16;
+    if us == 0 {
         return false;
     }
-    if eb == 0 {
+    if them == 0 {
         return true;
     }
-    let x = ea.wrapping_add(((eb as i16 as i32 * b_rand() as i32) / 0x8000) as u16);
-    let y = eb.wrapping_add(((ea as i16 as i32 * b_rand() as i32) / 0x8000) as u16);
-    x > y
+    // Each side adds a random part of the other's strength.
+    let ourroll = us.wrapping_add(((them as i16 as i32 * b_rand() as i32) / 0x8000) as u16);
+    let theirroll = them.wrapping_add(((us as i16 as i32 * b_rand() as i32) / 0x8000) as u16);
+    ourroll > theirroll
 }
 
 // 409c:0508: a covert operation ends the treaties between two empires.
 fn break_treaties(g: &mut Sre, me: usize, t: usize) {
     let (mid, tid) = (g.emp[me].id as usize, g.emp[t].id as usize);
-    set_treaty(&mut g.emp[me].treaty[tid], 0, 0);
-    g.emp[me].treaty[tid].setc(0);
-    set_treaty(&mut g.emp[t].treaty[mid], 0, 0);
-    g.emp[t].treaty[mid].setc(0);
+    set_treaty(&mut g.emp[me].treaty[tid], TT_NONE, 0);
+    g.emp[me].treaty[tid].setstatus(TS_NONE);
+    set_treaty(&mut g.emp[t].treaty[mid], TT_NONE, 0);
+    g.emp[t].treaty[mid].setstatus(TS_NONE);
 }
 
 // 409c:033d
@@ -128,13 +146,13 @@ fn choose_target(g: &mut Sre, me: usize, op: i16) -> i16 {
             mask_clear(&mut allowed, i as i16);
         }
     }
-    if op != 2 {
+    if op != OP_SETUP {
         mask_clear(&mut allowed, g.emp[me].id);
     }
-    if op != 0 && op != 6 {
+    if op != OP_SPY && op != OP_INFILTRATION {
         for i in 0..MAXEMPIRES {
             let t = g.emp[me].treaty[i];
-            if (t.typ() != 0 && t.a > 0) || t.typ() == 1 {
+            if (t.typ() != TT_NONE && t.days > 0) || t.typ() == TT_NEUTRALITY {
                 mask_clear(&mut allowed, i as i16);
             }
         }
@@ -143,9 +161,9 @@ fn choose_target(g: &mut Sre, me: usize, op: i16) -> i16 {
     if id == -1 {
         return -1;
     }
-    if op != 0 && op != 6 && op != 8 && mask_test(opmask(g, me, op), id) {
+    if op != OP_SPY && op != OP_INFILTRATION && op != OP_BRIBE && mask_test(opmask(g, me, op), id) {
         kout!(g; "But you have already performed covert ops with that empire!  Limit one empire per ");
-        kout!(g; if op == 1 || op == 3 || op == 4 { "turn.\n" } else { "day.\n" });
+        kout!(g; if op == OP_INSURGENTAID || op == OP_DISSENSION || op == OP_DEMORALIZE { "turn.\n" } else { "day.\n" });
         return -1;
     }
     id
@@ -161,14 +179,14 @@ fn attempt(g: &mut Sre, me: usize, cost: i32, target: &mut i16, op: i16) -> bool
     if *target == -1 {
         return false;
     }
-    if op != 1 && op != 0 && op != 8 {
+    if op != OP_INSURGENTAID && op != OP_SPY && op != OP_BRIBE {
         let c = chance(g, me, *target as usize);
         kout!(g; cn(g), "Chance of success:  ", col(13), c, cn(g), ".\n");
         if !yes_no(g, 1, b"Do you want to continue") {
             return false;
         }
     }
-    if op != 0 && op != 6 && op != 8 {
+    if op != OP_SPY && op != OP_INFILTRATION && op != OP_BRIBE {
         opmask_set_bit(g, me, op, *target);
     }
     g.emp[me].money.sub(cost);
@@ -213,12 +231,12 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
         }
         m.add(g, b"Infiltration", b'7', 7);
         if g.emp[me].year >= 0 {
-            if g.system.regstate != 0 {
+            if g.system.regstate != RS_UNREGISTERED {
                 m.add(g, b"Take hostages", b'8', 8);
             }
             m.add(g, b"Bribe spy", b'9', 9);
         }
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             m.add(g, b"", b'V', 0x50);
         }
         m.add(g, b"", b'S', 0x51);
@@ -232,11 +250,11 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
         let meid = g.emp[me].id;
         match r {
             1 => 'case: {
-                if !attempt(g, me, cost[1], &mut id, 0) {
+                if !attempt(g, me, cost[1], &mut id, OP_SPY) {
                     break 'case;
                 }
                 let t = id as usize;
-                if spy_succeeds(g, me, t) || mask_test(opmask(g, me, 8), g.emp[t].id) {
+                if spy_succeeds(g, me, t) || mask_test(opmask(g, me, OP_BRIBE), g.emp[t].id) {
                     kout!(g; "Your spy was successful.\nSpy results are...\n");
                     empire_status(g, t, false);
                 } else {
@@ -249,7 +267,7 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 }
             }
             2 => 'case: {
-                if !attempt(g, me, cost[2], &mut id, 1) {
+                if !attempt(g, me, cost[2], &mut id, OP_INSURGENTAID) {
                     break 'case;
                 }
                 let t = id as usize;
@@ -258,7 +276,7 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                     kout!(g; "That empire already is ", cnum(g), insurgency_name(g, t), cn(g), ".\n");
                     break 'case;
                 }
-                opmask_set_bit(g, me, 1, id);
+                opmask_set_bit(g, me, OP_INSURGENTAID, id);
                 let mut k: i16 = 0;
                 while k < g.emp[t].insurgency {
                     if !spy_succeeds(g, me, t) {
@@ -288,12 +306,12 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                     break 'case;
                 }
                 kout!(g; "Choose an 'attacker' empire:\n");
-                let a = choose_target(g, me, 2);
+                let a = choose_target(g, me, OP_SETUP);
                 if a == -1 {
                     break 'case;
                 }
                 kout!(g; "Choose a 'defender' empire:\n");
-                let d = choose_target(g, me, 2);
+                let d = choose_target(g, me, OP_SETUP);
                 if d == -1 {
                     break 'case;
                 }
@@ -305,8 +323,8 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 let (ea, ed) = (a as usize, d as usize);
                 break_treaties(g, me, ea);
                 break_treaties(g, me, ed);
-                opmask_set_bit(g, me, 2, a);
-                opmask_set_bit(g, me, 2, d);
+                opmask_set_bit(g, me, OP_SETUP, a);
+                opmask_set_bit(g, me, OP_SETUP, d);
                 g.emp[me].agents -= 1;
                 let ok = spy_succeeds(g, me, ea) || spy_succeeds(g, me, ed);
                 {
@@ -318,9 +336,9 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
             }
             4 | 5 | 8 => 'case: {
                 let (op, kind) = match r {
-                    4 => (3, EvKind::Dissension),
-                    5 => (4, EvKind::Demoralize),
-                    _ => (7, EvKind::Hostages),
+                    4 => (OP_DISSENSION, EvKind::Dissension),
+                    5 => (OP_DEMORALIZE, EvKind::Demoralize),
+                    _ => (OP_HOSTAGES, EvKind::Hostages),
                 };
                 if !attempt(g, me, cost[r as usize], &mut id, op) {
                     break 'case;
@@ -330,14 +348,14 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 if r == 5 {
                     g.emp[me].agents -= 1;
                     break_treaties(g, me, t);
-                    opmask_set_bit(g, me, 4, id);
+                    opmask_set_bit(g, me, OP_DEMORALIZE, id);
                 } else if r == 4 {
                     break_treaties(g, me, t);
                     g.emp[me].agents -= 1;
-                    opmask_set_bit(g, me, 3, id);
+                    opmask_set_bit(g, me, OP_DISSENSION, id);
                 } else {
                     break_treaties(g, me, t);
-                    opmask_set_bit(g, me, 7, id);
+                    opmask_set_bit(g, me, OP_HOSTAGES, id);
                     g.emp[me].agents -= 1;
                 }
                 let ok = spy_succeeds(g, me, t);
@@ -354,12 +372,12 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 });
             }
             6 => 'case: {
-                if !attempt(g, me, cost[6], &mut id, 5) {
+                if !attempt(g, me, cost[6], &mut id, OP_BOMBING) {
                     break 'case;
                 }
                 let t = id as usize;
                 break_treaties(g, me, t);
-                opmask_set_bit(g, me, 5, id);
+                opmask_set_bit(g, me, OP_BOMBING, id);
                 if !spy_succeeds(g, me, t) {
                     let rep = covert_report(g, g.emp[t].id);
                     g.emp[me].agents -= 1;
@@ -408,13 +426,13 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                     break;
                 }
                 if c == 1 {
-                    if !attempt(g, me, cost[7], &mut id, 6) {
+                    if !attempt(g, me, cost[7], &mut id, OP_INFILTRATION) {
                         continue;
                     }
                     let t = id as usize;
                     g.emp[me].agents -= 1;
                     let mi = g.emp[me].id as usize;
-                    if g.emp[t].b2d3[mi] as u8 == 0xff || !spy_succeeds(g, me, t) {
+                    if g.emp[t].intercepts[mi] as u8 == 0xff || !spy_succeeds(g, me, t) {
                         let rep = covert_report(g, g.emp[t].id);
                         out!(g, rep; "A covert agent from ", cemp(g), uname(g, me), cn(g),
                              " was caught trying to intercept your messages and ");
@@ -424,10 +442,10 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                         report_done(g, rep);
                     } else {
                         kout!(g; "Your spy was has been planted.\n");
-                        g.emp[t].b2d3[mi] = g.emp[t].b2d3[mi].wrapping_add(1);
+                        g.emp[t].intercepts[mi] = g.emp[t].intercepts[mi].wrapping_add(1);
                     }
                 } else if c == 2 {
-                    if !attempt(g, me, cost[7], &mut id, 6) {
+                    if !attempt(g, me, cost[7], &mut id, OP_INFILTRATION) {
                         continue;
                     }
                     let t = id as usize;
@@ -447,19 +465,19 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 }
             },
             9 => 'case: {
-                if !attempt(g, me, cost[9], &mut id, 8) {
+                if !attempt(g, me, cost[9], &mut id, OP_BRIBE) {
                     break 'case;
                 }
                 let t = id as usize;
                 let tid = g.emp[t].id;
-                if mask_test(opmask(g, me, 8), tid) {
+                if mask_test(opmask(g, me, OP_BRIBE), tid) {
                     g.emp[me].money.add(cost[9]);
                     kout!(g; "You already have a spy working for you in that empire!\n");
                     break 'case;
                 }
                 let mut bribed: i32 = 0;
                 for i in 0..MAXEMPIRES {
-                    if mask_test(opmask(g, i, 8), tid) {
+                    if mask_test(opmask(g, i, OP_BRIBE), tid) {
                         bribed += 1;
                     }
                 }
@@ -470,10 +488,10 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 }
                 let mut avail = g.emp[t].agents;
                 for i in 0..MAXEMPIRES {
-                    avail -= mask_test(opmask(g, i, 8), tid) as i32;
+                    avail -= mask_test(opmask(g, i, OP_BRIBE), tid) as i32;
                 }
                 if spy_succeeds(g, me, t) && spy_succeeds(g, me, t) && avail > 0 {
-                    opmask_set_bit(g, me, 8, tid);
+                    opmask_set_bit(g, me, OP_BRIBE, tid);
                     kout!(g; "You have successfully bribed an agent from ", cemp(g), uname(g, t), cn(g), ".\n");
                 } else {
                     let rep = covert_report(g, g.emp[t].id);

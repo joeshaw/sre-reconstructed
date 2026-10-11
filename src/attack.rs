@@ -26,8 +26,8 @@ fn clamp100b(v: i16) -> i8 {
 
 // The treaty an attack breaks (SetTreaty inlined, and the state reset).
 fn break_treaty(t: &mut Treaty) {
-    set_treaty(t, 0, 0);
-    t.setc(0);
+    set_treaty(t, TT_NONE, 0);
+    t.setstatus(TS_NONE);
 }
 
 fn break_treaties(g: &mut Sre, a: usize, b: usize) {
@@ -77,14 +77,14 @@ fn can_attack(g: &mut Sre, me: usize, t: usize) -> bool {
         return false;
     }
     let tr = g.emp[me].treaty[g.emp[t].id as usize];
-    if tr.typ() != 0 {
+    if tr.typ() != TT_NONE {
         kout!(g; "You have a ", col(10), treaty_name(tr.typ()), cn(g));
         kout!(g; " with ", cnum(g), uname(g, t), cn(g), ".\n");
-        if tr.typ() == 1 {
+        if tr.typ() == TT_NEUTRALITY {
             kout!(g; "Your Neutrality Treaty prevents you from attacking.\n");
             return false;
         }
-        if tr.a != 0 {
+        if tr.days != 0 {
             kout!(g; "You cannot attack your allies unless you first break the treaty from the Diplomacy Menu.\n");
             return false;
         }
@@ -182,7 +182,7 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
     s_forces.add(x.generals, b"general");
     s_forces.add(x.heavycruisers, b"heavy cruiser");
     s_forces.add(x.lightcruisers, b"light cruiser");
-    if (x.weapons >> 3) & 1 != 0 {
+    if x.has_weapon(W_MOTHERSHIP) {
         s_forces.add(1, b"mothership");
     }
     kout!(g; "You have ");
@@ -190,7 +190,7 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
     kout!(g; b'.');
     // (Any carrier or mothership lets up to 100,000 fighters fly.)
     let x = &g.emp[me];
-    let mut fcap: i32 = if 100i32.wrapping_mul(x.carriers) + ((x.weapons >> 3) & 1) as i32 != 0 { 100000 } else { 0 };
+    let mut fcap: i32 = if 100i32.wrapping_mul(x.carriers) + x.has_weapon(W_MOTHERSHIP) as i32 != 0 { 100000 } else { 0 };
     let scap: i32 = if 50i32.wrapping_mul(x.generals) <= x.soldiers { 50i32.wrapping_mul(x.generals) } else { x.soldiers };
     fcap = if x.fighters < fcap { x.fighters } else { fcap };
     let nogen = x.soldiers > scap;
@@ -246,11 +246,11 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
         if !a.exists() {
             continue;
         }
-        if a.treaty[tid].c() != 0 {
+        if a.treaty[tid].status() != TS_NONE {
             continue;
         }
-        allys[i] = (a.treaty[tid].e() as i32).wrapping_mul(a.soldiers / 100);
-        allyh[i] = (a.treaty[tid].d() as i32).wrapping_mul(a.heavycruisers / 100);
+        allys[i] = (a.treaty[tid].soldierpct() as i32).wrapping_mul(a.soldiers / 100);
+        allyh[i] = (a.treaty[tid].cruiserpct() as i32).wrapping_mul(a.heavycruisers / 100);
         sd = sd.wrapping_add(allys[i]);
         hd = hd.wrapping_add(allyh[i]);
     }
@@ -270,14 +270,19 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
     hd = hd.wrapping_add(g.emp[t].heavycruisers);
     let hd0 = hd;
     kout!(g; col(12));
+    // The forces: s soldiers, f fighters (the defender's defense stations
+    // fight as its fighters), h heavy and l light cruisers; a the
+    // attacker's, d the defender's (stations and tlight).  A hit costs 2%
+    // of both sides' forces of a kind (ds, df, dh, dl), and the battle
+    // goes on until either side is down to a tenth of its forces.
     let ds = (sa + sd) / 50 + 1;
     let df = (fa + stations) / 50 + 1;
     let dh = (ha + hd) / 50 + 1;
     let dl = (la + tlight) / 50 + 1;
-    let qa = (sa + fa + ha + la) / 10;
-    let qd = (sd + stations + hd + tlight) / 10;
+    let lasta = (sa + fa + ha + la) / 10;
+    let lastd = (sd + stations + hd + tlight) / 10;
     let mut round: i16 = 0;
-    while sa + fa + ha + la > qa && sd + stations + hd + tlight > qd {
+    while sa + fa + ha + la > lasta && sd + stations + hd + tlight > lastd {
         if round >= 3 && random(200) < g.emp[t].effectiveness as i16 + 90 {
             hit(&mut sa, ds, &mut ha, dh, &mut fa, df, &mut la, dl);
         }
@@ -313,23 +318,23 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
     kout!(g; cn(g), b'\n');
     // Score each kind of force.
     let f = [(sa, sd), (fa, stations), (ha, hd), (la, tlight)];
-    for (a, d) in f {
-        if a > 0 {
+    for (att, def) in f {
+        if att > 0 {
             score += 1;
         }
-        if 2 * d < a {
+        if 2 * def < att {
             score += 1;
         }
-        if a < 0 {
+        if att < 0 {
             score -= 1;
         }
-        if d > 0 {
+        if def > 0 {
             score -= 1;
         }
-        if 2 * a < d {
+        if 2 * att < def {
             score -= 1;
         }
-        if d < 0 {
+        if def < 0 {
             score += 1;
         }
     }
@@ -506,7 +511,7 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
         let r = battle_report_to(g, g.emp[t].id);
         let mn = ename(g, me);
         attack_message(g, r, &mn, score);
-        g.emp[me].w229 = g.emp[me].w229.wrapping_add(1);
+        g.emp[me].attacks = g.emp[me].attacks.wrapping_add(1);
         if won {
             show_victory(g, cc, credits, &s_captured);
         } else {
@@ -602,7 +607,7 @@ fn guerilla(g: &mut Sre, me: usize, t: usize) -> bool {
     }
     kout!(g; "You lost ", cnum(g), lost, cn(g), " soldiers.\n");
     g.emp[me].soldiers -= lost;
-    g.emp[me].w229 = g.emp[me].w229.wrapping_add(1);
+    g.emp[me].attacks = g.emp[me].attacks.wrapping_add(1);
     let before = g.emp[t].soldiers;
     {
         let x = &mut g.emp[t];
@@ -655,8 +660,8 @@ fn guerilla(g: &mut Sre, me: usize, t: usize) -> bool {
 
 // 5c5c:060b
 fn nuclear(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
-    let mut div: i16 = 100 / g.galaxy.w3b4 + 1;
-    if g.emp[me].weapons & 1 == 0 {
+    let mut div: i16 = 100 / g.galaxy.nukepercent + 1;
+    if !g.emp[me].has_weapon(W_NUCLEAR) {
         kout!(g; "You have no nuclear weapons!\n");
         return false;
     }
@@ -667,18 +672,18 @@ fn nuclear(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
         return false;
     }
     break_treaties(g, me, t);
-    g.emp[me].weapons &= !1;
-    g.emp[me].w229 = g.emp[me].w229.wrapping_add(1);
-    if g.galaxy.w3b2 > 50 {
-        g.galaxy.w3b2 -= 30;
+    g.emp[me].weapons &= !W_NUCLEAR;
+    g.emp[me].attacks = g.emp[me].attacks.wrapping_add(1);
+    if g.galaxy.nukelimit > 50 {
+        g.galaxy.nukelimit -= 30;
     }
-    if g.galaxy.w3b4 > 3 {
-        g.galaxy.w3b4 -= 1;
+    if g.galaxy.nukepercent > 3 {
+        g.galaxy.nukepercent -= 1;
     }
     if random(33) == 0 {
         // The bomb goes off at home.
         let tp = total_planets(g, me);
-        while tp / div as i32 > g.galaxy.w3b2 as i32 && div < 100 {
+        while tp / div as i32 > g.galaxy.nukelimit as i32 && div < 100 {
             div += 1;
         }
         for i in 0..10 {
@@ -693,7 +698,7 @@ fn nuclear(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
         return true;
     }
     let tp = total_planets(g, t);
-    while tp / div as i32 > g.galaxy.w3b2 as i32 && div < 100 {
+    while tp / div as i32 > g.galaxy.nukelimit as i32 && div < 100 {
         div += 1;
     }
     for i in 0..10 {
@@ -703,7 +708,7 @@ fn nuclear(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
     let lost = tp - total_planets(g, t);
     let r = battle_report_to(g, g.emp[t].id);
     out!(g, r; "You lost ", cnum(g), lost, cn(g), " planets in a Nuclear Attack from ", cemp(g), uname(g, me), cn(g), b'!');
-    g.emp[me].d1b0 /= 2;
+    g.emp[me].favor /= 2;
     out!(g, NEWS; col(9), uname(g, t), cn(g), " was hit by a nuclear bomb traced to ", cemp(g), uname(g, me), cn(g), ".\n");
     if random(3) == 0 && show_screen(g, None, b"NukeWar", false) {
         pause_prompt(g);
@@ -715,7 +720,7 @@ fn nuclear(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
 
 // 5c5c:0f19
 fn chemical(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
-    if (g.emp[me].weapons >> 1) & 1 == 0 {
+    if !g.emp[me].has_weapon(W_CHEMICAL) {
         kout!(g; "You have no chemical weapons!\n");
         return false;
     }
@@ -725,10 +730,10 @@ fn chemical(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
     if !yes_no(g, 0, b"The Galactic Coordinator has outlawed chemical weapons.  By using the barrel of chemicals, you will be seriously angering It.  Are you sure you wish to do this") {
         return false;
     }
-    g.emp[me].d1b0 = 0;
+    g.emp[me].favor = 0;
     break_treaties(g, me, t);
-    g.emp[me].weapons &= !2;
-    g.emp[me].w229 = g.emp[me].w229.wrapping_add(1);
+    g.emp[me].weapons &= !W_CHEMICAL;
+    g.emp[me].attacks = g.emp[me].attacks.wrapping_add(1);
     if random(10) == 0 && g.emp[t].agents > 0 {
         // The target's agents sabotage the weapon.
         let killed = g.emp[me].population / 2;
@@ -770,7 +775,7 @@ fn chemical(g: &mut Sre, p: &mut Player, me: usize, t: usize) -> bool {
 
 // 5c5c:1862
 fn psionic(g: &mut Sre, me: usize, t: usize) -> bool {
-    if (g.emp[me].weapons >> 2) & 1 == 0 {
+    if !g.emp[me].has_weapon(W_PSIONIC) {
         kout!(g; "You have no psionic bomb!\n");
         return false;
     }
@@ -781,13 +786,13 @@ fn psionic(g: &mut Sre, me: usize, t: usize) -> bool {
         return false;
     }
     break_treaties(g, me, t);
-    g.emp[me].weapons &= !4;
-    g.emp[me].w229 = g.emp[me].w229.wrapping_add(1);
+    g.emp[me].weapons &= !W_PSIONIC;
+    g.emp[me].attacks = g.emp[me].attacks.wrapping_add(1);
     g.emp[t].insurgency = 7;
     g.emp[t].effectiveness = 0;
     let r = battle_report_to(g, g.emp[t].id);
     out!(g, r; "A psionic weapon from ", cemp(g), uname(g, me), cn(g), " devastated your population.\n");
-    g.emp[me].d1b0 /= 2;
+    g.emp[me].favor /= 2;
     out!(g, NEWS; col(9), uname(g, t), cn(g), " was hit by a psionic bomb from ", cemp(g), uname(g, me), cn(g), ".\n");
     kout!(g; "You brought ", uname(g, t), " down to UNDER COUP.\n");
     report_done(g, r);
@@ -815,16 +820,16 @@ pub fn attack(g: &mut Sre, p: &mut Player, e: usize, mut how: u8) -> bool {
         if g.grb(&R_PIRATESPY) {
             add(g, &mut m, b"Spy on Pirates", 4);
         }
-        if g.emp[e].weapons & 1 != 0 {
+        if g.emp[e].has_weapon(W_NUCLEAR) {
             add(g, &mut m, b"Nuclear Offensive", 5);
         }
-        if (g.emp[e].weapons >> 1) & 1 != 0 {
+        if g.emp[e].has_weapon(W_CHEMICAL) {
             add(g, &mut m, b"Chemical Warfare", 6);
         }
-        if (g.emp[e].weapons >> 2) & 1 != 0 {
+        if g.emp[e].has_weapon(W_PSIONIC) {
             add(g, &mut m, b"Psionic Attack", 7);
         }
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             m.add(g, b"", b'V', 0x50);
         }
         if key == b'1' {
@@ -860,7 +865,7 @@ pub fn attack(g: &mut Sre, p: &mut Player, e: usize, mut how: u8) -> bool {
             return true;
         }
         let maxattacks = g.grl(&R_MAXATTACKS);
-        if maxattacks != -1 && g.emp[e].w229 as i32 >= g.grl(&R_MAXATTACKS) {
+        if maxattacks != -1 && g.emp[e].attacks as i32 >= g.grl(&R_MAXATTACKS) {
             kout!(g; "The ", col(15), "Galactic Coordinator", cn(g));
             kout!(g; " will not let you attack more than ", cnum(g));
             let n = g.grl(&R_MAXATTACKS);

@@ -25,13 +25,20 @@ record! {
     }
 }
 
+// TradeData::state
+pub const FS_DONE: i16 = 0;
+pub const FS_SENT: i16 = 1;
+pub const FS_ACCEPTED: i16 = 2;
+pub const FS_REJECTED: i16 = 3;
+pub const FS_RETURNING: i16 = 4;
+
 record! {
     pub struct TradeData {
         pub created: i32,   // 00
         pub expires: i32,   // 04
         pub to: i16,        // 08
         pub from: i16,      // 0a
-        pub state: i16,     // 0c 0 done, 1 sent, 2 accepted, 3 rejected, 4 returning
+        pub state: i16,     // 0c FS_*
         pub offer: Goods,   // 0e
         pub demand: Goods,  // 2e
         pub carriers: i32,  // 4e carriers carrying the fleet
@@ -109,7 +116,7 @@ fn trade_init(g: &mut Sre, t: &mut TradeData) {
     t.carriers = 0;
     t.to = -1;
     t.from = -1;
-    t.state = 0;
+    t.state = FS_DONE;
     t.created = g.time.now;
     t.expires = t.created.wrapping_add(86400i32.wrapping_mul(g.grl(&R_TRADEEXPIRE)));
 }
@@ -143,24 +150,24 @@ impl Streamable for TradingFleet {
     }
     // 6e3f:0070
     fn expired(&mut self, _g: &mut Sre) -> bool {
-        self.d.state == 0
+        self.d.state == FS_DONE
     }
     // 6e3f:0088: a fleet to a deleted empire turns back; one from it is lost.
     fn on_empire_deleted(&mut self, g: &mut Sre, id: i16) {
         let d = &mut self.d;
-        if d.to == id && d.state == 1 {
+        if d.to == id && d.state == FS_SENT {
             d.to = d.from;
             d.from = id;
-            d.state = 4;
+            d.state = FS_RETURNING;
             if d.to != -1 && !g.emp[d.to as usize].exists() {
-                d.state = 0;
+                d.state = FS_DONE;
             }
         }
         if d.from == id {
-            if d.state == 1 {
-                d.state = 0;
-            } else if d.state != 0 && d.to != -1 && g.emp[d.to as usize].exists() {
-                d.state = 4;
+            if d.state == FS_SENT {
+                d.state = FS_DONE;
+            } else if d.state != FS_DONE && d.to != -1 && g.emp[d.to as usize].exists() {
+                d.state = FS_RETURNING;
             }
         }
     }
@@ -289,7 +296,7 @@ fn choose_partner(g: &mut Sre, e: usize) -> i16 {
     let mut allowed = empire_mask(g) & !protected_mask(g);
     for i in 0..25 {
         // (The original tests the trading empire itself, not empire i.)
-        if g.emp[e].treaty[i].typ() == 0 || !g.emp[e].exists() || total_planets(g, e) <= 0 || g.emp[e].population <= 0 {
+        if g.emp[e].treaty[i].typ() == TT_NONE || !g.emp[e].exists() || total_planets(g, e) <= 0 || g.emp[e].population <= 0 {
             mask_clear(&mut allowed, i as i16);
         }
     }
@@ -318,10 +325,10 @@ fn send_trade(g: &mut Sre, e: usize) -> bool {
     }
     g.emp[e].carriers -= t.carriers;
     g.emp[e].money.sub(t.offer.credits);
-    g.emp[e].d16c += goods_value(&t.offer);
+    g.emp[e].tradegoods += goods_value(&t.offer);
     t.to = to;
     t.from = g.emp[e].id;
-    t.state = 1;
+    t.state = FS_SENT;
     let mut fleet = TradingFleet { d: t };
     fleet.d.hasmsg = 0;
     let mut msg = false;
@@ -366,8 +373,8 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
         return false;
     }
     match t.state {
-        0 => false,
-        1 => {
+        FS_DONE => false,
+        FS_SENT => {
             let o = t.from as usize;
             kout!(g; cemp(g), uname(g, o), cn(g), " has sent a trading deal:\n");
             kout!(g; "In return for ");
@@ -383,7 +390,7 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
                 put_item_list(g, KOUT, &l);
                 kout!(g; ".\n");
             }
-            t.state = 3;
+            t.state = FS_REJECTED;
             let mut c: u8;
             if g.emp[e].year < 0 {
                 kout!(g; "However, since you are in protection, you cannot trade with other empires.\n");
@@ -404,10 +411,10 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
                     c = b'N';
                 }
                 kout!(g; cn(g), b'\n');
-            } else if g.emp[e].treaty[t.from as usize].typ() == 0 {
+            } else if g.emp[e].treaty[t.from as usize].typ() == TT_NONE {
                 kout!(g; "However, you no longer have any relations with that empire.\n");
                 c = b'N';
-                t.state = 4;
+                t.state = FS_RETURNING;
             } else {
                 kout!(g; "Accept this deal?  ");
                 key(g, b'Y');
@@ -431,7 +438,7 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
                 return true;
             }
             if c == b'I' {
-                t.state = 1;
+                t.state = FS_SENT;
                 t.created = t.created.wrapping_add(2);
                 return true;
             }
@@ -441,20 +448,20 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
                     *v = v.wrapping_sub(d);
                 }
             }
-            g.emp[o].d16c -= goods_value(&t.offer);
-            g.emp[e].d16c += goods_value(&t.demand);
+            g.emp[o].tradegoods -= goods_value(&t.offer);
+            g.emp[e].tradegoods += goods_value(&t.demand);
             g.emp[e].money.sub(t.demand.credits.wrapping_sub(t.offer.credits));
             if g.emp[e].money.get().wrapping_sub(t.demand.credits).wrapping_add(t.offer.credits) < 0 {
                 let m = g.emp[e].money.get();
                 g.emp[e].bank.add(m);
                 g.emp[e].money.set(0);
             }
-            t.state = 2;
+            t.state = FS_ACCEPTED;
             t.to = t.from;
             t.from = g.emp[e].id;
             true
         }
-        2 => {
+        FS_ACCEPTED => {
             // The fleet returns with what was demanded.
             let o = t.from as usize;
             if g.emp[o].exists() {
@@ -474,13 +481,13 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
             }
             g.emp[e].money.add(t.demand.credits);
             g.emp[e].carriers += t.carriers;
-            g.emp[o].d16c -= goods_value(&t.demand);
+            g.emp[o].tradegoods -= goods_value(&t.demand);
             false
         }
-        3 | 4 => {
+        FS_REJECTED | FS_RETURNING => {
             // The offer comes back.
             let o = t.from as usize;
-            if g.emp[o].exists() && t.state == 3 {
+            if g.emp[o].exists() && t.state == FS_REJECTED {
                 kout!(g; cnum(g), uname(g, o), cn(g), " rejected your trade agreement.\n");
             } else {
                 kout!(g; "A trading fleet was not able to continue, and has returned.\n");
@@ -497,7 +504,7 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
             }
             g.emp[e].money.add(t.offer.credits);
             g.emp[e].carriers += t.carriers;
-            g.emp[e].d16c -= goods_value(&t.offer);
+            g.emp[e].tradegoods -= goods_value(&t.offer);
             false
         }
         _ => false,

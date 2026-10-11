@@ -33,7 +33,7 @@ pub fn treaty_name(typ: i16) -> Str {
         b"Total Defense Pact",
         b"Custom Treaty",
     ];
-    if typ as u16 > 7 {
+    if typ as u16 > TT_CUSTOM as u16 {
         return b"#<unknown-treaty-type>".to_vec();
     }
     NAMES[typ as usize].to_vec()
@@ -42,10 +42,10 @@ pub fn treaty_name(typ: i16) -> Str {
 // 14f6:04ba: the name, with the percentages of a custom treaty.
 pub fn treaty_desc(t: Treaty) -> Str {
     let s = treaty_name(t.typ());
-    if t.typ() != 7 {
+    if t.typ() != TT_CUSTOM {
         return s;
     }
-    cat(&[&s, b" (", &int_str(t.e() as i32), b"%/", &int_str(t.d() as i32), b"%)"])
+    cat(&[&s, b" (", &int_str(t.soldierpct() as i32), b"%/", &int_str(t.cruiserpct() as i32), b"%)"])
 }
 
 fn alive(g: &Sre, e: usize) -> bool {
@@ -86,22 +86,22 @@ fn relations(g: &mut Sre, me: usize, mark: i32) {
         kout!(g; "   ", col(15), setw(0x20), uname(g, i), setw(0));
         let mine = g.emp[me].treaty[g.emp[i].id as usize];
         let theirs = g.emp[i].treaty[g.emp[me].id as usize];
-        if mine.typ() != 0 {
+        if mine.typ() != TT_NONE {
             kout!(g; cnum(g), treaty_desc(mine));
-            if mine.a > 0 {
-                kout!(g; b' ', cbr(g), b'[', cbo(g), mine.a as i16, cbr(g), b']', cn(g));
+            if mine.days > 0 {
+                kout!(g; b' ', cbr(g), b'[', cbo(g), mine.days as i16, cbr(g), b']', cn(g));
             }
-        } else if theirs.typ() != 0 {
+        } else if theirs.typ() != TT_NONE {
             kout!(g; col(10), treaty_desc(theirs), b' ');
-            match theirs.c() {
-                1 => kout!(g; "Proposed"),
-                2 => kout!(g; "Rejected"),
-                3 => kout!(g; "Accepted"),
-                4 => kout!(g; "Treaty Broken"),
+            match theirs.status() {
+                TS_PROPOSED => kout!(g; "Proposed"),
+                TS_REJECTED => kout!(g; "Rejected"),
+                TS_ACCEPTED => kout!(g; "Accepted"),
+                TS_BROKEN => kout!(g; "Treaty Broken"),
                 _ => {}
             }
         } else {
-            kout!(g; cn(g), treaty_name(0));
+            kout!(g; cn(g), treaty_name(TT_NONE));
         }
         kout!(g; b'\n');
     }
@@ -120,35 +120,35 @@ fn relations_list(g: &mut Sre, mask: i32) {
 fn check_proposal(g: &mut Sre, o: usize, meid: i16, typ: i16, days: i16) -> bool {
     let mut shown = false;
     let t = T(o, meid as usize);
-    if tr(g, t).c() == 2 {
+    if tr(g, t).status() == TS_REJECTED {
         kout!(g; "You just rejected ", uname(g, o), "'s treaty.  ");
         if !yes_no(g, 0, b"Do you wish to send a new treaty instead") {
             return false;
         }
     }
-    if g.emp[o].id == g.galaxy.weaponsmaster && typ != 1 && typ != 2 {
+    if g.emp[o].id == g.galaxy.weaponsmaster && typ != TT_NEUTRALITY && typ != TT_FREETRADE {
         kout!(g; uname(g, o), " is the Weapons Master; you cannot get a defense treaty with today's Weapons Master.\n");
         return false;
     }
-    if tr(g, t).c() == 1 {
+    if tr(g, t).status() == TS_PROPOSED {
         let tt = *tr(g, t);
         kout!(g; "You have already proposed a ", cnum(g), treaty_desc(tt), cn(g));
-        if tt.a > 0 {
-            kout!(g; " for ", tt.a as i16, " turns");
+        if tt.days > 0 {
+            kout!(g; " for ", tt.days as i16, " turns");
         }
         kout!(g; " to ", uname(g, o), "!\n");
         shown = true;
     }
-    if tr(g, t).c() == 4 {
+    if tr(g, t).status() == TS_BROKEN {
         kout!(g; "You have sent word that you would like to break a treaty!\n");
         shown = true;
     }
     if !shown {
         let mine = g.emp[meid as usize].treaty[g.emp[o].id as usize];
-        if mine.typ() == typ && mine.a as i16 >= days {
+        if mine.typ() == typ && mine.days as i16 >= days {
             kout!(g; "You already have a ", cnum(g), treaty_desc(mine), cn(g));
-            if mine.a > 0 {
-                kout!(g; " for ", mine.a as i16, " turns");
+            if mine.days > 0 {
+                kout!(g; " for ", mine.days as i16, " turns");
             }
             kout!(g; " with ", uname(g, o), "!\n");
             return false;
@@ -162,14 +162,14 @@ fn check_proposal(g: &mut Sre, o: usize, meid: i16, typ: i16, days: i16) -> bool
 
 // 70d2:0a10
 fn propose(g: &mut Sre, me: usize, typ: i16) {
-    if typ != 1 && typ != 2 && g.emp[me].id == g.galaxy.weaponsmaster {
+    if typ != TT_NEUTRALITY && typ != TT_FREETRADE && g.emp[me].id == g.galaxy.weaponsmaster {
         kout!(g; "You cannot get a defense treaty while you are the Weapons Master!\n");
         return;
     }
     let mut t = Treaty::default();
     set_treaty(&mut t, typ, 0);
-    if t.d() > 0 || t.e() > 0 {
-        kout!(g; "This treaty will provide ", t.e(), "% soldier defense and ", t.d(), "% cruiser defense.\n");
+    if t.cruiserpct() > 0 || t.soldierpct() > 0 {
+        kout!(g; "This treaty will provide ", t.soldierpct(), "% soldier defense and ", t.cruiserpct(), "% cruiser defense.\n");
     }
     let mut days: i16 = -1;
     let mut soldiers: i16 = 0;
@@ -195,7 +195,7 @@ fn propose(g: &mut Sre, me: usize, typ: i16) {
             set_defval(g, KIN, 0);
             set_maxval(g, KIN, 14);
             days = in_i16(g, KIN);
-            if typ == 7 {
+            if typ == TT_CUSTOM {
                 kout!(g; "In a Custom Treaty, you may set the percentage of soldiers and ");
                 kout!(g; "heavy cruisers that are sent in the event of your treaty partner ");
                 kout!(g; "being attacked.  ");
@@ -222,12 +222,12 @@ fn propose(g: &mut Sre, me: usize, typ: i16) {
         kout!(g; col(10), i as u8 + b'A', cn(g), ": ");
         let ot = tr(g, T(o, meid as usize));
         set_treaty(ot, typ, days as u8);
-        ot.setc(1);
-        if typ == 7 {
-            ot.settype(7);
-            ot.a = days as u8;
-            ot.sete(soldiers);
-            ot.setd(cruisers);
+        ot.setstatus(TS_PROPOSED);
+        if typ == TT_CUSTOM {
+            ot.settype(TT_CUSTOM);
+            ot.days = days as u8;
+            ot.setsoldierpct(soldiers);
+            ot.setcruiserpct(cruisers);
         }
         kout!(g; cnum(g), treaty_name(typ), cn(g), " proposed");
         if days > 0 {
@@ -258,26 +258,26 @@ fn break_treaty(g: &mut Sre, me: usize) {
         let o = i;
         let mine = T(me, i);
         let theirs = T(o, g.emp[me].id as usize);
-        if tr(g, mine).typ() == 0 {
+        if tr(g, mine).typ() == TT_NONE {
             kout!(g; "You have no relations with ", cemp(g), uname(g, o), cn(g), "!\n");
-        } else if tr(g, mine).a == 0 {
+        } else if tr(g, mine).days == 0 {
             let d = treaty_desc(*tr(g, mine));
             kout!(g; "You break the ", cnum(g), d, cn(g), ".\n");
-            set_treaty(tr(g, mine), 0, 0);
-            tr(g, mine).setc(0);
-            tr(g, theirs).setc(4);
-        } else if tr(g, theirs).c() == 1 {
+            set_treaty(tr(g, mine), TT_NONE, 0);
+            tr(g, mine).setstatus(TS_NONE);
+            tr(g, theirs).setstatus(TS_BROKEN);
+        } else if tr(g, theirs).status() == TS_PROPOSED {
             let d = treaty_desc(*tr(g, theirs));
             kout!(g; "You have proposed a ", cnum(g), d, cn(g), " to ", cemp(g), uname(g, o), cn(g), ".  ");
             if yes_no(g, 0, b"Do you wish to cancel the proposal") {
                 *tr(g, theirs) = *tr(g, mine);
-                tr(g, mine).setc(0);
-                tr(g, theirs).setc(0);
+                tr(g, mine).setstatus(TS_NONE);
+                tr(g, theirs).setstatus(TS_NONE);
             }
-        } else if tr(g, theirs).c() == 4 {
+        } else if tr(g, theirs).status() == TS_BROKEN {
             kout!(g; "You have already sent word that you wish to break the treaty!\n");
         } else {
-            tr(g, theirs).setc(4);
+            tr(g, theirs).setstatus(TS_BROKEN);
             kout!(g; "You send word that you wish to break the treaty.\n");
         }
     }
@@ -301,22 +301,22 @@ pub fn diplomacy_menu(g: &mut Sre, _p: &mut Player, me: usize) {
             0
         }));
         if g.grb(&R_NEUTRAL) {
-            m.add(g, &treaty_name(1), b'1', 1);
+            m.add(g, &treaty_name(TT_NEUTRALITY), b'1', TT_NEUTRALITY);
         }
         if g.grb(&R_FREETRADE) {
-            m.add(g, &treaty_name(2), b'2', 2);
+            m.add(g, &treaty_name(TT_FREETRADE), b'2', TT_FREETRADE);
         }
         if g.grb(&R_MINOR) {
-            m.add(g, &treaty_name(3), b'3', 3);
+            m.add(g, &treaty_name(TT_MINORALLIANCE), b'3', TT_MINORALLIANCE);
         }
         if g.grb(&R_ARMED) {
-            m.add(g, &treaty_name(4), b'4', 4);
+            m.add(g, &treaty_name(TT_ARMEDDEFENSE), b'4', TT_ARMEDDEFENSE);
         }
         if g.grb(&R_CRUISER) {
-            m.add(g, &treaty_name(5), b'5', 5);
+            m.add(g, &treaty_name(TT_CRUISERPROTECTION), b'5', TT_CRUISERPROTECTION);
         }
         if g.grb(&R_TOTAL) {
-            m.add(g, &treaty_name(6), b'6', 6);
+            m.add(g, &treaty_name(TT_TOTALDEFENSE), b'6', TT_TOTALDEFENSE);
         }
         if g.grb(&R_BREAK) {
             m.add(g, b"Break Treaty", b'7', 7);
@@ -330,7 +330,7 @@ pub fn diplomacy_menu(g: &mut Sre, _p: &mut Player, me: usize) {
             1..=6 => propose(g, me, r),
             7 => break_treaty(g, me),
             8 => view_relations_of(g, me),
-            9 => propose(g, me, 7),
+            9 => propose(g, me, TT_CUSTOM),
             _ => {}
         }
         if r == -1 {
@@ -348,60 +348,60 @@ pub fn treaty_messages(g: &mut Sre, _p: &mut Player, me: usize) {
         }
         let a = T(me, g.emp[o].id as usize);
         let b = T(o, g.emp[me].id as usize);
-        if tr(g, a).c() == 4 {
+        if tr(g, a).status() == TS_BROKEN {
             kout!(g; col(15), uname(g, o), cn(g), " has ");
-            if tr(g, a).a > 0 {
+            if tr(g, a).days > 0 {
                 kout!(g; "dishonorably ");
             }
             kout!(g; "broken a treaty with you!\n");
-            set_treaty(tr(g, a), 0, 0);
-            tr(g, a).setc(0);
-            set_treaty(tr(g, b), 0, 0);
-            tr(g, b).setc(0);
+            set_treaty(tr(g, a), TT_NONE, 0);
+            tr(g, a).setstatus(TS_NONE);
+            set_treaty(tr(g, b), TT_NONE, 0);
+            tr(g, b).setstatus(TS_NONE);
         }
-        if tr(g, a).c() == 1 {
+        if tr(g, a).status() == TS_PROPOSED {
             if g.emp[me].id == g.galaxy.weaponsmaster
                 && total_planets(g, me) > 500
-                && tr(g, a).typ() != 2
-                && tr(g, a).typ() != 1
+                && tr(g, a).typ() != TT_FREETRADE
+                && tr(g, a).typ() != TT_NEUTRALITY
             {
                 kout!(g; "Because you are the Weapons Master, the treaty has been changed to Neutrality.\n");
-                let aa = tr(g, a).a;
-                set_treaty(tr(g, a), 1, aa);
+                let aa = tr(g, a).days;
+                set_treaty(tr(g, a), TT_NEUTRALITY, aa);
             }
             let ta = *tr(g, a);
             kout!(g; col(15), uname(g, o), cn(g), " proposes a ", cnum(g), treaty_name(ta.typ()), cn(g));
-            if ta.a > 0 {
-                kout!(g; " for ", cnum(g), ta.a as i16, cn(g), " days");
+            if ta.days > 0 {
+                kout!(g; " for ", cnum(g), ta.days as i16, cn(g), " days");
             }
             kout!(g; ".\n");
-            if ta.typ() == 7 {
-                kout!(g; "It involves ", cnum(g), ta.e(), cn(g), "% soldier defense and ");
-                kout!(g; cnum(g), ta.d(), cn(g), "% cruiser defense.\n");
+            if ta.typ() == TT_CUSTOM {
+                kout!(g; "It involves ", cnum(g), ta.soldierpct(), cn(g), "% soldier defense and ");
+                kout!(g; cnum(g), ta.cruiserpct(), cn(g), "% cruiser defense.\n");
             }
             if yes_no(g, 1, b"Do you accept") {
                 kout!(g; "Treaty Accepted");
                 *tr(g, b) = *tr(g, a);
-                tr(g, b).setc(3);
-                tr(g, a).setc(0);
+                tr(g, b).setstatus(TS_ACCEPTED);
+                tr(g, a).setstatus(TS_NONE);
             } else {
                 let typ = tr(g, a).typ();
-                let days = tr(g, a).a;
+                let days = tr(g, a).days;
                 kout!(g; "Treaty Rejected");
                 *tr(g, a) = *tr(g, b);
-                tr(g, a).setc(0);
+                tr(g, a).setstatus(TS_NONE);
                 set_treaty(tr(g, b), typ, days);
-                tr(g, b).setc(2);
+                tr(g, b).setstatus(TS_REJECTED);
             }
             kout!(g; cn(g), ".\n");
         }
-        if tr(g, a).c() == 3 {
+        if tr(g, a).status() == TS_ACCEPTED {
             let d = treaty_desc(*tr(g, a));
             kout!(g; cnum(g), uname(g, o), cn(g), " accepts the ", cnum(g), d, cn(g), ".\n");
-            tr(g, a).setc(0);
-            tr(g, b).setc(0);
+            tr(g, a).setstatus(TS_NONE);
+            tr(g, b).setstatus(TS_NONE);
         }
-        if tr(g, a).c() == 2 {
+        if tr(g, a).status() == TS_REJECTED {
             let d = treaty_desc(*tr(g, a));
             kout!(g; cnum(g), uname(g, o), cn(g), " rejects the ", cnum(g), d, cn(g), " proposal.\n");
             *tr(g, a) = *tr(g, b);

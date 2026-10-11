@@ -254,7 +254,7 @@ fn investments(g: &mut Sre, e: usize) {
 
 // 3e41:0000
 pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
-    if g.system.regstate == 0 && g.door.port != 0 {
+    if g.system.regstate == RS_UNREGISTERED && g.door.port != 0 {
         // Shown on the sysop's screen only, with a beep.
         out!(g, KLOCAL; col(14), "You are not allowed to visit the bank in the unregistered versions!\n", cn(g));
         return;
@@ -323,7 +323,7 @@ pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
                 break;
             }
         }
-        if g.system.regstate == 0 {
+        if g.system.regstate == RS_UNREGISTERED {
             c = 0;
         }
         if c == b'S' {
@@ -434,7 +434,7 @@ pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
                 } else {
                     g.emp[e].bank.sub(n.wrapping_add(n.wrapping_mul(interest) / 100));
                     g.emp[e].money.add(n);
-                    g.emp[e].d1a4 += payment;
+                    g.emp[e].loanpayment += payment;
                 }
             }
         }

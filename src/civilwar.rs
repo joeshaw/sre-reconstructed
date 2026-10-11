@@ -2,7 +2,6 @@
 // unpaid or unfed army (segment 44e2).
 
 use crate::prelude::*;
-use crate::upkeep::neglected;
 
 // 44e2:04f2: lose pct percent of the military.
 fn lose_military(g: &mut Sre, pct: i32, e: usize, l: &mut ItemList) {
@@ -42,16 +41,16 @@ pub fn civil_war(g: &mut Sre, _p: &mut Player, e: usize) {
     let mut military = ItemList::new(cn(g), cnum(g));
     let mut lost = ItemList::new(cn(g), cnum(g));
     lost.skip_zero();
-    if g.emp[e].b1c4 & 1 != 0 {
+    if g.emp[e].shortfalls & SF_NEGLECT != 0 {
         // Neglected planets revolt.
         insurgency_up(g, e);
         for i in 0..10i16 {
-            let mut n = neglected(g, e, i);
+            let mut n = g.emp[e].neglected[i as usize];
             if g.emp[e].planets[i as usize].count < n {
                 n = g.emp[e].planets[i as usize].count;
             }
             lost.add_plural(n, planet_name(i as i8), b"");
-            g.galaxy.d392 += n;
+            g.galaxy.marketplanets += n;
             total += n;
             g.emp[e].planets[i as usize].count -= n;
         }
@@ -78,9 +77,9 @@ pub fn civil_war(g: &mut Sre, _p: &mut Player, e: usize) {
         } else {
             cause = "unemployment";
         }
-    } else if (g.emp[e].b1c4 >> 1) & 1 != 0 {
+    } else if g.emp[e].shortfalls & SF_STARVED != 0 {
         // Starvation.
-        let starving = get_i32(&g.emp[e].u_1c7, 0x5c);
+        let starving = g.emp[e].starving;
         // The original divides by zero if the population is gone.
         let pop = g.emp[e].population;
         pct = if pop != 0 { 100i32.wrapping_mul(starving) / pop } else { 0 };
@@ -96,7 +95,7 @@ pub fn civil_war(g: &mut Sre, _p: &mut Player, e: usize) {
         for i in 0..10i16 {
             let n = pct.wrapping_mul(g.emp[e].planets[i as usize].count) / 100;
             lost.add_plural(n, planet_name(i as i8), b"");
-            g.galaxy.d392 += n;
+            g.galaxy.marketplanets += n;
             total += n;
             g.emp[e].planets[i as usize].count -= n;
         }
@@ -159,31 +158,31 @@ pub fn civil_war(g: &mut Sre, _p: &mut Player, e: usize) {
         if x.planets[P_TOURISM].count > x.planets[P_ORE].count {
             show_help_topic2(g, topic, b"tourism");
             let x = &g.emp[e];
-            if x.planets[P_ANTIPOLLUTION].b * x.planets[P_ANTIPOLLUTION].count < x.planets[P_PETROLEUM].count {
+            if x.planets[P_ANTIPOLLUTION].output * x.planets[P_ANTIPOLLUTION].count < x.planets[P_PETROLEUM].count {
                 kout!(g; "Also, tourism profits decrease when you have pollution caused by petroleum planets.");
             }
             kout!(g; "\n\n");
         }
         let x = &g.emp[e];
-        if x.planets[P_FOOD].b * x.planets[P_FOOD].count > crate::foodmarket::food_needed(g, e, 0) {
+        if x.planets[P_FOOD].output * x.planets[P_FOOD].count > crate::foodmarket::food_needed(g, e, 0) {
             show_help_topic2(g, topic, b"long-term-food");
         }
         show_help_topic2(g, topic, b"continuous");
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             show_help_topic2(g, topic, b"loan");
         }
         kout!(g; "\n\nHope this helps!\n\n");
     }
     let x = &g.emp[e];
-    if x.d1b0 >= 25
+    if x.favor >= 25
         && pct > 25
         && x.money.get().wrapping_add(x.bank.get()) < 100000000
         && (x.soldiers + x.fighters + x.stations + x.heavycruisers + x.agents < 2000 || total_planets(g, e) < 300)
     {
         kout!(g; "The Galactic Coordinator offers to give you some funds to recover from the civil war.  ");
         if yes_no(g, 1, b"Do you accept") {
-            let mut v = g.emp[e].d1b0;
-            g.emp[e].d1b0 -= 25;
+            let mut v = g.emp[e].favor;
+            g.emp[e].favor -= 25;
             if v > 100 {
                 v = 100;
             }
@@ -200,8 +199,8 @@ pub fn civil_war(g: &mut Sre, _p: &mut Player, e: usize) {
 // 44e2:0000
 pub fn desertion(g: &mut Sre, _p: &mut Player, e: usize) {
     let x = &mut g.emp[e];
-    if x.b1c6 >= 0 {
-        x.effectiveness = (x.effectiveness as i32 + x.b1c5 as i32) as i8;
+    if x.effnext >= 0 {
+        x.effectiveness = (x.effectiveness as i32 + x.effchange as i32) as i8;
         if x.effectiveness < 0 {
             x.effectiveness = 0;
         }
@@ -211,10 +210,10 @@ pub fn desertion(g: &mut Sre, _p: &mut Player, e: usize) {
         return;
     }
     x.effectiveness = 0;
-    if (x.b1c4 >> 3) & 1 == 0 {
+    if x.shortfalls & SF_ARMY == 0 {
         return;
     }
-    let mut k: i16 = (x.b1c6 as i16).wrapping_neg();
+    let mut k: i16 = (x.effnext as i16).wrapping_neg();
     if k > 20 {
         k = 20;
     }

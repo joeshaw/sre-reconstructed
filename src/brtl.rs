@@ -183,14 +183,14 @@ fn ydays(i: i32) -> u16 {
 
 // 1000:4cc8 __isDST(year - 1970, month (0 = use yday), yday, hour)
 fn is_dst(year: u16, mut month: u16, mut yday: u16, hour: u8) -> bool {
-    let mut cx: u16;
+    let mut change: u16; // the day of the year the clocks change (a Sunday)
     if month == 0 {
-        let mut si = yday;
+        let mut day = yday;
         if yday >= 59 && (year.wrapping_add(70) & 3) == 0 {
-            si = si.wrapping_sub(1);
+            day = day.wrapping_sub(1);
         }
         month = 0;
-        while ydays(month as i32) <= si {
+        while ydays(month as i32) <= day {
             month += 1;
             // A day past the end of the table (a time before 1980) reads
             // on past it; whatever month that gives is past October.
@@ -214,29 +214,30 @@ fn is_dst(year: u16, mut month: u16, mut yday: u16, hour: u8) -> bool {
         return true;
     }
     if (year as i16) > 16 && month == 4 {
-        cx = ydays(month as i32 - 1).wrapping_add(7);
+        change = ydays(month as i32 - 1).wrapping_add(7);
     } else {
-        cx = ydays(month as i32);
+        change = ydays(month as i32);
     }
     if (year.wrapping_add(0x7b2) & 3) != 0 {
-        cx = cx.wrapping_sub(1);
+        change = change.wrapping_sub(1);
     }
-    let bx = ((year.wrapping_add(1) as i16 >> 2) as u16).wrapping_add(cx);
-    let ax = 0x16du16.wrapping_mul(year).wrapping_add(bx).wrapping_add(4);
-    cx = cx.wrapping_sub(ax % 7);
+    // Back to a Sunday: 1 January 1970 was a Thursday.
+    let days = ((year.wrapping_add(1) as i16 >> 2) as u16).wrapping_add(change);
+    let epochday = 0x16du16.wrapping_mul(year).wrapping_add(days).wrapping_add(4);
+    change = change.wrapping_sub(epochday % 7);
     if month == 4 {
-        if yday > cx {
+        if yday > change {
             return true;
         }
-        if yday != cx {
+        if yday != change {
             return false;
         }
         return hour >= 2;
     }
-    if yday < cx {
+    if yday < change {
         return true;
     }
-    if yday != cx {
+    if yday != change {
         return false;
     }
     hour <= 1
@@ -244,10 +245,10 @@ fn is_dst(year: u16, mut month: u16, mut yday: u16, hour: u8) -> bool {
 
 pub fn b_dostounix(d: &BDate, t: &BTime) -> i32 {
     let mut x: i32 = TIMEZONE + 315532800;
-    let si: i16 = d.da_year.wrapping_sub(1980);
-    x = x.wrapping_add(((si >> 2) as i32).wrapping_mul(126230400));
-    x = x.wrapping_add(((si & 3) as i32) * 31536000);
-    if si & 3 != 0 {
+    let years: i16 = d.da_year.wrapping_sub(1980);
+    x = x.wrapping_add(((years >> 2) as i32).wrapping_mul(126230400));
+    x = x.wrapping_add(((years & 3) as i32) * 31536000);
+    if years & 3 != 0 {
         x = x.wrapping_add(86400);
     }
     let mut days: i16 = 0;

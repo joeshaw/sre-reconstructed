@@ -53,14 +53,14 @@ pub fn net_worth(g: &Sre, e: usize) -> i32 {
     let mut t: i32 = 0;
     for i in 0..25 {
         let tr = x.treaty[i];
-        if tr.typ() == 0 {
+        if tr.typ() == TT_NONE {
             continue;
         }
-        t += (tr.a as i32 + 5) / 3;
-        if tr.typ() == 2 {
+        t += (tr.days as i32 + 5) / 3;
+        if tr.typ() == TT_FREETRADE {
             continue;
         }
-        if tr.typ() == 1 {
+        if tr.typ() == TT_NEUTRALITY {
             continue;
         }
         t += 1;
@@ -75,8 +75,8 @@ pub fn net_worth(g: &Sre, e: usize) -> i32 {
         + x.population / (x.taxrate as i32 + 10)
         + x.cmdship as i32
         + x.bank.get() / 110000
-        - x.d188
-        + x.d16c / 2;
+        - x.pollution
+        + x.tradegoods / 2;
     if t < 0 {
         t = 0;
     }
@@ -125,9 +125,11 @@ pub fn planet_name(typ: i8) -> &'static [u8] {
 }
 
 // ---------------------------------------------------------------------
-// 48cc:11be
-pub fn clear_spending(s: &mut [u8; 0x60]) {
-    *s = [0; 0x60];
+// 48cc:11be: clear what went short in the last turn (Empire+0x1c7).
+pub fn clear_shortages(x: &mut Empire) {
+    x.neglected = [0; 10];
+    x.u_1ef = [0; 0x34];
+    x.starving = 0;
 }
 
 pub fn clamp100(mut v: i16) -> i8 {
@@ -140,8 +142,8 @@ pub fn clamp100(mut v: i16) -> i8 {
     v as i8
 }
 
-fn set_planets(x: &mut Empire, typ: usize, count: i32, a: i32, b: i32) {
-    x.planets[typ] = PlanetSet { count, a, b };
+fn set_planets(x: &mut Empire, typ: usize, count: i32, target: i32, output: i32) {
+    x.planets[typ] = PlanetSet { count, target, output };
 }
 
 // 48cc:0254
@@ -155,25 +157,25 @@ pub fn empire_init(g: &mut Sre, e: usize) {
     x.player = -1;
     x.lastplay = now;
     x.created = now;
-    x.w2a1 = 4;
-    set_planets(x, 0, 0, 1900, 1900);
-    set_planets(x, 1, 3, 17, 39);
-    set_planets(x, 2, 9, 2650, 3100);
-    set_planets(x, 3, 1, 46, 53);
-    set_planets(x, 4, 1, 9, 11);
-    set_planets(x, 5, 9, 2200, 2500);
-    set_planets(x, 6, 1, 2, 3);
-    set_planets(x, 7, 3, 200, 210);
-    set_planets(x, 8, 0, 11, 15);
-    set_planets(x, 9, 0, 10, 10);
+    x.inactivedays = 4;
+    set_planets(x, P_PETROLEUM, 0, 1900, 1900);
+    set_planets(x, P_EDUCATION, 3, 17, 39);
+    set_planets(x, P_TOURISM, 9, 2650, 3100);
+    set_planets(x, P_FOOD, 1, 46, 53);
+    set_planets(x, P_RESEARCH, 1, 9, 11);
+    set_planets(x, P_ORE, 9, 2200, 2500);
+    set_planets(x, P_GOVERNMENT, 1, 2, 3);
+    set_planets(x, P_URBAN, 3, 200, 210);
+    set_planets(x, P_SUPPLY, 0, 11, 15);
+    set_planets(x, P_ANTIPOLLUTION, 0, 10, 10);
     for t in x.treaty.iter_mut() {
-        t.settype(0);
-        t.a = 0;
-        t.sete(0);
-        t.setd(0);
-        t.setc(0);
+        t.settype(TT_NONE);
+        t.days = 0;
+        t.setsoldierpct(0);
+        t.setcruiserpct(0);
+        t.setstatus(TS_NONE);
     }
-    for b in x.b2d3.iter_mut() {
+    for b in x.intercepts.iter_mut() {
         *b = 0;
     }
     x.lightcruisers = 0;
@@ -183,25 +185,25 @@ pub fn empire_init(g: &mut Sre, e: usize) {
     x.stations = 0;
     x.fighters = 0;
     x.soldiers = 0;
-    x.b297[0] = clamp100(20);
-    x.b297[1] = clamp100(20);
-    x.b297[2] = clamp100(20);
-    x.b297[3] = clamp100(20);
-    x.b297[4] = clamp100(10);
-    x.b297[5] = clamp100(10);
-    x.d16c = 0;
-    x.w172 = 0;
-    x.flags = 0;
+    x.supplyrates[0] = clamp100(20);
+    x.supplyrates[1] = clamp100(20);
+    x.supplyrates[2] = clamp100(20);
+    x.supplyrates[3] = clamp100(20);
+    x.supplyrates[4] = clamp100(10);
+    x.supplyrates[5] = clamp100(10);
+    x.tradegoods = 0;
+    x.tickets = 0;
+    x.localplay = 0;
     x.insurgency = 0;
     x.effectiveness = clamp100(100);
     x.cmdship = clamp100(0);
     x.money.set(10000);
     x.score = 0;
-    x.d178 = 0;
+    x.points = 0;
     x.population = 40;
-    x.d188 = 0;
+    x.pollution = 0;
     x.food = 0;
-    x.d1b4 = 0;
+    x.efficiency = 0;
     x.d29d = 0;
     if open {
         x.year = protection.wrapping_neg();
@@ -212,9 +214,9 @@ pub fn empire_init(g: &mut Sre, e: usize) {
         x.turnsused = 0;
         x.turnsperday = 5;
     }
-    x.w19a = x.year;
+    x.bonusyear = x.year;
     x.bank.set(0);
-    x.d1a4 = 0;
+    x.loanpayment = 0;
     x.w1a8 = 0;
     x.bonds = 0;
     x.maxbonds = 0;
@@ -227,24 +229,30 @@ pub fn empire_init(g: &mut Sre, e: usize) {
     x.w1ab = 0;
     x.draftrate = clamp100(5);
     x.w1ae = 0;
-    x.d1b0 = 0;
-    x.phase = 0;
-    x.m1bc.set(0);
-    x.b1c4 &= !0x0f;
-    clear_spending(&mut x.u_1c7);
-    x.b1c6 = 0;
-    x.b1c5 = 0;
-    x.weapons &= !0x0f;
+    x.favor = 0;
+    x.phase = PH_START;
+    x.income.set(0);
+    x.shortfalls &= !(SF_NEGLECT | SF_STARVED | SF_UNUSED | SF_ARMY);
+    clear_shortages(x);
+    x.effnext = 0;
+    x.effchange = 0;
+    x.weapons &= !(W_NUCLEAR | W_CHEMICAL | W_PSIONIC | W_MOTHERSHIP);
     x.weapons &= 0x0f;
     x.troubles = 0;
     x.bonuses = 0;
-    x.w229 = 0;
+    x.attacks = 0;
     x.agents = 0;
-    x.d22f = [0; 7];
+    x.aidmask = 0;
+    x.dissensionmask = 0;
+    x.demoralizemask = 0;
+    x.bombmask = 0;
+    x.hostagemask = 0;
+    x.bribemask = 0;
+    x.setupmask = 0;
     x.w26f = [0; 9];
-    x.d293 = 0;
-    x.w192 = 0;
-    x.d2ec = 0;
+    x.researchpoints = 0;
+    x.planetsbought = 0;
+    x.lastnews = 0;
 }
 
 // 48cc:112c
@@ -264,7 +272,7 @@ pub fn oil_price(g: &mut Sre) -> i32 {
         return 1900;
     }
     galaxy_oil_price(g);
-    g.galaxy.d3b6
+    g.galaxy.oilprice
 }
 
 // 48cc:124f: the empire of a player, or -1.
@@ -346,10 +354,10 @@ pub fn empire_status(g: &mut Sre, e: usize, full: bool) {
     status_item(g, g.emp[e].heavycruisers, b"Heavy Cruiser", 0);
     status_item(g, g.emp[e].lightcruisers, b"Light Cruiser", 0);
     status_item(g, g.emp[e].carriers, b"Carrier", 0);
-    status_item(g, ((g.emp[e].weapons >> 3) & 1) as i32, b"Mothership", 0);
-    status_item(g, (g.emp[e].weapons & 1) as i32, b"Nuclear Bomb", 1);
-    status_item(g, ((g.emp[e].weapons >> 1) & 1) as i32, b"Chemical Bomb", 1);
-    status_item(g, ((g.emp[e].weapons >> 2) & 1) as i32, b"Psionic Bomb", 1);
+    status_item(g, g.emp[e].has_weapon(W_MOTHERSHIP) as i32, b"Mothership", 0);
+    status_item(g, g.emp[e].has_weapon(W_NUCLEAR) as i32, b"Nuclear Bomb", 1);
+    status_item(g, g.emp[e].has_weapon(W_CHEMICAL) as i32, b"Chemical Bomb", 1);
+    status_item(g, g.emp[e].has_weapon(W_PSIONIC) as i32, b"Psionic Bomb", 1);
     wrap_at(g, 0x34);
     kout!(g; col(8), b'[', cn(g), "Effectiveness=", cnum(g), g.emp[e].effectiveness as i16, cn(g), "%", col(8), "] ", cn(g));
     wrap_at(g, 0x38);
@@ -365,34 +373,34 @@ pub fn empire_status(g: &mut Sre, e: usize, full: bool) {
     kout!(g; col(8), b'(', cn(g), "Total=", col(15), tot, cn(g), col(8), ")\n", cn(g));
     if g.emp[e].troubles != 0 {
         kout!(g; setw(12), "Troubles:", setw(0));
-        if g.emp[e].troubles & 1 != 0 {
+        if g.emp[e].troubles & TR_PLAGUE != 0 {
             status_item(g, 1, b"Plague", 1);
         }
-        if g.emp[e].troubles & 2 != 0 {
+        if g.emp[e].troubles & TR_FAMINE != 0 {
             status_item(g, 1, b"Famine", 1);
         }
-        if g.emp[e].troubles & 4 != 0 {
+        if g.emp[e].troubles & TR_SPACESTORMS != 0 {
             status_item(g, 1, b"Space Storms", 1);
         }
-        if g.emp[e].troubles & 8 != 0 {
+        if g.emp[e].troubles & TR_DUSTCLOUD != 0 {
             status_item(g, 1, b"Dust Cloud", 1);
         }
-        if g.emp[e].troubles & 0x10 != 0 {
+        if g.emp[e].troubles & TR_GASCLOUD != 0 {
             status_item(g, 1, b"Gas Cloud", 1);
         }
-        if g.emp[e].troubles & 0x20 != 0 {
+        if g.emp[e].troubles & TR_BANKFAILURE != 0 {
             status_item(g, 1, b"Bank Failure", 1);
         }
         kout!(g; b'\n');
     }
     if g.emp[e].bonuses != 0 {
         kout!(g; setw(12), "Bonuses:", setw(0));
-        status_item(g, g.emp[e].bonuses & 1, b"Cloaking Device", 1);
-        status_item(g, g.emp[e].bonuses & 2, b"Long Range Scanner", 1);
-        status_item(g, g.emp[e].bonuses & 4, b"Genetically Engineered Food", 1);
-        status_item(g, g.emp[e].bonuses & 8, b"Planetary Shield", 1);
-        status_item(g, g.emp[e].bonuses & 0x10, b"Accura Weapons", 1);
-        status_item(g, g.emp[e].bonuses & 0x20, b"Enhanced Spying", 1);
+        status_item(g, g.emp[e].bonuses & B_CLOAKING, b"Cloaking Device", 1);
+        status_item(g, g.emp[e].bonuses & B_SCANNER, b"Long Range Scanner", 1);
+        status_item(g, g.emp[e].bonuses & B_GENEFOOD, b"Genetically Engineered Food", 1);
+        status_item(g, g.emp[e].bonuses & B_SHIELD, b"Planetary Shield", 1);
+        status_item(g, g.emp[e].bonuses & B_ACCURA, b"Accura Weapons", 1);
+        status_item(g, g.emp[e].bonuses & B_SPYING, b"Enhanced Spying", 1);
         kout!(g; b'\n');
     }
     if full {
@@ -412,10 +420,10 @@ pub fn empire_status(g: &mut Sre, e: usize, full: bool) {
     hline(g, col(1), 0x4b);
 }
 
-// 48cc:232d: the lottery pool pays out to protected empires.
+// 48cc:232d: the Coordinator's fund pays a bonus to protected empires.
 pub fn protection_bonus(g: &mut Sre, e: usize) -> i32 {
     let x = &g.emp[e];
-    if x.year < x.w19a {
+    if x.year < x.bonusyear {
         return 0;
     }
     let mut div: i32 = 100;
@@ -425,14 +433,14 @@ pub fn protection_bonus(g: &mut Sre, e: usize) -> i32 {
     if x.year < -25 {
         div = 400;
     }
-    let mut v = g.galaxy.d3ac / div;
+    let mut v = g.galaxy.coordfund / div;
     if v < 0 {
         v = 0;
     }
     g.emp[e].money.add(1000i32.wrapping_mul(v));
-    g.galaxy.d3ac -= v;
+    g.galaxy.coordfund -= v;
     let gt = g.galaxy.grantturns;
-    g.emp[e].w19a = (g.emp[e].year as i32 + gt as i32) as i16;
+    g.emp[e].bonusyear = (g.emp[e].year as i32 + gt as i32) as i16;
     v
 }
 
@@ -444,10 +452,10 @@ pub fn show_status(g: &mut Sre, e: usize) {
 // 48cc:2420
 pub fn next_phase(g: &mut Sre, e: usize) {
     let x = &mut g.emp[e];
-    if x.phase < 0x15 {
+    if x.phase < PH_CONTINUE {
         x.phase += 1;
     } else {
-        x.phase = 0;
+        x.phase = PH_START;
         x.turnsused = x.turnsused.wrapping_add(1);
         x.year = x.year.wrapping_add(1);
     }
@@ -459,7 +467,7 @@ pub fn prev_phase(g: &mut Sre, e: usize) {
     if x.phase >= 0 {
         x.phase -= 1;
     } else {
-        x.phase = 0x15;
+        x.phase = PH_CONTINUE;
         x.turnsused = x.turnsused.wrapping_sub(1);
         x.year = x.year.wrapping_sub(1);
     }
@@ -504,13 +512,13 @@ pub fn bank_interest(g: &mut Sre, e: usize) {
 
 // 14f6:02a6: move b a step towards a.
 pub fn move_toward(p: &mut PlanetSet) {
-    let diff = if p.a >= 0 { p.a - p.b } else { 0 };
+    let diff = if p.target >= 0 { p.target - p.output } else { 0 };
     if diff >= 30 || diff <= -30 {
-        p.b += diff / 30;
-    } else if p.a > p.b {
-        p.b += 1;
-    } else if p.a < p.b {
-        p.b -= 1;
+        p.output += diff / 30;
+    } else if p.target > p.output {
+        p.output += 1;
+    } else if p.target < p.output {
+        p.output -= 1;
     }
 }
 
@@ -530,50 +538,50 @@ pub fn update_score(g: &mut Sre, e: usize) {
     x.score += x.population / (x.taxrate as i32 + 10);
 }
 
-// 48cc:2731
-pub fn update_d1b0(g: &mut Sre, e: usize) {
+// 48cc:2731: the Coordinator's favor fades, and grows with anti-pollution planets.
+pub fn drift_favor(g: &mut Sre, e: usize) {
     let tp = total_planets(g, e);
     let x = &mut g.emp[e];
-    if x.d1b0 < 0 {
-        x.d1b0 += 1;
+    if x.favor < 0 {
+        x.favor += 1;
     }
-    if x.d1b0 > 0 {
-        x.d1b0 -= 2;
+    if x.favor > 0 {
+        x.favor -= 2;
     }
     if (tp - x.planets[P_PETROLEUM].count) / 10 < x.planets[P_ANTIPOLLUTION].count {
-        x.d1b0 += 1;
+        x.favor += 1;
     }
 }
 
-// 48cc:27c6: spare capacity of government planets.
+// 48cc:27c6: spare capacity of government planets, in agents.
 pub fn gov_capacity(g: &Sre, e: usize) -> i32 {
     let x = &g.emp[e];
     300 * x.planets[P_GOVERNMENT].count - 6 * x.generals - x.agents
 }
 
-// 48cc:282f
-pub fn gov_capacity6(g: &Sre, e: usize) -> i32 {
+// 48cc:282f: spare capacity of government planets, in generals.
+pub fn gov_capacity_generals(g: &Sre, e: usize) -> i32 {
     gov_capacity(g, e) / 6
 }
 
 // Set a treaty's type and its default terms (inlined in the original).
-pub fn set_treaty(t: &mut Treaty, typ: i16, a: u8) {
+pub fn set_treaty(t: &mut Treaty, typ: i16, days: u8) {
     t.settype(typ);
-    t.a = a;
-    t.sete(0);
-    t.setd(0);
-    if t.typ() == 3 {
-        t.sete(0x14);
-        t.setd(0x14);
+    t.days = days;
+    t.setsoldierpct(0);
+    t.setcruiserpct(0);
+    if t.typ() == TT_MINORALLIANCE {
+        t.setsoldierpct(0x14);
+        t.setcruiserpct(0x14);
     }
-    if t.typ() == 4 {
-        t.sete(0x3c);
+    if t.typ() == TT_ARMEDDEFENSE {
+        t.setsoldierpct(0x3c);
     }
-    if t.typ() == 5 {
-        t.setd(0x3c);
+    if t.typ() == TT_CRUISERPROTECTION {
+        t.setcruiserpct(0x3c);
     }
-    if t.typ() == 6 {
-        t.sete(0x28);
-        t.setd(0x28);
+    if t.typ() == TT_TOTALDEFENSE {
+        t.setsoldierpct(0x28);
+        t.setcruiserpct(0x28);
     }
 }

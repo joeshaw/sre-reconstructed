@@ -9,8 +9,8 @@ const PIRATE_FILE: &[u8] = b"Data/Pirate.II"; // DS:a1b4
 
 // 6c38:0000
 pub fn system_load(g: &mut Sre) {
-    g.system.t120 = b_time();
-    g.system.t124 = b_time();
+    g.system.created = b_time();
+    g.system.inuse = b_time();
     g.system.galaxy.clear();
     let mut f = DataFile::new(g, SYSTEM_FILE, 0x142, 0, 1);
     let mut b = g.system.to_bytes();
@@ -24,19 +24,19 @@ pub fn system_load(g: &mut Sre) {
 
 // 6c38:00f6
 pub fn system_clear_in_use(g: &mut Sre) {
-    g.system.t124 = 0;
+    g.system.inuse = 0;
 }
 
 // 6c38:011d
 pub fn system_init(g: &mut Sre) {
-    g.system.t120 = g.time.now;
-    g.system.t124 = g.time.now;
+    g.system.created = g.time.now;
+    g.system.inuse = g.time.now;
     g.system.galaxy.clear();
     for i in 0..0x40 {
         g.system.bbs[i] = 0;
         g.system.sysop[i] = 0;
     }
-    g.system.regstate = 0;
+    g.system.regstate = RS_UNREGISTERED;
 }
 
 // 6c38:0188
@@ -64,10 +64,10 @@ pub fn system_maintenance(g: &mut Sre) {
 // 6c38:02c9
 pub fn system_valid(g: &Sre) -> bool {
     let s = &g.system;
-    if !(s.t124 > 0x12c684c0 && s.t124 < 0x38538e40) {
+    if !(s.inuse > 0x12c684c0 && s.inuse < 0x38538e40) {
         return false;
     }
-    if !(s.t120 > 0x12c684c0 && s.t120 < 0x38538e40) {
+    if !(s.created > 0x12c684c0 && s.created < 0x38538e40) {
         return false;
     }
     if s.regstate < 0 || s.regstate > 5 {
@@ -141,7 +141,7 @@ pub fn system_load_data(g: &mut Sre) -> i16 {
                     out!(g, ERRLOG; time_str(g, now), ": Resetting EMPIRE ", i as i16, "!\n");
                 }
             }
-            g.emp[i].flags |= g.galaxy.w386;
+            g.emp[i].localplay |= g.galaxy.localonly;
         }
     } else {
         for i in 0..MAXEMPIRES {
@@ -326,7 +326,7 @@ pub fn rankings(g: &mut Sre) {
         networth[k] = net_worth(g, i);
         planets[k] = total_planets(g, i);
         score[k] = g.emp[i].score;
-        points[k] = g.emp[i].d178;
+        points[k] = g.emp[i].points;
         n += 1;
     }
     if n == 0 {

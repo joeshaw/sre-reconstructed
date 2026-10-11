@@ -6,7 +6,7 @@ static R_FOODMARKET: GRes = GRes::text(b"FoodMarket.Name", b"the Solar Food Mark
 
 // 512f:0000: the price of food, given the supply.
 fn food_price(g: &Sre, extra: i32) -> i32 {
-    let mut q = g.galaxy.d388.wrapping_add(extra);
+    let mut q = g.galaxy.marketfood.wrapping_add(extra);
     if q < 0 {
         q = 0;
     }
@@ -57,7 +57,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
     kout!(g; cn(g), "\nWelcome to ", col(14), name, b'\n', cn(g));
     let people = food_needed(g, e, 1);
     let army = food_needed(g, e, 2);
-    let grown = g.emp[e].planets[P_FOOD].count * g.emp[e].planets[P_FOOD].b;
+    let grown = g.emp[e].planets[P_FOOD].count * g.emp[e].planets[P_FOOD].output;
     let extra = g.emp[e].food - people - army;
     let price = food_price(g, extra);
     let demand = food_demand(g, extra);
@@ -67,7 +67,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
               cn(g));
     }
     loop {
-        kout!(g; "Current quantity available is ", cnum(g), g.galaxy.d388, cn(g), ".  ");
+        kout!(g; "Current quantity available is ", cnum(g), g.galaxy.marketfood, cn(g), ".  ");
         kout!(g; "Food is in ", demand, " demand.\n");
         kout!(g; "You currently have ", cnum(g), g.emp[e].food, cn(g), " megatons of food.\n");
         kout!(g; "Would you like to ");
@@ -75,7 +75,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
         kout!(g; "uy, ");
         key(g, b'S');
         kout!(g; "ell, ");
-        if g.system.regstate != 0 {
+        if g.system.regstate != RS_UNREGISTERED {
             key(g, b'V');
             kout!(g; "isit the bank, ");
         }
@@ -85,7 +85,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
         let mut c;
         loop {
             c = get_choice(g, b"CVBS", true);
-            if g.system.regstate == 0 && c == b'V' {
+            if g.system.regstate == RS_UNREGISTERED && c == b'V' {
                 c = 0;
             }
             if c != 0 {
@@ -94,8 +94,8 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
         }
         if c == b'B' {
             let mut max = g.emp[e].money.get() / price;
-            if g.galaxy.d388 < max {
-                max = g.galaxy.d388;
+            if g.galaxy.marketfood < max {
+                max = g.galaxy.marketfood;
             }
             let mut need = people + army - g.emp[e].food;
             if need < 0 {
@@ -110,11 +110,11 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
             set_maxval(g, KIN, max);
             let n = in_i32(g, KIN);
             g.emp[e].money.sub(n.wrapping_mul(price));
-            if g.galaxy.d3ac < 1500000000 {
-                g.galaxy.d3ac += n.wrapping_mul(price) / 1000;
+            if g.galaxy.coordfund < 1500000000 {
+                g.galaxy.coordfund += n.wrapping_mul(price) / 1000;
             }
             g.emp[e].food += n;
-            g.galaxy.d388 -= n;
+            g.galaxy.marketfood -= n;
         } else if c == b'S' {
             kout!(g; "Sell", cn(g), "\nAt ", cnum(g), price / 2, cn(g), how, "sell? \n", cbr(g), b'[', cbo(g), "MAX=",
                   g.emp[e].food, cbr(g), b']', cn(g), "  ");
@@ -123,12 +123,12 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
             set_maxval(g, KIN, f);
             let n = in_i32(g, KIN);
             g.emp[e].money.add(n.wrapping_mul(price / 2));
-            g.galaxy.d3ac -= n.wrapping_mul(price / 2) / 1000;
-            if g.galaxy.d3ac < 0 {
-                g.galaxy.d3ac = 0;
+            g.galaxy.coordfund -= n.wrapping_mul(price / 2) / 1000;
+            if g.galaxy.coordfund < 0 {
+                g.galaxy.coordfund = 0;
             }
             g.emp[e].food -= n;
-            g.galaxy.d388 += n;
+            g.galaxy.marketfood += n;
         } else if c == b'V' {
             kout!(g; "Visit Bank", cn(g), b'\n');
             crate::bank::bank(g, p, e);
@@ -138,14 +138,14 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
         }
         kout!(g; "Continue", cn(g), "\n\n");
         let mut food = g.emp[e].food;
-        let mut flags = g.emp[e].b1c4;
-        let mut b1c5 = g.emp[e].b1c5;
-        let mut starving = get_i32(&g.emp[e].u_1c7, 0x5c);
+        let mut flags = g.emp[e].shortfalls;
+        let mut effchange = g.emp[e].effchange;
+        let mut starving = g.emp[e].starving;
         let fedpeople;
         let fedarmy;
         if people > 0 {
             let def = if people < food { people } else { food };
-            if (p.prefs1 >> 3) & 1 != 0 {
+            if has_pref(p.prefs1, PF1_TERSE) {
                 kout!(g; "People:  ", cnum(g), people, cn(g), b'\n');
             } else {
                 kout!(g; "Your people require ", cnum(g), people, cn(g), " megatons of food.\n");
@@ -155,7 +155,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
             set_maxval(g, KIN, food);
             fedpeople = in_i32(g, KIN);
             if fedpeople < people {
-                flags |= 2;
+                flags |= SF_STARVED;
                 starving = (people - fedpeople).wrapping_mul(g.emp[e].population) / people;
                 if starving < 0 {
                     starving = 0;
@@ -167,7 +167,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
         }
         if army > 0 {
             let def = if army < food { army } else { food };
-            if (p.prefs1 >> 3) & 1 != 0 {
+            if has_pref(p.prefs1, PF1_TERSE) {
                 kout!(g; "Army:    ", cnum(g), army, cn(g), b'\n');
             } else {
                 kout!(g; "\nYour Army needs ", cnum(g), army, cn(g), " megatons of food.\n");
@@ -178,10 +178,10 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
             fedarmy = in_i32(g, KIN);
             if fedarmy < army {
                 let k = (-((39 * (army - fedarmy)) / army)) as i16;
-                if (b1c5 as i16) > k {
-                    b1c5 = k as i8;
+                if (effchange as i16) > k {
+                    effchange = k as i8;
                 }
-                flags |= 8;
+                flags |= SF_ARMY;
             }
             food -= fedarmy;
         } else {
@@ -194,9 +194,9 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
                 continue;
             }
         }
-        g.emp[e].b1c4 = flags;
-        g.emp[e].b1c5 = b1c5;
-        set_i32(&mut g.emp[e].u_1c7, 0x5c, starving);
+        g.emp[e].shortfalls = flags;
+        g.emp[e].effchange = effchange;
+        g.emp[e].starving = starving;
         g.emp[e].food = food;
         return;
     }

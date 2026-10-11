@@ -15,17 +15,17 @@ pub fn pirate_init(g: &mut Sre, p: usize) {
     let x = &mut g.pir[p];
     x.lasthour = now;
     x.money = 0;
-    x.d94 = 0;
-    x.d98 = 0;
-    x.d9c = 0;
-    x.da0 = 0;
-    x.da4 = 0;
-    x.da8 = 0;
-    x.dac = 0;
-    x.db0 = 0;
+    x.food = 0;
+    x.soldiers = 0;
+    x.fighters = 0;
+    x.stations = 0;
+    x.heavycruisers = 0;
+    x.carriers = 0;
+    x.generals = 0;
+    x.agents = 0;
     x.color = 7;
-    x.wb4 = [0; 16];
-    x.wd4 = [0; 25];
+    x.planets = [0; 16];
+    x.hatred = [0; 25];
     x.u_026 = [0; 0x69];
 }
 
@@ -43,7 +43,7 @@ pub fn pirate_set_name(g: &mut Sre, p: usize, s: &[u8]) {
 // 4b60:01ed
 pub fn pirate_planets(g: &Sre, p: usize) -> i32 {
     let mut n: i32 = 0;
-    for &w in g.pir[p].wb4.iter() {
+    for &w in g.pir[p].planets.iter() {
         n += w as i32;
     }
     n
@@ -52,10 +52,10 @@ pub fn pirate_planets(g: &Sre, p: usize) -> i32 {
 // 4b60:022f
 pub fn pirate_net_worth(g: &Sre, p: usize) -> i32 {
     let x = &g.pir[p];
-    10 * pirate_planets(g, p) + x.money / 100000 + 7 * x.db0 + x.d98 + x.d9c + x.d94 / 10000 + 3 * x.da4
-        + (x.da0 << 1)
-        + (x.da8 << 1)
-        + 5 * x.dac
+    10 * pirate_planets(g, p) + x.money / 100000 + 7 * x.agents + x.soldiers + x.fighters + x.food / 10000 + 3 * x.heavycruisers
+        + (x.stations << 1)
+        + (x.carriers << 1)
+        + 5 * x.generals
 }
 
 // 4b60:034a: pirates rebuild once an hour.
@@ -67,51 +67,51 @@ pub fn pirate_hourly(g: &mut Sre, p: usize) {
     g.pir[p].lasthour = now;
     let lv = g.pir[p].level as i32;
     let cap = |m: i32| (lv * m) as i16 as i32;
-    let w = |g: &Sre, i: usize| g.pir[p].wb4[i] as i32;
-    if cap(3000) > g.pir[p].d98 {
-        let v = random(100) as i32 + (5 * w(g, 8)) / 10;
-        g.pir[p].d98 += v;
+    let planets = |g: &Sre, i: usize| g.pir[p].planets[i] as i32;
+    if cap(3000) > g.pir[p].soldiers {
+        let v = random(100) as i32 + (5 * planets(g, P_SUPPLY)) / 10;
+        g.pir[p].soldiers += v;
     }
-    if cap(3000) > g.pir[p].d9c {
-        let v = random(100) as i32 + (4 * w(g, 8)) / 10;
-        g.pir[p].d9c += v;
+    if cap(3000) > g.pir[p].fighters {
+        let v = random(100) as i32 + (4 * planets(g, P_SUPPLY)) / 10;
+        g.pir[p].fighters += v;
     }
-    if cap(3000) > g.pir[p].da4 {
-        let v = random(100) as i32 + w(g, 8) / 10;
-        g.pir[p].da4 += v;
+    if cap(3000) > g.pir[p].heavycruisers {
+        let v = random(100) as i32 + planets(g, P_SUPPLY) / 10;
+        g.pir[p].heavycruisers += v;
     }
-    if cap(3000) > g.pir[p].da0 {
-        let v = random(100) as i32 + (4 * w(g, 8)) / 10;
-        g.pir[p].da0 += v;
+    if cap(3000) > g.pir[p].stations {
+        let v = random(100) as i32 + (4 * planets(g, P_SUPPLY)) / 10;
+        g.pir[p].stations += v;
     }
-    if cap(300) > g.pir[p].da8 {
-        let v = random(10) as i32 + (2 * w(g, 8)) / 10;
-        g.pir[p].da8 += v;
+    if cap(300) > g.pir[p].carriers {
+        let v = random(10) as i32 + (2 * planets(g, P_SUPPLY)) / 10;
+        g.pir[p].carriers += v;
     }
-    if cap(300) > g.pir[p].dac {
-        let v = random(10) as i32 + (2 * w(g, 8)) / 10;
-        g.pir[p].dac += v;
+    if cap(300) > g.pir[p].generals {
+        let v = random(10) as i32 + (2 * planets(g, P_SUPPLY)) / 10;
+        g.pir[p].generals += v;
     }
-    if cap(500) > g.pir[p].db0 {
+    if cap(500) > g.pir[p].agents {
         let v = random(10) as i32;
-        g.pir[p].db0 += v;
+        g.pir[p].agents += v;
     }
-    if 10000000i32.wrapping_mul(lv) > g.pir[p].d94 {
-        let v = random(30) as i32 + 6 * w(g, 3);
-        g.pir[p].d94 += v;
+    if 10000000i32.wrapping_mul(lv) > g.pir[p].food {
+        let v = random(30) as i32 + 6 * planets(g, P_FOOD);
+        g.pir[p].food += v;
     }
     if 10000000i32.wrapping_mul(lv) > g.pir[p].money {
         let x = &mut g.pir[p];
         x.money += 10000 * lv;
-        x.money += 230 * x.wb4[0] as i32;
-        x.money += 50 * x.wb4[1] as i32;
-        x.money += 260 * x.wb4[2] as i32;
-        x.money += 210 * x.wb4[5] as i32;
-        x.money += 70 * x.wb4[7] as i32;
+        x.money += 230 * x.planets[P_PETROLEUM] as i32;
+        x.money += 50 * x.planets[P_EDUCATION] as i32;
+        x.money += 260 * x.planets[P_TOURISM] as i32;
+        x.money += 210 * x.planets[P_ORE] as i32;
+        x.money += 70 * x.planets[P_URBAN] as i32;
     }
-    if 10000 * lv > g.pir[p].db0 {
-        let v = (g.pir[p].wb4[6] as i32) << 1;
-        g.pir[p].db0 += v;
+    if 10000 * lv > g.pir[p].agents {
+        let v = (g.pir[p].planets[P_GOVERNMENT] as i32) << 1;
+        g.pir[p].agents += v;
     }
 }
 

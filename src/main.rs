@@ -243,7 +243,7 @@ fn real_main(g: &mut Sre) -> i32 {
     load_translation(g);
     main_menu(g);
     score_files(g);
-    if g.system.regstate != 0 {
+    if g.system.regstate != RS_UNREGISTERED {
         if random(3) == 0 {
             put_untranslated(g, KOUT, b"\nThis game is registered to ");
             kout!(g; col(14));
