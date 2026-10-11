@@ -14,7 +14,7 @@ static void TaxRates(Player *p, Empire *e)
         e->taxrate = 0;
     if (e->taxrate > 100)
         e->taxrate = 100;
-    if (!((p->prefs1 >> 3) & 1))
+    if (!(HasPref(p->prefs1, PF1_TERSE)))
         kout << tax << "now " << c_number << (int16)e->taxrate << c_normal << "%.\n";
     if (e->taxrate > 80 && Random(100) < e->taxrate)
         kout << "A high tax rate may cause violent revolts in your empire.\n";
@@ -30,7 +30,7 @@ static void TaxRates(Player *p, Empire *e)
         e->draftrate = 0;
     if (e->draftrate > 100)
         e->draftrate = 100;
-    if (!((p->prefs1 >> 3) & 1))
+    if (!(HasPref(p->prefs1, PF1_TERSE)))
         kout << draft << "now " << c_number << (int16)e->draftrate << c_normal << "%.\n";
 }
 
@@ -40,7 +40,7 @@ void Preferences(Player *p)
     int16 r;
     do {
         Menu m("Preferences", "Player Preferences", 0xb, 3, 3, 0xf, 0xb, 7, 7, 7, 7, 7);
-        m.Add((p->prefs1 >> 2) & 1 ? "Redisplay Menus" : "Don't redisplay Menus", '1', 1);
+        m.Add(HasPref(p->prefs1, PF1_SHORTMENUS) ? "Redisplay Menus" : "Don't redisplay Menus", '1', 1);
         m.Add("Automatic Payment", '2', 2);
         m.Add("Galactic Coordinator Donations", '3', 3);
         if (g_system.regstate)
@@ -54,8 +54,8 @@ void Preferences(Player *p)
         switch (r) {
         case 1:
             kout << "Spending and Planet menus are now " << c_number;
-            p->prefs1 ^= 4;
-            if ((p->prefs1 >> 2) & 1)
+            p->prefs1 ^= PF1_SHORTMENUS;
+            if (HasPref(p->prefs1, PF1_SHORTMENUS))
                 kout << "SHORT";
             else
                 kout << "LONG";
@@ -63,63 +63,63 @@ void Preferences(Player *p)
             break;
         case 2:
             kout << "SRE can pay your expenses automatically if you wish.  ";
-            ask = YesNo(p->prefs2 & 1, "Do you want the system to ask about automatic payment");
+            ask = YesNo(HasPref(p->prefs2, PF2_ASKPAY), "Do you want the system to ask about automatic payment");
             if (ask)
-                yes = YesNo((p->prefs2 >> 1) & 1, "Do you want the default to be YES");
+                yes = YesNo(HasPref(p->prefs2, PF2_AUTOPAY), "Do you want the default to be YES");
             else
-                yes = YesNo((p->prefs2 >> 1) & 1,
+                yes = YesNo(HasPref(p->prefs2, PF2_AUTOPAY),
                             "Do you want it to automatically pay whenever possible");
-            p->prefs2 = (uint8)((p->prefs2 & ~1) | (ask & 1));
-            p->prefs2 = (uint8)((p->prefs2 & ~2) | ((yes & 1) << 1));
+            SetPref(p->prefs2, PF2_ASKPAY, ask);
+            SetPref(p->prefs2, PF2_AUTOPAY, yes);
             break;
         case 3:
             kout << "The Galactic Coordinator appreciates donations.  At the end of each turn, you have the option of donating a portion of your funds to It.  ";
-            if (YesNo(!((p->prefs1 >> 6) & 1) && ((p->prefs1 >> 7) & 1),
+            if (YesNo(!(HasPref(p->prefs1, PF1_ASKDONATE)) && (HasPref(p->prefs1, PF1_DONATE)),
                       "Do you want to always donate")) {
                 ask = 0;
                 yes = 1;
-            } else if (YesNo(!((p->prefs1 >> 6) & 1) && !((p->prefs1 >> 7) & 1),
+            } else if (YesNo(!(HasPref(p->prefs1, PF1_ASKDONATE)) && !(HasPref(p->prefs1, PF1_DONATE)),
                              "Do you want to never donate")) {
                 ask = 0;
                 yes = 0;
             } else {
                 ask = 1;
-                yes = YesNo((p->prefs1 >> 7) & 1,
+                yes = YesNo(HasPref(p->prefs1, PF1_DONATE),
                             "The system will ask whether you want to donate.  Do you want the default to be YES");
             }
-            p->prefs1 = (uint8)((p->prefs1 & ~0x40) | ((ask & 1) << 6));
-            p->prefs1 = (uint8)((p->prefs1 & 0x7f) | ((yes & 1) << 7));
+            SetPref(p->prefs1, PF1_ASKDONATE, ask);
+            SetPref(p->prefs1, PF1_DONATE, yes);
             break;
         case 4:
             kout << "At the end of each turn, you can deposit the rest of your money into the bank if you wish.  ";
-            if (YesNo(!((p->prefs1 >> 4) & 1) && ((p->prefs1 >> 5) & 1),
+            if (YesNo(!(HasPref(p->prefs1, PF1_ASKDEPOSIT)) && (HasPref(p->prefs1, PF1_DEPOSIT)),
                       "Do you want to always deposit")) {
                 ask = 0;
                 yes = 1;
-            } else if (YesNo(!((p->prefs1 >> 4) & 1) && !((p->prefs1 >> 5) & 1),
+            } else if (YesNo(!(HasPref(p->prefs1, PF1_ASKDEPOSIT)) && !(HasPref(p->prefs1, PF1_DEPOSIT)),
                              "Do you want to never deposit")) {
                 ask = 0;
                 yes = 0;
             } else {
                 ask = 1;
-                yes = YesNo((p->prefs1 >> 5) & 1,
+                yes = YesNo(HasPref(p->prefs1, PF1_DEPOSIT),
                             "The system will ask whether you want to deposit.  Do you want the default to be YES");
             }
-            p->prefs1 = (uint8)((p->prefs1 & ~0x10) | ((ask & 1) << 4));
-            p->prefs1 = (uint8)((p->prefs1 & ~0x20) | ((yes & 1) << 5));
+            SetPref(p->prefs1, PF1_ASKDEPOSIT, ask);
+            SetPref(p->prefs1, PF1_DEPOSIT, yes);
             break;
         case 5:
             kout << "When you win a battle, SRE can attach a message to the other empire.  ";
-            yes = YesNo((p->prefs2 >> 2) & 1, "Would you like to do this");
-            p->prefs2 = (uint8)((p->prefs2 & ~4) | ((yes & 1) << 2));
+            yes = YesNo(HasPref(p->prefs2, PF2_BATTLEMSG), "Would you like to do this");
+            SetPref(p->prefs2, PF2_BATTLEMSG, yes);
             break;
         case 6:
-            yes = YesNo((p->prefs2 >> 3) & 1, "Do you want the date to be displayed on reports");
-            p->prefs2 = (uint8)((p->prefs2 & ~8) | ((yes & 1) << 3));
+            yes = YesNo(HasPref(p->prefs2, PF2_REPORTDATES), "Do you want the date to be displayed on reports");
+            SetPref(p->prefs2, PF2_REPORTDATES, yes);
             break;
         case 7:
-            yes = YesNo(!((p->prefs2 >> 4) & 1), "Do you want Enter to exit from the spending menu");
-            p->prefs2 = (uint8)((p->prefs2 & ~0x10) | ((yes ? 0 : 1) << 4));
+            yes = YesNo(!(HasPref(p->prefs2, PF2_ENTERSTAYS)), "Do you want Enter to exit from the spending menu");
+            SetPref(p->prefs2, PF2_ENTERSTAYS, !yes);
             break;
         case 8:
             g_ansi = YesNo(g_ansi, "Use ANSI color");
@@ -147,7 +147,7 @@ static void SupplyProduction(Player *p, Empire *e)
     for (int16 i = 1; i <= 9; i++) {
         if (!SLOT[i])
             continue;
-        int16 v = e->b297[SLOT[i] - 1];
+        int16 v = e->supplyrates[SLOT[i] - 1];
         m.Find(i)->AddColumn((int32)v);
         m.Find(i)->AddColumn("%");
     }
@@ -157,7 +157,7 @@ static void SupplyProduction(Player *p, Empire *e)
     for (int16 i = 1; i <= 9; i++) {
         if (!SLOT[i])
             continue;
-        uint16 def = (uint16)(int16)e->b297[SLOT[i] - 1];
+        uint16 def = (uint16)(int16)e->supplyrates[SLOT[i] - 1];
         if (def > left)
             def = left;
         kout << c_normal << setw(0x14) << m.Find(i)->text;
@@ -166,7 +166,7 @@ static void SupplyProduction(Player *p, Empire *e)
         int16 v;
         kin >> maxval((int32)left) >> defval((int32)def) >> v;
         left -= v;
-        int8 &slot = e->b297[SLOT[i] - 1];
+        int8 &slot = e->supplyrates[SLOT[i] - 1];
         slot = (int8)v;
         if (slot < 0)
             slot = 0;

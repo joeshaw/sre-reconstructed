@@ -27,15 +27,15 @@ int16 AskNumber(const char *prompt, int16 min, int16 max, int16 def)
 void ResetGalaxy(Galaxy *g)
 {
     Resource localonly("System.LocalOnly", (int32)0);
-    g->w386 = localonly.Bool();
+    g->localonly = localonly.Bool();
     HostMkdir("DATA");
     HostMkdir("BACKUP");
-    if (g->w386) {
+    if (g->localonly) {
         kout << "This game is configured for LOCAL PLAY ONLY.\n\n";
         kout << "You will be able to play an unlimited number of turns.\n";
     }
     ShowHelpTopic("reset-inflation");
-    g->w384 = YesNo(1, "Do you want Inflation");
+    g->inflation = YesNo(1, "Do you want Inflation");
     ShowHelpTopic("reset-maintenance-interval");
     g->grantdays = AskNumber("How many days before maintenance runs", 1, 14, 1);
     if (g_system.regstate >= 2) {
@@ -45,20 +45,20 @@ void ResetGalaxy(Galaxy *g)
     }
     if (g_system.regstate >= 2) {
         ShowHelpTopic("reset-galactic-coordinator-taxes");
-        g->w3b0 = AskNumber("What is the galactic tax rate [per 1000 credits]", 0, 100, 15);
+        g->coordtax = AskNumber("What is the galactic tax rate [per 1000 credits]", 0, 100, 15);
     }
     if (g_system.regstate >= 2) {
         ShowHelpTopic("reset-planet-market");
-        g->d392 = AskNumber("How many planets are initially available", 0, 25000, 100);
+        g->marketplanets = AskNumber("How many planets are initially available", 0, 25000, 100);
     }
     ShowHelpTopic("reset-planet-limit");
-    g->d38e = AskNumber("How many planets per turn can be bought", -1, 25000, -1);
+    g->planetsperturn = AskNumber("How many planets per turn can be bought", -1, 25000, -1);
     if (g_system.regstate >= 2) {
         ShowHelpTopic("reset-planet-regeneration");
-        g->w38c = AskNumber("How many seconds", 1, 32000, 60);
+        g->regenseconds = AskNumber("How many seconds", 1, 32000, 60);
     }
     ShowHelpTopic("reset-food-market");
-    g->d388 = 1000 * (int32)AskNumber("How many thousands of megatons of food", 0, 1000, 70);
+    g->marketfood = 1000 * (int32)AskNumber("How many thousands of megatons of food", 0, 1000, 70);
     for (int16 i = 0; i <= 9; i++) {
         char name[] = "NEWS/NEWS_.MSG";
         name[9] = (char)('0' + i);
@@ -89,7 +89,7 @@ void ResetGalaxy(Galaxy *g)
 void AskGameDates(Galaxy *g)
 {
     kout << "\nEnter the date that users can start playing:  ";
-    InputDate(&g->t44);
+    InputDate(&g->startdate);
     kout << "\nEnter the last date that users can play:      ";
     InputDate(&g->enddate);
 }
@@ -101,16 +101,16 @@ void DeleteEmpire(Empire *e)
         return;
     for (int16 i = 0; i < MAXEMPIRES; i++) {
         Empire *o = &g_empires[i];
-        MaskClear(&o->d22f[5], e->id);
-        MaskClear(&o->d22f[0], e->id);
-        MaskClear(&o->d22f[1], e->id);
-        MaskClear(&o->d22f[2], e->id);
-        MaskClear(&o->d22f[3], e->id);
-        MaskClear(&o->d22f[4], e->id);
-        MaskClear(&o->d22f[6], e->id);
+        MaskClear(&o->bribemask, e->id);
+        MaskClear(&o->aidmask, e->id);
+        MaskClear(&o->dissensionmask, e->id);
+        MaskClear(&o->demoralizemask, e->id);
+        MaskClear(&o->bombmask, e->id);
+        MaskClear(&o->hostagemask, e->id);
+        MaskClear(&o->setupmask, e->id);
         SetTreaty(o->treaty[e->id], 0, 0);
-        o->treaty[e->id].setc(0);
-        o->b2d3[e->id] = 0;
+        o->treaty[e->id].setstatus(TS_NONE);
+        o->intercepts[e->id] = 0;
     }
     for (int16 j = 0; j < 10; j++)
         Planets(e, j)->count = 0;

@@ -33,8 +33,8 @@ static void PutTitle(const String &t)
 }
 
 // 1922:001f
-Menu::Menu(const String &nm, const String &ti, uint8 c0, uint8 c1, uint8 c2, uint8 c3, uint8 c4,
-           uint8 c5, uint8 c6, uint8 c7, uint8 c8, uint8 c9)
+Menu::Menu(const String &nm, const String &ti, uint8 ctitle, uint8 cframe, uint8 cbracket,
+           uint8 ckey, uint8 ctext, uint8 ccol1, uint8 ccol2, uint8 ccol3, uint8 ccol4, uint8 ccol5)
     : name(nm), title(ti)
 {
     items = new MenuItem *[0x80];
@@ -51,7 +51,7 @@ Menu::Menu(const String &nm, const String &ti, uint8 c0, uint8 c1, uint8 c2, uin
         if (a && a->num == 0)
             title = a->str;
     }
-    int16 c[10] = { c0, c1, c2, c3, c4, c5, c6, c7, c8, c9 };
+    int16 c[10] = { ctitle, cframe, cbracket, ckey, ctext, ccol1, ccol2, ccol3, ccol4, ccol5 };
     {
         String rn = String("Menu.") + name + ".Colors";
         Resource r(rn.c_str(), "");

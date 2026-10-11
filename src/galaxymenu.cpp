@@ -107,24 +107,24 @@ static void GalaxyInfo(Galaxy *g)
              << c_normal << " real days.\n";
     kout << "Each empire receives " << c_number << g->protection << c_normal
          << " turns of protection.\n";
-    kout << c_number << g->d392 << c_normal << " planets are available.\n";
-    kout << c_number << g->d388 << c_normal << " megatons of food are available.\n";
-    if (g->d38e >= 0)
-        kout << c_number << g->d38e << c_normal << " planets can be bought each turn.\n";
+    kout << c_number << g->marketplanets << c_normal << " planets are available.\n";
+    kout << c_number << g->marketfood << c_normal << " megatons of food are available.\n";
+    if (g->planetsperturn >= 0)
+        kout << c_number << g->planetsperturn << c_normal << " planets can be bought each turn.\n";
     if (g_system.regstate)
         kout << "The interest rate is " << g->interest << "%.\n";
     kout << "This game is set up with ";
-    if (g->w384)
+    if (g->inflation)
         kout << "traditional inflationary economics.\n";
     else
         kout << "non-inflationary prices.\n";
     if (g->enddate < Midnight(0x7fffffff)) {
         kout << "This is a tournament game that ";
-        if (g->t44 <= g_today)
+        if (g->startdate <= g_today)
             kout << "started ";
         else
             kout << "starts ";
-        PutTime(kout, g->t44) << ", and ends ";
+        PutTime(kout, g->startdate) << ", and ends ";
         PutTime(kout, g->enddate) << ".\n";
     }
 }
@@ -136,13 +136,13 @@ static void NewNews(Galaxy *g, int16 id)
     if (!Exists(*e))
         return;
     kout << "New news since ";
-    PutTime(kout, e->d2ec) << ":\n";
+    PutTime(kout, e->lastnews) << ":\n";
     for (char c = '9'; c >= '0'; c--) {
         char name[] = "News/NEWS0.MSG";
         name[9] = c;
-        ShowNews(String(name), e->d2ec);
+        ShowNews(String(name), e->lastnews);
     }
-    e->d2ec = b_time(0);
+    e->lastnews = b_time(0);
 }
 
 // 62b1:0a82
@@ -174,7 +174,7 @@ static void OldNews()
 // 62b1:0c07
 static void JoinGame(Galaxy *g)
 {
-    if (g_today >= g->t4c) {
+    if (g_today >= g->joindeadline) {
         kout << "No new players can join this game.\n\n";
         return;
     }
@@ -349,7 +349,7 @@ static void JoinGame(Galaxy *g)
         }
         EmpireSetName(e, String(name));
     }
-    e->flags = g->w386;
+    e->flags = g->localonly;
     e->player = p.index;
     kout << "You are:  " << String(p.male ? "Emperor" : "Emperess") << Color(14) << ' '
          << Untr(p.name) << c_normal;
@@ -363,7 +363,7 @@ static void TournamentResults(Galaxy *g)
     kout << Color(14) << "\nTournament Results\n";
     HLine(Color(4), 0x4b);
     kout << c_normal << "Tournament started:  " << Color(12);
-    PutTime(kout, Midnight(g->t44)) << '\n';
+    PutTime(kout, Midnight(g->startdate)) << '\n';
     kout << c_normal << "Tournament ended:    " << Color(12);
     PutTime(kout, Midnight(g->enddate)) << '\n';
     kout << c_normal;
@@ -376,7 +376,7 @@ static void TournamentResults(Galaxy *g)
         if (!Exists(*e))
             continue;
         if (Exists(*e) && TotalPlanets(e) > 0 && e->population > 0)
-            pts[i] = e->d178;
+            pts[i] = e->points;
     }
     pts[25] = 0;
     for (int16 i = 0; i < 24; i++) {

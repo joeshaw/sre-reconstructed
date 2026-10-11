@@ -11,15 +11,15 @@ static const char *CAUGHT = "Your covert agent was caught and was publicly execu
 int32 *OpMask(Empire *e, int16 op)
 {
     switch (op) {
-    case 1: return &e->d22f[0];
-    case 2: return &e->d22f[6];
-    case 3: return &e->d22f[1];
-    case 4: return &e->d22f[2];
-    case 5: return &e->d22f[3];
-    case 7: return &e->d22f[4];
-    case 8: return &e->d22f[5];
+    case OP_INSURGENTAID: return &e->aidmask;
+    case OP_SETUP: return &e->setupmask;
+    case OP_DISSENSION: return &e->dissensionmask;
+    case OP_DEMORALIZE: return &e->demoralizemask;
+    case OP_BOMBING: return &e->bombmask;
+    case OP_HOSTAGES: return &e->hostagemask;
+    case OP_BRIBE: return &e->bribemask;
     }
-    return (int32 *)(e->u_24b + 0x20);
+    return &e->othermask;
 }
 
 static int16 Alive(Empire *e)
@@ -87,9 +87,9 @@ int16 SpySucceeds(Empire *me, Empire *t)
 static void BreakTreaties(Empire *me, Empire *t)
 {
     SetTreaty(me->treaty[t->id], 0, 0);
-    me->treaty[t->id].setc(0);
+    me->treaty[t->id].setstatus(TS_NONE);
     SetTreaty(t->treaty[me->id], 0, 0);
-    t->treaty[me->id].setc(0);
+    t->treaty[me->id].setstatus(TS_NONE);
 }
 
 // 409c:033d
@@ -99,21 +99,21 @@ static int16 ChooseTarget(Player *p, Empire *me, int16 op)
     for (int16 i = 0; i < MAXEMPIRES; i++)
         if (!Alive(&g_empires[i]))
             MaskClear(&allowed, i);
-    if (op != 2)
+    if (op != OP_SETUP)
         MaskClear(&allowed, me->id);
-    if (op != 0 && op != 6) {
+    if (op != OP_SPY && op != OP_INFILTRATION) {
         for (int16 i = 0; i < MAXEMPIRES; i++) {
             Treaty t = me->treaty[i];
-            if ((t.type() != 0 && t.a > 0) || t.type() == 1)
+            if ((t.type() != 0 && t.days > 0) || t.type() == 1)
                 MaskClear(&allowed, i);
         }
     }
     int16 id = ChooseEmpire(allowed);
     if (id == -1)
         return -1;
-    if (op != 0 && op != 6 && op != 8 && MaskTest(*OpMask(me, op), id)) {
+    if (op != OP_SPY && op != OP_INFILTRATION && op != OP_BRIBE && MaskTest(*OpMask(me, op), id)) {
         kout << "But you have already performed covert ops with that empire!  Limit one empire per ";
-        kout << ((op == 1 || op == 3 || op == 4) ? "turn.\n" : "day.\n");
+        kout << ((op == OP_INSURGENTAID || op == OP_DISSENSION || op == OP_DEMORALIZE) ? "turn.\n" : "day.\n");
         return -1;
     }
     return id;
@@ -129,13 +129,13 @@ static int16 Attempt(Player *p, Empire *me, int32 cost, int16 *target, int16 op)
     *target = ChooseTarget(p, me, op);
     if (*target == -1)
         return 0;
-    if (op != 1 && op != 0 && op != 8) {
+    if (op != OP_INSURGENTAID && op != OP_SPY && op != OP_BRIBE) {
         kout << c_normal << "Chance of success:  " << Color(13)
              << Chance(me, &g_empires[*target]) << c_normal << ".\n";
         if (!YesNo(1, "Do you want to continue"))
             return 0;
     }
-    if (op != 0 && op != 6 && op != 8)
+    if (op != OP_SPY && op != OP_INFILTRATION && op != OP_BRIBE)
         MaskSet(OpMask(me, op), *target);
     me->money.sub(cost);
     return 1;
@@ -197,10 +197,10 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
         Empire *t;
         switch (r) {
         case 1:
-            if (!Attempt(p, me, cost[1], &id, 0))
+            if (!Attempt(p, me, cost[1], &id, OP_SPY))
                 break;
             t = &g_empires[id];
-            if (SpySucceeds(me, t) || MaskTest(*OpMask(me, 8), t->id)) {
+            if (SpySucceeds(me, t) || MaskTest(*OpMask(me, OP_BRIBE), t->id)) {
                 kout << "Your spy was successful.\nSpy results are...\n";
                 EmpireStatus(t, 0);
             } else {
@@ -212,7 +212,7 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             }
             break;
         case 2: {
-            if (!Attempt(p, me, cost[2], &id, 1))
+            if (!Attempt(p, me, cost[2], &id, OP_INSURGENTAID))
                 break;
             t = &g_empires[id];
             BreakTreaties(me, t);
@@ -221,7 +221,7 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                      << ".\n";
                 break;
             }
-            MaskSet(OpMask(me, 1), id);
+            MaskSet(OpMask(me, OP_INSURGENTAID), id);
             int16 k = 0;
             while (k < t->insurgency) {
                 if (!SpySucceeds(me, t)) {
@@ -252,11 +252,11 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                 break;
             }
             kout << "Choose an 'attacker' empire:\n";
-            int16 a = ChooseTarget(p, me, 2);
+            int16 a = ChooseTarget(p, me, OP_SETUP);
             if (a == -1)
                 break;
             kout << "Choose a 'defender' empire:\n";
-            int16 d = ChooseTarget(p, me, 2);
+            int16 d = ChooseTarget(p, me, OP_SETUP);
             if (d == -1)
                 break;
             if (a == d) {
@@ -267,8 +267,8 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             Empire *ea = &g_empires[a], *ed = &g_empires[d];
             BreakTreaties(me, ea);
             BreakTreaties(me, ed);
-            MaskSet(OpMask(me, 2), a);
-            MaskSet(OpMask(me, 2), d);
+            MaskSet(OpMask(me, OP_SETUP), a);
+            MaskSet(OpMask(me, OP_SETUP), d);
             me->agents -= 1;
             int16 ok = SpySucceeds(me, ea) || SpySucceeds(me, ed);
             {
@@ -280,12 +280,12 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             break;
         }
         case 4: {
-            if (!Attempt(p, me, cost[4], &id, 3))
+            if (!Attempt(p, me, cost[4], &id, OP_DISSENSION))
                 break;
             t = &g_empires[id];
             BreakTreaties(me, t);
             me->agents -= 1;
-            MaskSet(OpMask(me, 3), id);
+            MaskSet(OpMask(me, OP_DISSENSION), id);
             int16 ok = SpySucceeds(me, t);
             {
                 EventCovertDissension ev(me->id, t->id, ok);
@@ -297,12 +297,12 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             break;
         }
         case 5: {
-            if (!Attempt(p, me, cost[5], &id, 4))
+            if (!Attempt(p, me, cost[5], &id, OP_DEMORALIZE))
                 break;
             t = &g_empires[id];
             me->agents -= 1;
             BreakTreaties(me, t);
-            MaskSet(OpMask(me, 4), id);
+            MaskSet(OpMask(me, OP_DEMORALIZE), id);
             int16 ok = SpySucceeds(me, t);
             {
                 EventCovertDemoralize ev(me->id, t->id, ok);
@@ -314,11 +314,11 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             break;
         }
         case 6:
-            if (!Attempt(p, me, cost[6], &id, 5))
+            if (!Attempt(p, me, cost[6], &id, OP_BOMBING))
                 break;
             t = &g_empires[id];
             BreakTreaties(me, t);
-            MaskSet(OpMask(me, 5), id);
+            MaskSet(OpMask(me, OP_BOMBING), id);
             if (!SpySucceeds(me, t)) {
                 CovertReport rep(t->id);
                 me->agents -= 1;
@@ -360,11 +360,11 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                 if (c == -1)
                     break;
                 if (c == 1) {
-                    if (!Attempt(p, me, cost[7], &id, 6))
+                    if (!Attempt(p, me, cost[7], &id, OP_INFILTRATION))
                         continue;
                     t = &g_empires[id];
                     me->agents -= 1;
-                    if ((uint8)t->b2d3[me->id] == 0xff || !SpySucceeds(me, t)) {
+                    if ((uint8)t->intercepts[me->id] == 0xff || !SpySucceeds(me, t)) {
                         CovertReport rep(t->id);
                         rep << "A covert agent from " << c_empire << Untr(me->name) << c_normal
                             << " was caught trying to intercept your messages and "
@@ -372,10 +372,10 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                         kout << CAUGHT;
                     } else {
                         kout << "Your spy was has been planted.\n";
-                        t->b2d3[me->id]++;
+                        t->intercepts[me->id]++;
                     }
                 } else if (c == 2) {
-                    if (!Attempt(p, me, cost[7], &id, 6))
+                    if (!Attempt(p, me, cost[7], &id, OP_INFILTRATION))
                         continue;
                     t = &g_empires[id];
                     if (!SpySucceeds(me, t)) {
@@ -393,11 +393,11 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             }
             break;
         case 8: {
-            if (!Attempt(p, me, cost[8], &id, 7))
+            if (!Attempt(p, me, cost[8], &id, OP_HOSTAGES))
                 break;
             t = &g_empires[id];
             BreakTreaties(me, t);
-            MaskSet(OpMask(me, 7), id);
+            MaskSet(OpMask(me, OP_HOSTAGES), id);
             me->agents -= 1;
             int16 ok = SpySucceeds(me, t);
             {
@@ -410,17 +410,17 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             break;
         }
         case 9: {
-            if (!Attempt(p, me, cost[9], &id, 8))
+            if (!Attempt(p, me, cost[9], &id, OP_BRIBE))
                 break;
             t = &g_empires[id];
-            if (MaskTest(*OpMask(me, 8), t->id)) {
+            if (MaskTest(*OpMask(me, OP_BRIBE), t->id)) {
                 me->money.add(cost[9]);
                 kout << "You already have a spy working for you in that empire!\n";
                 break;
             }
             int32 bribed = 0;
             for (int16 i = 0; i < MAXEMPIRES; i++)
-                if (MaskTest(*OpMask(&g_empires[i], 8), t->id))
+                if (MaskTest(*OpMask(&g_empires[i], OP_BRIBE), t->id))
                     bribed += 1;
             if (t->agents <= bribed) {
                 me->money.add(cost[9]);
@@ -429,9 +429,9 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             }
             int32 avail = t->agents;
             for (int16 i = 0; i < MAXEMPIRES; i++)
-                avail -= MaskTest(*OpMask(&g_empires[i], 8), t->id);
+                avail -= MaskTest(*OpMask(&g_empires[i], OP_BRIBE), t->id);
             if (SpySucceeds(me, t) && SpySucceeds(me, t) && avail > 0) {
-                MaskSet(OpMask(me, 8), t->id);
+                MaskSet(OpMask(me, OP_BRIBE), t->id);
                 kout << "You have successfully bribed an agent from " << c_empire << Untr(t->name)
                      << c_normal << ".\n";
             } else {

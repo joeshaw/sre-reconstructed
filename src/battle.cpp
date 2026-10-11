@@ -31,7 +31,7 @@ void AttackMessage(OStream &o, const char *attacker, int16 severity)
 // 3f62:01c1
 int16 ShowBattleReports(Player *p, Empire *e)
 {
-    return ShowReports(e->id, BATTLE_FILE, (p->prefs2 >> 3) & 1, 4, 12);
+    return ShowReports(e->id, BATTLE_FILE, HasPref(p->prefs2, PF2_REPORTDATES), 4, 12);
 }
 
 // 3f62:01f5

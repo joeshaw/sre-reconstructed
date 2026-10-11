@@ -55,7 +55,7 @@ int32 NetWorth(Empire *e)
         Treaty tr = e->treaty[i];
         if (tr.type() == 0)
             continue;
-        t += ((int32)tr.a + 5) / 3;
+        t += ((int32)tr.days + 5) / 3;
         if (tr.type() == 2)
             continue;
         if (tr.type() == 1)
@@ -67,7 +67,7 @@ int32 NetWorth(Empire *e)
         e->soldiers + e->fighters + 3 * e->heavycruisers + 3 * e->lightcruisers +
         (e->stations << 1) + 3 * e->carriers + (e->generals << 1) +
         e->population / ((int32)e->taxrate + 10) + (int32)e->cmdship + e->bank.get() / 110000 -
-        e->d188 + e->d16c / 2;
+        e->pollution + e->tradegoods / 2;
     if (t < 0)
         t = 0;
     return t;
@@ -116,10 +116,10 @@ const char *PlanetName(int8 type)
 }
 
 // ---------------------------------------------------------------------
-// 48cc:11be
-void ClearSpending(uint8 *s)
+// 48cc:11be: clear what went short in the last turn (Empire+0x1c7).
+void ClearShortages(Empire *e)
 {
-    memset(s, 0, 0x60);
+    memset(e->neglected, 0, 0x60);
 }
 
 static int8 Clamp100(int16 v)
@@ -131,14 +131,14 @@ static int8 Clamp100(int16 v)
     return (int8)v;
 }
 
-static void SetPlanets(Empire *e, int16 type, int32 count, int32 a, int32 b)
+static void SetPlanets(Empire *e, int16 type, int32 count, int32 target, int32 output)
 {
     PlanetSet *p = Planets(e, type);
     p->count = 0;
-    p->a = 0;
-    p->b = 0;
-    Planets(e, type)->a = a;
-    Planets(e, type)->b = b;
+    p->target = 0;
+    p->output = 0;
+    Planets(e, type)->target = target;
+    Planets(e, type)->output = output;
     Planets(e, type)->count = count;
 }
 
@@ -150,7 +150,7 @@ void EmpireInit(Empire *e)
     e->player = -1;
     e->lastplay = g_now;
     e->created = g_now;
-    e->w2a1 = 4;
+    e->inactivedays = 4;
     SetPlanets(e, 0, 0, 1900, 1900);
     SetPlanets(e, 1, 3, 17, 39);
     SetPlanets(e, 2, 9, 2650, 3100);
@@ -164,13 +164,13 @@ void EmpireInit(Empire *e)
     for (int16 i = 0; i < 26; i++) {
         Treaty &t = e->treaty[i];
         t.settype(0);
-        t.a = 0;
-        t.sete(0);
-        t.setd(0);
-        t.setc(0);
+        t.days = 0;
+        t.setsoldierpct(0);
+        t.setcruiserpct(0);
+        t.setstatus(TS_NONE);
     }
     for (int16 i = 0; i < 25; i++)
-        e->b2d3[i] = 0;
+        e->intercepts[i] = 0;
     e->lightcruisers = 0;
     e->generals = 0;
     e->carriers = 0;
@@ -178,25 +178,25 @@ void EmpireInit(Empire *e)
     e->stations = 0;
     e->fighters = 0;
     e->soldiers = 0;
-    e->b297[0] = Clamp100(20);
-    e->b297[1] = Clamp100(20);
-    e->b297[2] = Clamp100(20);
-    e->b297[3] = Clamp100(20);
-    e->b297[4] = Clamp100(10);
-    e->b297[5] = Clamp100(10);
-    e->d16c = 0;
-    e->w172 = 0;
+    e->supplyrates[0] = Clamp100(20);
+    e->supplyrates[1] = Clamp100(20);
+    e->supplyrates[2] = Clamp100(20);
+    e->supplyrates[3] = Clamp100(20);
+    e->supplyrates[4] = Clamp100(10);
+    e->supplyrates[5] = Clamp100(10);
+    e->tradegoods = 0;
+    e->tickets = 0;
     e->flags = 0;
     e->insurgency = 0;
     e->effectiveness = Clamp100(100);
     e->cmdship = Clamp100(0);
     e->money.set(10000);
     e->score = 0;
-    e->d178 = 0;
+    e->points = 0;
     e->population = 40;
-    e->d188 = 0;
+    e->pollution = 0;
     e->food = 0;
-    e->d1b4 = 0;
+    e->efficiency = 0;
     e->d29d = 0;
     if (g_open) {
         e->year = -g_galaxy.protection;
@@ -207,9 +207,9 @@ void EmpireInit(Empire *e)
         e->turnsused = 0;
         e->turnsperday = 5;
     }
-    e->w19a = e->year;
+    e->bonusyear = e->year;
     e->bank.set(0);
-    e->d1a4 = 0;
+    e->loanpayment = 0;
     e->w1a8 = 0;
     e->bonds = 0;
     e->maxbonds = 0;
@@ -222,26 +222,31 @@ void EmpireInit(Empire *e)
     e->w1ab = 0;
     e->draftrate = Clamp100(5);
     e->w1ae = 0;
-    e->d1b0 = 0;
+    e->favor = 0;
     e->phase = 0;
-    e->m1bc.set(0);
-    e->b1c4 &= ~0x0f;
-    ClearSpending(e->u_1c7);
-    e->b1c6 = 0;
-    e->b1c5 = 0;
+    e->income.set(0);
+    e->shortfalls &= ~(SF_NEGLECT | SF_STARVED | SF_UNUSED | SF_ARMY);
+    ClearShortages(e);
+    e->effnext = 0;
+    e->effchange = 0;
     e->weapons &= ~0x0f;
     e->weapons &= 0x0f;
     e->troubles = 0;
     e->bonuses = 0;
-    e->w229 = 0;
+    e->attacks = 0;
     e->agents = 0;
-    for (int16 i = 0; i < 7; i++)
-        e->d22f[i] = 0;
+    e->aidmask = 0;
+    e->dissensionmask = 0;
+    e->demoralizemask = 0;
+    e->bombmask = 0;
+    e->hostagemask = 0;
+    e->bribemask = 0;
+    e->setupmask = 0;
     for (int16 i = 0; i < 9; i++)
         e->w26f[i] = 0;
-    e->d293 = 0;
-    e->w192 = 0;
-    e->d2ec = 0;
+    e->researchpoints = 0;
+    e->planetsbought = 0;
+    e->lastnews = 0;
 }
 
 // 48cc:112c
@@ -264,7 +269,7 @@ int32 OilPrice()
     if (!g_open)
         return 1900;
     GalaxyOilPrice(&g_galaxy);
-    return g_galaxy.d3b6;
+    return g_galaxy.oilprice;
 }
 
 // 48cc:124f: the empire of a player, or -1.
@@ -413,22 +418,22 @@ void EmpireStatus(Empire *e, int16 full)
     HLine(Color(1), 0x4b);
 }
 
-// 48cc:232d: the lottery pool pays out to protected empires.
+// 48cc:232d: the Coordinator's fund pays a bonus to protected empires.
 int32 ProtectionBonus(Empire *e)
 {
-    if (e->year < e->w19a)
+    if (e->year < e->bonusyear)
         return 0;
     int32 div = 100;
     if (e->year <= 0)
         div = 300;
     if (e->year < -25)
         div = 400;
-    int32 v = g_galaxy.d3ac / div;
+    int32 v = g_galaxy.coordfund / div;
     if (v < 0)
         v = 0;
     e->money.add(1000 * v);
-    g_galaxy.d3ac -= v;
-    e->w19a = (int16)(e->year + g_galaxy.grantturns);
+    g_galaxy.coordfund -= v;
+    e->bonusyear = (int16)(e->year + g_galaxy.grantturns);
     return v;
 }
 
@@ -499,13 +504,13 @@ void BankInterest(Empire *e)
 // 14f6:02a6: move b a step towards a.
 void MoveToward(PlanetSet *p)
 {
-    int32 diff = (p->a >= 0) ? p->a - p->b : 0;
+    int32 diff = (p->target >= 0) ? p->target - p->output : 0;
     if (diff >= 30 || diff <= -30) {
-        p->b += diff / 30;
-    } else if (p->a > p->b) {
-        p->b += 1;
-    } else if (p->a < p->b) {
-        p->b -= 1;
+        p->output += diff / 30;
+    } else if (p->target > p->output) {
+        p->output += 1;
+    } else if (p->target < p->output) {
+        p->output -= 1;
     }
 }
 
@@ -524,46 +529,46 @@ void UpdateScore(Empire *e)
     e->score += e->population / ((int32)e->taxrate + 10);
 }
 
-// 48cc:2731
-void UpdateD1b0(Empire *e)
+// 48cc:2731: the Coordinator's favor fades, and grows with anti-pollution planets.
+void DriftFavor(Empire *e)
 {
-    if (e->d1b0 < 0)
-        e->d1b0 += 1;
-    if (e->d1b0 > 0)
-        e->d1b0 -= 2;
+    if (e->favor < 0)
+        e->favor += 1;
+    if (e->favor > 0)
+        e->favor -= 2;
     if ((TotalPlanets(e) - e->planets[P_PETROLEUM].count) / 10 < e->planets[P_ANTIPOLLUTION].count)
-        e->d1b0 += 1;
+        e->favor += 1;
 }
 
-// 48cc:27c6: spare capacity of government planets.
+// 48cc:27c6: spare capacity of government planets, in agents.
 int32 GovCapacity(Empire *e)
 {
     return 300 * e->planets[P_GOVERNMENT].count - 6 * e->generals - e->agents;
 }
 
-// 48cc:282f
-int32 GovCapacity6(Empire *e)
+// 48cc:282f: spare capacity of government planets, in generals.
+int32 GovCapacityGenerals(Empire *e)
 {
     return (300 * e->planets[P_GOVERNMENT].count - 6 * e->generals - e->agents) / 6;
 }
 
 // Set a treaty's type and its default terms (inlined in the original).
-void SetTreaty(Treaty &t, int16 type, uint8 a)
+void SetTreaty(Treaty &t, int16 type, uint8 days)
 {
     t.settype(type);
-    t.a = a;
-    t.sete(0);
-    t.setd(0);
+    t.days = days;
+    t.setsoldierpct(0);
+    t.setcruiserpct(0);
     if (t.type() == 3) {
-        t.sete(0x14);
-        t.setd(0x14);
+        t.setsoldierpct(0x14);
+        t.setcruiserpct(0x14);
     }
     if (t.type() == 4)
-        t.sete(0x3c);
+        t.setsoldierpct(0x3c);
     if (t.type() == 5)
-        t.setd(0x3c);
+        t.setcruiserpct(0x3c);
     if (t.type() == 6) {
-        t.sete(0x28);
-        t.setd(0x28);
+        t.setsoldierpct(0x28);
+        t.setcruiserpct(0x28);
     }
 }

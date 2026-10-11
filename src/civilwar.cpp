@@ -43,15 +43,15 @@ void CivilWar(Player *p, Empire *e)
     ItemList military(c_normal, c_number);
     ItemList lost(c_normal, c_number);
     lost.SkipZero();
-    if (e->b1c4 & 1) {
+    if (e->shortfalls & SF_NEGLECT) {
         // Neglected planets revolt.
         InsurgencyUp(e);
         for (int16 i = 0; i < 10; i++) {
-            int32 n = Neglected(e, i);
+            int32 n = e->neglected[i];
             if (Planets(e, i)->count < n)
                 n = Planets(e, i)->count;
             lost.Add(n, PlanetName((int8)i), "");
-            g_galaxy.d392 += n;
+            g_galaxy.marketplanets += n;
             total += n;
             Planets(e, i)->count -= n;
         }
@@ -77,10 +77,9 @@ void CivilWar(Player *p, Empire *e)
         } else {
             cause = "unemployment";
         }
-    } else if ((e->b1c4 >> 1) & 1) {
+    } else if (e->shortfalls & SF_STARVED) {
         // Starvation.
-        int32 starving;
-        memcpy(&starving, e->u_1c7 + 0x5c, 4);
+        int32 starving = e->starving;
         // The original divides by zero if the population is gone.
         pct = e->population ? 100 * starving / e->population : 0;
         if (pct < 0)
@@ -93,7 +92,7 @@ void CivilWar(Player *p, Empire *e)
         for (int16 i = 0; i < 10; i++) {
             int32 n = pct * Planets(e, i)->count / 100;
             lost.Add(n, PlanetName((int8)i), "");
-            g_galaxy.d392 += n;
+            g_galaxy.marketplanets += n;
             total += n;
             Planets(e, i)->count -= n;
         }
@@ -144,25 +143,25 @@ void CivilWar(Player *p, Empire *e)
         ShowHelpTopic(topic, "general");
         if (e->planets[P_TOURISM].count > e->planets[P_ORE].count) {
             ShowHelpTopic(topic, "tourism");
-            if (e->planets[P_ANTIPOLLUTION].b * e->planets[P_ANTIPOLLUTION].count <
+            if (e->planets[P_ANTIPOLLUTION].output * e->planets[P_ANTIPOLLUTION].count <
                 e->planets[P_PETROLEUM].count)
                 kout << "Also, tourism profits decrease when you have pollution caused by petroleum planets.";
             kout << "\n\n";
         }
-        if (e->planets[P_FOOD].b * e->planets[P_FOOD].count > FoodNeeded(e, 0))
+        if (e->planets[P_FOOD].output * e->planets[P_FOOD].count > FoodNeeded(e, 0))
             ShowHelpTopic(topic, "long-term-food");
         ShowHelpTopic(topic, "continuous");
         if (g_system.regstate)
             ShowHelpTopic(topic, "loan");
         kout << "\n\nHope this helps!\n\n";
     }
-    if (e->d1b0 >= 25 && pct > 25 && e->money.get() + e->bank.get() < 100000000 &&
+    if (e->favor >= 25 && pct > 25 && e->money.get() + e->bank.get() < 100000000 &&
         (e->soldiers + e->fighters + e->stations + e->heavycruisers + e->agents < 2000 ||
          TotalPlanets(e) < 300)) {
         kout << "The Galactic Coordinator offers to give you some funds to recover from the civil war.  ";
         if (YesNo(1, "Do you accept")) {
-            int32 x = e->d1b0;
-            e->d1b0 -= 25;
+            int32 x = e->favor;
+            e->favor -= 25;
             if (x > 100)
                 x = 100;
             x = x * (15 * TotalPlanets(e));
@@ -179,8 +178,8 @@ void CivilWar(Player *p, Empire *e)
 void Desertion(Player *p, Empire *e)
 {
     (void)p;
-    if (e->b1c6 >= 0) {
-        e->effectiveness = (int8)(e->effectiveness + e->b1c5);
+    if (e->effnext >= 0) {
+        e->effectiveness = (int8)(e->effectiveness + e->effchange);
         if (e->effectiveness < 0)
             e->effectiveness = 0;
         if (e->effectiveness > 100)
@@ -188,9 +187,9 @@ void Desertion(Player *p, Empire *e)
         return;
     }
     e->effectiveness = 0;
-    if (!((e->b1c4 >> 3) & 1))
+    if (!(e->shortfalls & SF_ARMY))
         return;
-    int16 k = (int16)-e->b1c6;
+    int16 k = (int16)-e->effnext;
     if (k > 20)
         k = 20;
     if (k < 0)

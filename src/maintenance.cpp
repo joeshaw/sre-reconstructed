@@ -50,7 +50,7 @@ static void Backup(const char *from, const char *to)
 // 5681:0160: one of three newspapers, with random headlines.
 static void Newspaper()
 {
-    int16 paper = g_galaxy.w3c0;
+    int16 paper = g_galaxy.newspaper;
     if (paper == 2) {
         g_log2 << '\\' << Color(14) << "   Farmer Bob's Guide to the Galaxy        " << Color(7)
                << "Printed Annually\n";
@@ -83,7 +83,7 @@ static void Newspaper()
             }
         }
         if (Random(10) == 0) {
-            g_galaxy.w3c0 = 3;
+            g_galaxy.newspaper = 3;
             g_log2 << "Centurion Rahad has come out of retirement to take over this news agency.\n";
         }
     } else if (paper == 3) {
@@ -134,7 +134,7 @@ static void Newspaper()
             }
         }
         if (Random(10) == 0) {
-            g_galaxy.w3c0 = 1;
+            g_galaxy.newspaper = 1;
             g_log2 << "Centurion Rahad is considering retiring!\n";
         }
     } else {
@@ -170,7 +170,7 @@ static void Newspaper()
                 g_log2 << "Rumors are that investments are a good buy.\n";
         }
         if (Random(10) == 0) {
-            g_galaxy.w3c0 = 2;
+            g_galaxy.newspaper = 2;
             g_log2 << "The Galactic Star is on the verge of bankrupcy.  Can another newspaper take over?\n";
         }
     }
@@ -180,17 +180,17 @@ static void Newspaper()
 void RegeneratePlanets(Galaxy *g)
 {
     int32 now = b_time(0);
-    if (g->d392 < 0)
-        g->d392 = 0;
-    if (now > g->t48 && g->w38c > 0) {
-        if (g->d392 < 30000) {
-            int32 n = (now - g->t48) / ((int32)g->w38c + 1);
+    if (g->marketplanets < 0)
+        g->marketplanets = 0;
+    if (now > g->lastregen && g->regenseconds > 0) {
+        if (g->marketplanets < 30000) {
+            int32 n = (now - g->lastregen) / ((int32)g->regenseconds + 1);
             if (n > 0) {
-                g->d392 += n;
-                g->t48 = g->t48 + n * (int32)g->w38c;
+                g->marketplanets += n;
+                g->lastregen = g->lastregen + n * (int32)g->regenseconds;
             }
         } else {
-            g->t48 = now;
+            g->lastregen = now;
         }
     }
 }
@@ -201,14 +201,14 @@ static void DailyEmpire(Empire *e)
     GalaxyOpen();
     e->turnsperday = g_galaxy.grantturns;
     e->turnsused = 0;
-    e->w2a1--;
-    e->w229 = 0;
-    e->d22f[3] = 0;
-    e->d22f[4] = 0;
-    e->d22f[6] = 0;
+    e->inactivedays--;
+    e->attacks = 0;
+    e->bombmask = 0;
+    e->hostagemask = 0;
+    e->setupmask = 0;
     for (int16 i = 0; i < MAXEMPIRES; i++) {
-        if (e->treaty[i].a > 0)
-            e->treaty[i].a = (uint8)(e->treaty[i].a - 1);
+        if (e->treaty[i].days > 0)
+            e->treaty[i].days = (uint8)(e->treaty[i].days - 1);
     }
     if (r_deletedead.Bool() &&
         !(Exists(*e) && TotalPlanets(e) > 0 && e->population > 0)) {
@@ -219,7 +219,7 @@ static void DailyEmpire(Empire *e)
             g_log2 << "collapsed!\n";
         DeleteEmpire(e);
         EmpireInit(e);
-    } else if (r_deletedead.Bool() && e->w2a1 <= 0) {
+    } else if (r_deletedead.Bool() && e->inactivedays <= 0) {
         int32 days = r_inactivetimeout.Long();
         g_log2 << "Empire " << c_empire << Untr(e->name) << c_normal << " erased - inactive for "
                << days << " days.\n";
@@ -237,15 +237,15 @@ void Maintenance(Galaxy *g)
         return;
     RegeneratePlanets(g);
     const char *msg = 0;
-    if (g_now - g->t3ba >= 3600) {
+    if (g_now - g->lasthourly >= 3600) {
         msg = "Running hourly maintenance...";
         Status(msg);
-        if (Midnight(g->t3ba) < g->created)
-            g->t3ba = g->created;
-        while (g_now - g->t3ba > 3600) {
+        if (Midnight(g->lasthourly) < g->created)
+            g->lasthourly = g->created;
+        while (g_now - g->lasthourly > 3600) {
             for (int16 i = 1; i <= 9; i++)
                 PirateHourly(&g_pirates[i - 1]);
-            g->t3ba = g->t3ba + 3600;
+            g->lasthourly = g->lasthourly + 3600;
         }
         StatusEnd(msg);
     }
@@ -289,17 +289,17 @@ void Maintenance(Galaxy *g)
 
     msg = "Searching for illegal nuclear bomb traders...";
     Status(msg);
-    if (g->w3b2 > 400)
-        g->w3b2 += 2;
-    else if (g->w3b2 > 300)
-        g->w3b2 += 5;
+    if (g->nukelimit > 400)
+        g->nukelimit += 2;
+    else if (g->nukelimit > 300)
+        g->nukelimit += 5;
     else
-        g->w3b2 += 15;
-    if (g->w3b4 < 30)
-        g->w3b4++;
-    g->d3c2 = 15 * (g->d3c2 / 20);
-    if (g->d3c2 < 5000000)
-        g->d3c2 = 5000000;
+        g->nukelimit += 15;
+    if (g->nukepercent < 30)
+        g->nukepercent++;
+    g->psionicprice = 15 * (g->psionicprice / 20);
+    if (g->psionicprice < 5000000)
+        g->psionicprice = 5000000;
     StatusEnd(msg);
 
     msg = "Checking top scores and lottery...";
@@ -311,37 +311,37 @@ void Maintenance(Galaxy *g)
     g->solarmaster = -1;
     g->weaponsmaster = -1;
     g->planetmaster = -1;
-    int16 tickets = g->w3a4;
+    int16 tickets = g->lotterytickets;
     int16 winner = (int16)(((int32)tickets * b_rand()) / 0x8000);
-    if (g->w3a4 <= 0) {
+    if (g->lotterytickets <= 0) {
         winner = -1;
-        g->w3a4 = 0;
+        g->lotterytickets = 0;
     }
     for (int16 i = 0; i < MAXEMPIRES; i++) {
         Empire *e = &g_empires[i];
         if (!Exists(*e))
             continue;
-        if (e->lastplay < g->t44)
-            e->lastplay = g->t44;
+        if (e->lastplay < g->startdate)
+            e->lastplay = g->startdate;
         DailyEmpire(e);
     }
     for (int16 i = 0; i < MAXEMPIRES; i++) {
         Empire *e = &g_empires[i];
         if (!Exists(*e))
             continue;
-        if (winner >= 0 && e->w172 > winner) {
-            g->w3a6 = e->id;
-            g->d3a8 = Jackpot((int32)g->w3a4);
+        if (winner >= 0 && e->tickets > winner) {
+            g->lotterywinner = e->id;
+            g->jackpot = Jackpot((int32)g->lotterytickets);
             if (e->bank.get() < 2000000000)
-                e->bank.add(g->d3a8);
+                e->bank.add(g->jackpot);
             else if (e->money.get() < 2000000000)
-                e->money.add(g->d3a8);
-            g->w3a4 = 0;
+                e->money.add(g->jackpot);
+            g->lotterytickets = 0;
             winner = -1;
         }
         if (winner >= 0)
-            winner = (int16)(winner - e->w172);
-        e->w172 = 0;
+            winner = (int16)(winner - e->tickets);
+        e->tickets = 0;
         if (EmpireScore(e) > 3 * bestscore / 2) {
             bestscore = EmpireScore(e);
             g->solarmaster = e->id;
@@ -364,23 +364,23 @@ void Maintenance(Galaxy *g)
             bestworth = NetWorth(e);
         }
     }
-    g->w3a4 = 0;
+    g->lotterytickets = 0;
     if (g->solarmaster != -1) {
-        if (g->d3ac < 0)
-            g->d3ac = 0;
+        if (g->coordfund < 0)
+            g->coordfund = 0;
         Empire *e = &g_empires[g->solarmaster];
-        e->d178 += r_ptsolar.Long();
+        e->points += r_ptsolar.Long();
         g_log2 << c_empire << Untr(e->name) << c_normal << " has been ";
         if (g->solarmaster == oldsolar)
             g_log2 << "once again ";
         g_log2 << "chosen today's Solar Master, and has received a ";
-        g_log2 << c_number << 10 * g->d3ac << c_normal << " credit bonus!\n";
-        e->money.add(10 * g->d3ac);
-        g->d3ac -= g->d3ac / 100;
+        g_log2 << c_number << 10 * g->coordfund << c_normal << " credit bonus!\n";
+        e->money.add(10 * g->coordfund);
+        g->coordfund -= g->coordfund / 100;
     }
     if (g->planetmaster != -1) {
         Empire *e = &g_empires[g->planetmaster];
-        e->d178 += r_ptplanet.Long();
+        e->points += r_ptplanet.Long();
         g_log2 << c_empire << Untr(e->name) << c_normal;
         if (g->planetmaster == oldplanet)
             g_log2 << " is still the";
@@ -391,18 +391,18 @@ void Maintenance(Galaxy *g)
     if (g->weaponsmaster != -1) {
         int16 lost = 0;
         Empire *e = &g_empires[g->weaponsmaster];
-        e->d178 += r_ptweapons.Long();
+        e->points += r_ptweapons.Long();
         if (g->weaponsmaster != oldweapons)
             g_log2 << c_empire << Untr(e->name) << c_normal
                    << " has been chosen the new Weapons Master";
         if (TotalPlanets(e) > 500) {
             for (int16 i = 0; i < MAXEMPIRES; i++) {
-                if (e->treaty[i].e() > 0 || e->treaty[i].d() > 0) {
+                if (e->treaty[i].soldierpct() > 0 || e->treaty[i].cruiserpct() > 0) {
                     Empire *o = &g_empires[i];
-                    uint8 a = e->treaty[i].a;
+                    uint8 days = e->treaty[i].days;
                     lost = 1;
-                    SetTreaty(o->treaty[e->id], 1, a);
-                    SetTreaty(e->treaty[o->id], 1, a);
+                    SetTreaty(o->treaty[e->id], 1, days);
+                    SetTreaty(e->treaty[o->id], 1, days);
                 }
             }
         }
@@ -435,6 +435,6 @@ void Maintenance(Galaxy *g)
         }
     }
     g->created = g_today;
-    g->t3ba = g_today;
+    g->lasthourly = g_today;
     GalaxyClose();
 }

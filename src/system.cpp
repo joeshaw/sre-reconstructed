@@ -16,8 +16,8 @@ static const char *PIRATE_FILE = "Data/Pirate.II";      // DS:a1b4
 // 6c38:0000
 void SystemLoad()
 {
-    g_system.t120 = b_time(0);
-    g_system.t124 = b_time(0);
+    g_system.created = b_time(0);
+    g_system.inuse = b_time(0);
     g_system.galaxy.clear();
     DataFile f(SYSTEM_FILE, 0x142, 0, 1);
     if (!f.read(0, &g_system, 1))
@@ -28,14 +28,14 @@ void SystemLoad()
 // 6c38:00f6
 void SystemClearInUse()
 {
-    g_system.t124 = 0;
+    g_system.inuse = 0;
 }
 
 // 6c38:011d
 void SystemInit()
 {
-    g_system.t120 = g_now;
-    g_system.t124 = g_now;
+    g_system.created = g_now;
+    g_system.inuse = g_now;
     g_system.galaxy.clear();
     for (int16 i = 0; i < 0x40; i++) {
         g_system.bbs[i] = 0;
@@ -75,9 +75,9 @@ void SystemMaintenance()
 // 6c38:02c9
 int16 SystemValid()
 {
-    if (!(g_system.t124 > 0x12c684c0 && g_system.t124 < 0x38538e40))
+    if (!(g_system.inuse > 0x12c684c0 && g_system.inuse < 0x38538e40))
         return 0;
-    if (!(g_system.t120 > 0x12c684c0 && g_system.t120 < 0x38538e40))
+    if (!(g_system.created > 0x12c684c0 && g_system.created < 0x38538e40))
         return 0;
     if (g_system.regstate < 0 || g_system.regstate > 5)
         return 0;
@@ -131,7 +131,7 @@ int16 SystemLoadData()
                     g_errlog << TimeStr(g_now) << ": Resetting EMPIRE " << i << "!\n";
                 }
             }
-            g_empires[i].flags |= g_galaxy.w386;
+            g_empires[i].flags |= g_galaxy.localonly;
         }
     } else {
         for (int16 i = 0; i < MAXEMPIRES; i++)
@@ -326,7 +326,7 @@ void Rankings()
         networth[n] = NetWorth(&g_empires[i]);
         planets[n] = TotalPlanets(&g_empires[i]);
         score[n] = g_empires[i].score;
-        points[n] = g_empires[i].d178;
+        points[n] = g_empires[i].points;
         n++;
     }
     if (n == 0) {

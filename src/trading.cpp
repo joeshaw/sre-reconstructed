@@ -288,7 +288,7 @@ static int16 SendTrade(Empire *e)
             *EmpireItem(e, i) -= *GoodsItem(&t.offer, i);
     e->carriers -= t.carriers;
     e->money.sub(t.offer.credits);
-    e->d16c += GoodsValue(&t.offer);
+    e->tradegoods += GoodsValue(&t.offer);
     t.to = to;
     t.from = e->id;
     t.state = 1;
@@ -402,8 +402,8 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         for (int16 i = 1; i <= 9; i++)
             if (EmpireItem(e, i))
                 *EmpireItem(e, i) -= *GoodsItem(&t->demand, i) - *GoodsItem(&t->offer, i);
-        o->d16c -= GoodsValue(&t->offer);
-        e->d16c += GoodsValue(&t->demand);
+        o->tradegoods -= GoodsValue(&t->offer);
+        e->tradegoods += GoodsValue(&t->demand);
         e->money.sub(t->demand.credits - t->offer.credits);
         if (e->money.get() - t->demand.credits + t->offer.credits < 0) {
             e->bank.add(e->money.get());
@@ -430,7 +430,7 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         }
         e->money.add(t->demand.credits);
         e->carriers += t->carriers;
-        o->d16c -= GoodsValue(&t->demand);
+        o->tradegoods -= GoodsValue(&t->demand);
         return 0;
     }
     case 3:
@@ -450,7 +450,7 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         }
         e->money.add(t->offer.credits);
         e->carriers += t->carriers;
-        e->d16c -= GoodsValue(&t->offer);
+        e->tradegoods -= GoodsValue(&t->offer);
         return 0;
     }
     }

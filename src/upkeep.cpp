@@ -11,18 +11,6 @@ struct Costs {
     int32 donation;     // 14 to the Galactic Coordinator
 };
 
-// The planets neglected this turn (e+0x1c7, ten longs).
-int32 Neglected(Empire *e, int16 i)
-{
-    int32 v;
-    memcpy(&v, e->u_1c7 + 4 * i, 4);
-    return v;
-}
-
-void SetNeglected(Empire *e, int16 i, int32 v)
-{
-    memcpy(e->u_1c7 + 4 * i, &v, 4);
-}
 
 // 5e48:0000
 static void ComputeCosts(Empire *e, Costs *c)
@@ -38,11 +26,11 @@ static void ComputeCosts(Empire *e, Costs *c)
     c->violence = (int32)((int16)(e->insurgency + 1) / 2) * (TotalPlanets(e) + 2 * e->population);
     c->loan = 0;
     if (e->bank.get() < 0) {
-        c->loan = e->d1a4;
+        c->loan = e->loanpayment;
         if (c->loan + e->bank.get() > 0)
             c->loan = -e->bank.get();
     }
-    if (g_galaxy.w384 == 0) {
+    if (g_galaxy.inflation == 0) {
         // Upkeep per planet grows with the logarithm of the size.
         static const int16 FRACTION[8] = { 0, 86, 266, 422, 533, 619, 689, 748 };
         int32 per = -1400;
@@ -58,8 +46,8 @@ static void ComputeCosts(Empire *e, Costs *c)
     }
     if (c->planets < 0)
         c->planets = 0;
-    c->donation = e->m1bc.get() * (int32)g_galaxy.w3b0;
-    if (g_galaxy.d3ac > 1500000000)
+    c->donation = e->income.get() * (int32)g_galaxy.coordtax;
+    if (g_galaxy.coordfund > 1500000000)
         c->donation = 0;
 }
 
@@ -67,9 +55,9 @@ static void ComputeCosts(Empire *e, Costs *c)
 static void Consequences(Empire *e, Costs *c, Costs *paid)
 {
     if (paid->military < c->military) {
-        e->b1c5 = (int8)((paid->military - c->military) / (c->military / 100 + 1));
-        e->b1c6 = (int8)(e->b1c5 + e->effectiveness);
-        e->b1c4 |= 8;
+        e->effchange = (int8)((paid->military - c->military) / (c->military / 100 + 1));
+        e->effnext = (int8)(e->effchange + e->effectiveness);
+        e->shortfalls |= SF_ARMY;
     }
     int32 per = c->effect;
     if (e->effectiveness < 100) {
@@ -93,38 +81,38 @@ static void Consequences(Empire *e, Costs *c, Costs *paid)
         e->insurgency--;
     e->bank.add(paid->loan);
     if (e->bank.get() >= 0)
-        e->d1a4 = 0;
+        e->loanpayment = 0;
     if (paid->planets < c->planets) {
         int32 n = ((c->planets - paid->planets) / (c->planets / 1000 + 1)) *
                   (TotalPlanets(e) - 3 * e->planets[P_GOVERNMENT].count) / 2000;
         if (n > 0) {
             int32 k = TotalPlanets(e) / n;
             int16 every = (int16)(k > 10000 ? 10000 : k < 1 ? 1 : k);
-            e->b1c4 |= 1;
+            e->shortfalls |= SF_NEGLECT;
             int32 total = 0;
             for (int16 i = 0; i < 10; i++) {
-                SetNeglected(e, i, Planets(e, i)->count / every);
-                total += Neglected(e, i);
+                e->neglected[i] = Planets(e, i)->count / every;
+                total += e->neglected[i];
             }
             for (int16 j = 0; j < 100 && total < n; j++) {
                 int16 t = (int16)(((int32)10 * b_rand()) / 0x8000);
-                if (Planets(e, t)->count > Neglected(e, t)) {
-                    SetNeglected(e, t, Neglected(e, t) + 1);
+                if (Planets(e, t)->count > e->neglected[t]) {
+                    e->neglected[t]++;
                     total++;
                 }
             }
         }
     }
     if (paid->donation > c->donation) {
-        int32 x = (paid->donation - c->donation) / (e->m1bc.get() + 1);
+        int32 x = (paid->donation - c->donation) / (e->income.get() + 1);
         if (x > 1000)
             x -= 1000;
         if (x > 0)
-            e->d1b0 += (int16)x;
+            e->favor += (int16)x;
     }
-    g_galaxy.d3ac += paid->donation / 1000;
-    if (TotalPlanets(e) > 0 && e->m1bc.get() < 2000000)
-        e->d1b4 = (1000 * e->m1bc.get() - c->military - c->effect - c->violence - c->loan -
+    g_galaxy.coordfund += paid->donation / 1000;
+    if (TotalPlanets(e) > 0 && e->income.get() < 2000000)
+        e->efficiency = (1000 * e->income.get() - c->military - c->effect - c->violence - c->loan -
                    c->planets - c->donation) /
                   TotalPlanets(e);
 }
@@ -164,8 +152,8 @@ void PayUpkeep(Player *p, Empire *e, Galaxy *g)
              << " credits this year.  You have " << c_number << e->money.get() << c_normal
              << " credits.\n";
         if (e->money.get() >= total) {
-            int16 autopay = (p->prefs2 >> 1) & 1;
-            if (p->prefs2 & 1)
+            int16 autopay = HasPref(p->prefs2, PF2_AUTOPAY);
+            if (HasPref(p->prefs2, PF2_ASKPAY))
                 autopay = YesNo(autopay, "Pay everything automatically");
             if (autopay) {
                 paid = c;

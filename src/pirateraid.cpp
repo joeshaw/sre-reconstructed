@@ -74,19 +74,19 @@ int16 PirateRaid(Player *p, Empire *e)
     if (s == 0 && f == 0 && c == 0)
         return 0;
     e->money.sub(credits);
-    int32 ps = s + pt->d98;
-    int32 pf = f + pt->d9c;
-    int32 pc = c + pt->da4;
+    int32 ps = s + pt->soldiers;
+    int32 pf = f + pt->fighters;
+    int32 pc = c + pt->heavycruisers;
     kout << Color(13);
     for (;;) {
-        if (Random(1100) < chance && pt->d98 > 0)
-            Shrink(&pt->d98, -ps / 80 - 1);
-        if (Random(1300) < chance && pt->da4 > 0)
-            Shrink(&pt->da4, -pc / 80 - 1);
-        if (Random(1200) < chance && pt->d9c > 0)
-            Shrink(&pt->d9c, -pf / 80 - 1);
-        if (Random(1200) < chance && pt->da0 > 0)
-            Shrink(&pt->da0, -pt->da0 / 80 - 1);
+        if (Random(1100) < chance && pt->soldiers > 0)
+            Shrink(&pt->soldiers, -ps / 80 - 1);
+        if (Random(1300) < chance && pt->heavycruisers > 0)
+            Shrink(&pt->heavycruisers, -pc / 80 - 1);
+        if (Random(1200) < chance && pt->fighters > 0)
+            Shrink(&pt->fighters, -pf / 80 - 1);
+        if (Random(1200) < chance && pt->stations > 0)
+            Shrink(&pt->stations, -pt->stations / 80 - 1);
         if (Random(500) < 80 && s > 0)
             s -= ps / 80 + 1;
         if (Random(500) < 80 && c > 0)
@@ -99,7 +99,7 @@ int16 PirateRaid(Player *p, Empire *e)
             break;
         if (!(sents / 2 < s || sentc / 2 < c || sentf / 2 < f))
             break;
-        if (!(pt->d98 > 0 || pt->da4 > 0 || pt->d9c > 0))
+        if (!(pt->soldiers > 0 || pt->heavycruisers > 0 || pt->fighters > 0))
             break;
         if ((ps + pc + pf) / 5 > s + c + f)
             break;
@@ -115,11 +115,11 @@ int16 PirateRaid(Player *p, Empire *e)
     e->heavycruisers -= sentc - c;
     e->fighters -= sentf - f;
     int16 score = 0;
-    if (pt->d9c > 0)
+    if (pt->fighters > 0)
         score--;
-    if (pt->d98 > 0)
+    if (pt->soldiers > 0)
         score--;
-    if (pt->da4 > 0)
+    if (pt->heavycruisers > 0)
         score--;
     if (s > 0)
         score++;
@@ -127,31 +127,31 @@ int16 PirateRaid(Player *p, Empire *e)
         score++;
     if (f > 0)
         score++;
-    if (pt->d9c > f)
+    if (pt->fighters > f)
         score--;
-    if (pt->d98 > s)
+    if (pt->soldiers > s)
         score--;
-    if (pt->da4 > c)
+    if (pt->heavycruisers > c)
         score--;
-    if (pt->d9c < f)
+    if (pt->fighters < f)
         score++;
-    if (pt->d98 < s)
+    if (pt->soldiers < s)
         score++;
-    if (pt->da4 < c)
+    if (pt->heavycruisers < c)
         score++;
-    if (2 * f < pt->d9c)
+    if (2 * f < pt->fighters)
         score--;
-    if (2 * s < pt->d98)
+    if (2 * s < pt->soldiers)
         score--;
-    if (2 * c < pt->da4)
+    if (2 * c < pt->heavycruisers)
         score--;
-    if (2 * pt->d9c < f)
+    if (2 * pt->fighters < f)
         score++;
-    if (2 * pt->d98 < s)
+    if (2 * pt->soldiers < s)
         score++;
-    if (2 * pt->da4 < c)
+    if (2 * pt->heavycruisers < c)
         score++;
-    if (2 * pt->d9c + pt->d98 + 13 * pt->da4 > 2 * f + s + 13 * c)
+    if (2 * pt->fighters + pt->soldiers + 13 * pt->heavycruisers > 2 * f + s + 13 * c)
         score -= 5;
     else
         score += 5;
@@ -182,47 +182,47 @@ int16 PirateRaid(Player *p, Empire *e)
         if (div < 2)
             div = 2;
         for (int16 k = 0; k < 10; k++) {
-            int16 take = (int16)(pt->wb4[k] / div);
+            int16 take = (int16)(pt->planets[k] / div);
             if (take > 100)
                 take = 100;
             if (take < 0)
                 take = 0;
             Planets(e, k)->count += take;
-            pt->wb4[k] = (int16)(pt->wb4[k] - take);
-            if (pt->wb4[k] < 0)
-                pt->wb4[k] = 0;
+            pt->planets[k] = (int16)(pt->planets[k] - take);
+            if (pt->planets[k] < 0)
+                pt->planets[k] = 0;
             total += take;
         }
         ItemList got(c_normal, Color(14));
         got.SkipZero();
         got.Add(total, "planet");
-        got.Add(pt->d94, "megatons of food", "");
-        got.Add(pt->d98 / div, "soldier");
-        got.Add(pt->d9c / div, "fighter");
-        got.Add(pt->da0 / div, "defense station");
-        got.Add(pt->da4 / div, "heavy cruiser");
-        got.Add(pt->da8 / div, "carrier");
-        got.Add(pt->dac / div, "general");
-        got.Add(pt->db0 / div, "covert agent");
+        got.Add(pt->food, "megatons of food", "");
+        got.Add(pt->soldiers / div, "soldier");
+        got.Add(pt->fighters / div, "fighter");
+        got.Add(pt->stations / div, "defense station");
+        got.Add(pt->heavycruisers / div, "heavy cruiser");
+        got.Add(pt->carriers / div, "carrier");
+        got.Add(pt->generals / div, "general");
+        got.Add(pt->agents / div, "covert agent");
         got.Add(pt->money, "credit");
-        e->soldiers += pt->d98 / div;
-        e->fighters += pt->d9c / div;
-        e->generals += pt->dac / div;
-        e->heavycruisers += pt->da4 / div;
-        e->carriers += pt->da8 / div;
-        e->stations += pt->da0 / div;
-        e->agents += pt->db0 / div;
-        e->food += pt->d94;
+        e->soldiers += pt->soldiers / div;
+        e->fighters += pt->fighters / div;
+        e->generals += pt->generals / div;
+        e->heavycruisers += pt->heavycruisers / div;
+        e->carriers += pt->carriers / div;
+        e->stations += pt->stations / div;
+        e->agents += pt->agents / div;
+        e->food += pt->food;
         e->money.add(pt->money);
-        pt->wd4[e->id]++;
-        Shrink(&pt->d98, -pt->d98 / div);
-        Shrink(&pt->d9c, -pt->d9c / div);
-        Shrink(&pt->dac, -pt->dac / div);
-        Shrink(&pt->da4, -pt->da4 / div);
-        Shrink(&pt->da8, -pt->da8 / div);
-        Shrink(&pt->da0, -pt->da0 / div);
-        Shrink(&pt->db0, -pt->db0 / div);
-        pt->d94 = 0;
+        pt->hatred[e->id]++;
+        Shrink(&pt->soldiers, -pt->soldiers / div);
+        Shrink(&pt->fighters, -pt->fighters / div);
+        Shrink(&pt->generals, -pt->generals / div);
+        Shrink(&pt->heavycruisers, -pt->heavycruisers / div);
+        Shrink(&pt->carriers, -pt->carriers / div);
+        Shrink(&pt->stations, -pt->stations / div);
+        Shrink(&pt->agents, -pt->agents / div);
+        pt->food = 0;
         pt->money = 0;
         if (r_pirateraids.Bool()) {
             const char *name = PirateName(pt);

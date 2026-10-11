@@ -29,7 +29,7 @@ static int8 Clamp100(int16 v)
 static void BreakTreaty(Treaty &t)
 {
     SetTreaty(t, 0, 0);
-    t.setc(0);
+    t.setstatus(TS_NONE);
 }
 
 static void BreakTreaties(Empire *a, Empire *b)
@@ -83,7 +83,7 @@ static int16 CanAttack(Empire *me, Empire *t)
             kout << "Your Neutrality Treaty prevents you from attacking.\n";
             return 0;
         }
-        if (tr.a != 0) {
+        if (tr.days != 0) {
             kout << "You cannot attack your allies unless you first break the treaty from the Diplomacy Menu.\n";
             return 0;
         }
@@ -225,10 +225,10 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
         Empire *a = &g_empires[i];
         if (!Exists(*a))
             continue;
-        if (a->treaty[t->id].c() != 0)
+        if (a->treaty[t->id].status() != TS_NONE)
             continue;
-        allys[i] = (int32)a->treaty[t->id].e() * (a->soldiers / 100);
-        allyh[i] = (int32)a->treaty[t->id].d() * (a->heavycruisers / 100);
+        allys[i] = (int32)a->treaty[t->id].soldierpct() * (a->soldiers / 100);
+        allyh[i] = (int32)a->treaty[t->id].cruiserpct() * (a->heavycruisers / 100);
         sd += allys[i];
         hd += allyh[i];
     }
@@ -277,19 +277,19 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
     }
     kout << c_normal << '\n';
     // Score each kind of force.
-    struct { int32 a, d; } f[4] = { { sa, sd }, { fa, stations }, { ha, hd }, { la, tlight } };
+    struct { int32 att, def; } f[4] = { { sa, sd }, { fa, stations }, { ha, hd }, { la, tlight } };
     for (int16 i = 0; i < 4; i++) {
-        if (f[i].a > 0)
+        if (f[i].att > 0)
             score++;
-        if (2 * f[i].d < f[i].a)
+        if (2 * f[i].def < f[i].att)
             score++;
-        if (f[i].a < 0)
+        if (f[i].att < 0)
             score--;
-        if (f[i].d > 0)
+        if (f[i].def > 0)
             score--;
-        if (2 * f[i].a < f[i].d)
+        if (2 * f[i].att < f[i].def)
             score--;
-        if (f[i].d < 0)
+        if (f[i].def < 0)
             score++;
     }
     Color cc(14);
@@ -435,7 +435,7 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
     {
         BattleReport r(t->id);
         AttackMessage(r, me->name, score);
-        me->w229++;
+        me->attacks++;
         if (won) {
             ShowVictory(cc, credits, &s_captured);
         } else {
@@ -509,7 +509,7 @@ static int16 Guerilla(Player *p, Empire *me, Empire *t)
         lost = me->soldiers;
     kout << "You lost " << c_number << lost << c_normal << " soldiers.\n";
     me->soldiers -= lost;
-    me->w229++;
+    me->attacks++;
     int32 before = t->soldiers;
     t->soldiers -= (t->soldiers - theirs) / 3;
     if (t->soldiers < 0)
@@ -555,7 +555,7 @@ static int16 Guerilla(Player *p, Empire *me, Empire *t)
 // 5c5c:060b
 static int16 Nuclear(Player *p, Empire *me, Empire *t)
 {
-    int16 div = (int16)(100 / g_galaxy.w3b4 + 1);
+    int16 div = (int16)(100 / g_galaxy.nukepercent + 1);
     if (!(me->weapons & 1)) {
         kout << "You have no nuclear weapons!\n";
         return 0;
@@ -566,15 +566,15 @@ static int16 Nuclear(Player *p, Empire *me, Empire *t)
         return 0;
     BreakTreaties(me, t);
     me->weapons &= ~1;
-    me->w229++;
-    if (g_galaxy.w3b2 > 50)
-        g_galaxy.w3b2 -= 30;
-    if (g_galaxy.w3b4 > 3)
-        g_galaxy.w3b4--;
+    me->attacks++;
+    if (g_galaxy.nukelimit > 50)
+        g_galaxy.nukelimit -= 30;
+    if (g_galaxy.nukepercent > 3)
+        g_galaxy.nukepercent--;
     if (Random(33) == 0) {
         // The bomb goes off at home.
         int32 tp = TotalPlanets(me);
-        while (tp / div > g_galaxy.w3b2 && div < 100)
+        while (tp / div > g_galaxy.nukelimit && div < 100)
             div++;
         for (int16 i = 0; i < 10; i++)
             Planets(me, i)->count -= Planets(me, i)->count / div;
@@ -586,7 +586,7 @@ static int16 Nuclear(Player *p, Empire *me, Empire *t)
         return 1;
     }
     int32 tp = TotalPlanets(t);
-    while (tp / div > g_galaxy.w3b2 && div < 100)
+    while (tp / div > g_galaxy.nukelimit && div < 100)
         div++;
     for (int16 i = 0; i < 10; i++)
         Planets(t, i)->count -= Planets(t, i)->count / div;
@@ -594,7 +594,7 @@ static int16 Nuclear(Player *p, Empire *me, Empire *t)
     BattleReport r(t->id);
     r << "You lost " << c_number << lost << c_normal << " planets in a Nuclear Attack from "
       << c_empire << Untr(me->name) << c_normal << '!';
-    me->d1b0 /= 2;
+    me->favor /= 2;
     g_log2 << Color(9) << Untr(t->name) << c_normal << " was hit by a nuclear bomb traced to "
            << c_empire << Untr(me->name) << c_normal << ".\n";
     if (Random(3) == 0 && ShowScreen(0, "NukeWar", 0))
@@ -614,10 +614,10 @@ static int16 Chemical(Player *p, Empire *me, Empire *t)
         return 0;
     if (!YesNo(0, "The Galactic Coordinator has outlawed chemical weapons.  By using the barrel of chemicals, you will be seriously angering It.  Are you sure you wish to do this"))
         return 0;
-    me->d1b0 = 0;
+    me->favor = 0;
     BreakTreaties(me, t);
     me->weapons &= ~2;
-    me->w229++;
+    me->attacks++;
     if (Random(10) == 0 && t->agents > 0) {
         // The target's agents sabotage the weapon.
         int32 killed = me->population / 2;
@@ -667,13 +667,13 @@ static int16 Psionic(Player *p, Empire *me, Empire *t)
         return 0;
     BreakTreaties(me, t);
     me->weapons &= ~4;
-    me->w229++;
+    me->attacks++;
     t->insurgency = 7;
     t->effectiveness = 0;
     BattleReport r(t->id);
     r << "A psionic weapon from " << c_empire << Untr(me->name) << c_normal
       << " devastated your population.\n";
-    me->d1b0 /= 2;
+    me->favor /= 2;
     g_log2 << Color(9) << Untr(t->name) << c_normal << " was hit by a psionic bomb from "
            << c_empire << Untr(me->name) << c_normal << ".\n";
     kout << "You brought " << Untr(t->name) << " down to UNDER COUP.\n";
@@ -729,7 +729,7 @@ int16 Attack(Player *p, Empire *e, char how)
             SpyOnPirates();
             return 1;
         }
-        if (r_maxattacks.Long() != -1 && (int32)e->w229 >= r_maxattacks.Long()) {
+        if (r_maxattacks.Long() != -1 && (int32)e->attacks >= r_maxattacks.Long()) {
             kout << "The " << Color(15) << "Galactic Coordinator" << c_normal;
             kout << " will not let you attack more than " << c_number;
             kout << r_maxattacks.Long() << c_normal << " times per " << c_number;

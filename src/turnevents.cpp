@@ -24,8 +24,8 @@ static void Bad()
 // 6572:0080
 static void Appeased(Empire *e, Pirate *p)
 {
-    if (p->wd4[e->id] > 0)
-        p->wd4[e->id]--;
+    if (p->hatred[e->id] > 0)
+        p->hatred[e->id]--;
 }
 
 static void MaybeScreen(int16 odds, const char *name)
@@ -86,7 +86,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
             default:
                 PutPirate(kout, p);
                 for (int16 i = 0; i < 10; i++)
-                    p->wb4[i] += lost[i];
+                    p->planets[i] += lost[i];
                 Appeased(e, p);
                 break;
             }
@@ -111,7 +111,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         int32 n = (e->heavycruisers / 100) * Random(10);
         if (n > 0 && e->heavycruisers / 5 >= n) {
             e->heavycruisers -= n;
-            AddClamp(p->da4, n);
+            AddClamp(p->heavycruisers, n);
             Bad();
             kout << c_number << n << c_normal << " cruisers were stolen by ";
             PutPirate(kout, p) << c_normal << ".\n";
@@ -190,7 +190,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
                      << c_normal << " ate " << c_number << n << c_normal << " megatons of food!\n";
                 break;
             default:
-                AddClamp(p->d94, n);
+                AddClamp(p->food, n);
                 Appeased(e, p);
                 if (Random(15) == 0 && ShowScreen(0, "FoodLost", 0)) {
                     Pause();
@@ -231,7 +231,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         int16 k = (int16)P(e, P_PETROLEUM).count;
         int32 n = (int16)((((int32)k * b_rand()) / 0x8000) / 3);
         if (n > 0) {
-            e->d188 += n;
+            e->pollution += n;
             Bad();
             kout << c_number << n << c_normal
                  << " exatons of toxic fumes were released due to a pumping accident.\n";
@@ -241,7 +241,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         int16 k = (int16)P(e, P_PETROLEUM).count;
         int32 n = (int16)((((int32)k * b_rand()) / 0x8000) / 10);
         if (n > 0) {
-            e->d188 += n;
+            e->pollution += n;
             Bad();
             kout << c_number << n << c_normal
                  << " exatons of toxic fumes were released when one of your advisors burped.\n";
@@ -251,7 +251,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         int32 n = (P(e, P_SUPPLY).count / 3) * Random(25);
         if (n > 0 && e->soldiers >= n) {
             e->soldiers -= n;
-            AddClamp(p->d98, n);
+            AddClamp(p->soldiers, n);
             Bad();
             kout << c_number << n << c_normal << " soldiers desert your training camps.\n";
         }
@@ -265,7 +265,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         }
     }
     if (Random(1000) <= 50 && e->generals > 50 && e->year > 0) {
-        AddClamp(p->dac, 1);
+        AddClamp(p->generals, 1);
         e->generals -= 1;
         Bad();
         kout << c_number << (int16)1 << c_normal << " general was captured by ";
@@ -287,7 +287,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         int16 k = e->agents > 3000 ? (int16)200 : (int16)(e->agents / 20);
         uint16 n = (uint16)(((int32)k * b_rand()) / 0x8000);
         if (n > 0) {
-            AddClamp(p->db0, (int32)n);
+            AddClamp(p->agents, (int32)n);
             e->agents -= (int32)n;
             Bad();
             kout << c_number << n << c_normal << " covert agents were captured by ";
@@ -299,7 +299,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         int16 k = (int16)(e->soldiers / 20);
         int32 n = (int16)(((int32)k * b_rand()) / 0x8000);
         if (n > 0) {
-            AddClamp(p->d98, n);
+            AddClamp(p->soldiers, n);
             e->soldiers -= n;
             Bad();
             kout << c_number << n << c_normal << " soldiers have been forced to join the ";
@@ -341,7 +341,7 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
                 kout << "captured by ";
                 PutPirate(kout, p);
                 for (int16 i = 0; i < 10; i++)
-                    p->wb4[i] += lost[i];
+                    p->planets[i] += lost[i];
                 Appeased(e, p);
                 break;
             }
@@ -355,7 +355,7 @@ static int16 ChoosePirate(int16 id)
 {
     int32 sum = 0;
     for (int16 k = 1; k <= 9; k++) {
-        int32 h = g_pirates[k - 1].wd4[id];
+        int32 h = g_pirates[k - 1].hatred[id];
         if (h > 0)
             sum += h * k;
     }
@@ -365,7 +365,7 @@ static int16 ChoosePirate(int16 id)
     int16 b = (int16)(((int32)lo * b_rand()) / 0x8000);
     int32 r = (int16)((uint16)(a << 15) | (uint16)b);
     for (int16 k = 1; k <= 9; k++) {
-        int32 h = g_pirates[k - 1].wd4[id];
+        int32 h = g_pirates[k - 1].hatred[id];
         if (h > 0)
             r -= h * k;
         if (r <= 0)
@@ -413,24 +413,24 @@ void Advisor(Player *pl, Empire *e)
         if (d.type < 0 || d.type > 9) {
             g_errlog << "R.index( " << idx << " ) in random() is " << d.type << "/"
                      << ResearchCount() << ".\n";
-        } else if (d.cost * Planets(e, d.type)->count <= e->d293 &&
+        } else if (d.cost * Planets(e, d.type)->count <= e->researchpoints &&
                    Planets(e, d.type)->count > 0 && Random(2) == 0) {
             PlanetSet *ps = Planets(e, d.type);
-            ps->a = (int16)((int16)ps->a + (int16)d.Permanent());
-            ps->b = (int16)((int16)ps->b + (int16)d.Temporary());
-            e->d293 -= d.cost * Planets(e, d.type)->count;
+            ps->target = (int16)((int16)ps->target + (int16)d.Permanent());
+            ps->output = (int16)((int16)ps->output + (int16)d.Temporary());
+            e->researchpoints -= d.cost * Planets(e, d.type)->count;
             kout << '\n';
             d.Show();
         }
-    } else if (e->d293 >= 10000 && !(e->weapons & 8)) {
+    } else if (e->researchpoints >= 10000 && !(e->weapons & 8)) {
         e->weapons |= 8;
         kout << Color(14)
              << "Your research planets develop a Mothership carrier capable of carrying 100,000 fighters into battle.\n"
              << c_normal;
     }
-    if (GovCapacity6(e) < 0 || GovCapacity(e) < 0) {
+    if (GovCapacityGenerals(e) < 0 || GovCapacity(e) < 0) {
         int32 agents = -GovCapacity(e);
-        int32 generals = -GovCapacity6(e);
+        int32 generals = -GovCapacityGenerals(e);
         if (agents < 0)
             agents = 0;
         if (e->agents < agents)
@@ -483,7 +483,7 @@ void Advisor(Player *pl, Empire *e)
     if (g_system.regstate && r_psionic.Bool()) {
         if ((4 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !(e->weapons & 4) &&
             e->year > 0) {
-            int32 price = g_galaxy.d3c2;
+            int32 price = g_galaxy.psionicprice;
             MaybeScreen(3, "Psionic");
             kout << "A well-known smuggler approaches you and offers to sell a one-pound "
                  << Color(14) << "Psionic Bomb" << c_normal << " to you.\n";
@@ -503,7 +503,7 @@ void Advisor(Player *pl, Empire *e)
                         e->bank.sub(price - e->money.get());
                         e->money.set(0);
                     }
-                    g_galaxy.d3c2 += 2 * g_galaxy.d3c2 + 1000000;
+                    g_galaxy.psionicprice += 2 * g_galaxy.psionicprice + 1000000;
                 }
             } else {
                 kout << "You tell him that you cannot afford it.\n";

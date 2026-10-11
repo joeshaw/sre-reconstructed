@@ -44,11 +44,12 @@ public:
     int16 columns;      // +12
     MenuHook *prompt;   // +14
     MenuHook *display;  // +18
-    uint8 colors[10];   // +1c
+    uint8 colors[10];   // +1c title, frame, then the items' (bracket, key, text, columns 1..5)
     MenuItem **items;   // +26
 
-    Menu(const String &name, const String &title, uint8 c0, uint8 c1, uint8 c2, uint8 c3,
-         uint8 c4, uint8 c5, uint8 c6, uint8 c7, uint8 c8, uint8 c9);     // 1922:001f
+    Menu(const String &name, const String &title, uint8 ctitle, uint8 cframe, uint8 cbracket,
+         uint8 ckey, uint8 ctext, uint8 ccol1, uint8 ccol2, uint8 ccol3, uint8 ccol4,
+         uint8 ccol5);                                      // 1922:001f
     ~Menu();                                                // 1922:03d0
     int16 Add(String text, char key, int16 id);             // 1922:04dc
     MenuItem *Find(int16 id);                               // 1922:085f

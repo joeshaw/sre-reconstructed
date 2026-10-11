@@ -6,13 +6,13 @@ void GalaxyInit(Galaxy *g)
 {
     g->name[0] = 0;
     g->created = g_today;
-    g->t3ba = g_today;
-    g->t44 = g_today;
-    g->t48 = g_now;
-    g->t4c = NeverDate();
+    g->lasthourly = g_today;
+    g->startdate = g_today;
+    g->lastregen = g_now;
+    g->joindeadline = NeverDate();
     g->enddate = NeverDate();
-    g->w384 = 0;
-    g->w386 = 0;
+    g->inflation = 0;
+    g->localonly = 0;
     g->interest = 3;
     for (int16 i = 0; i < MAXEMPIRES; i++)
         g->empire[i].clear();
@@ -24,21 +24,21 @@ void GalaxyInit(Galaxy *g)
     g->grantturns = 5;
     g->protection = 20;
     g->w3a2 = 0;
-    g->w3a4 = 0;
-    g->w3a6 = -1;
-    g->d3a8 = 0;
-    g->d3ac = 10000;
-    g->w3b0 = 15;
-    g->w3b2 = 300;
-    g->w3b4 = 20;
-    g->d3c2 = 10000000;
-    g->w3c0 = 0;
+    g->lotterytickets = 0;
+    g->lotterywinner = -1;
+    g->jackpot = 0;
+    g->coordfund = 10000;
+    g->coordtax = 15;
+    g->nukelimit = 300;
+    g->nukepercent = 20;
+    g->psionicprice = 10000000;
+    g->newspaper = 0;
     g->grantdays = 1;
-    g->d388 = 7000000;
-    g->w38c = 3;
-    g->d392 = 100;
-    g->d38e = -1;
-    g->d3b6 = 0;
+    g->marketfood = 7000000;
+    g->regenseconds = 3;
+    g->marketplanets = 100;
+    g->planetsperturn = -1;
+    g->oilprice = 0;
 }
 
 // 5222:0339
@@ -68,11 +68,11 @@ void GalaxyOilPrice(Galaxy *g)
         planets += TotalPlanets(e);
         petroleum += e->planets[P_PETROLEUM].count;
     }
-    g->d3b6 = (300 * planets) / (petroleum + 10);
-    if (g->d3b6 < 700)
-        g->d3b6 = 700;
-    if (g->d3b6 > 100000)
-        g->d3b6 = 100000;
+    g->oilprice = (300 * planets) / (petroleum + 10);
+    if (g->oilprice < 700)
+        g->oilprice = 700;
+    if (g->oilprice > 100000)
+        g->oilprice = 100000;
 }
 
 // 5222:04a8
@@ -228,7 +228,7 @@ void ScoreList(Galaxy *g, int32 mask, OStream *o)
         t = g->enddate < NeverDate();
         *o << setw(13 - t) << NetWorth(e) << setw(0);
         if (g->enddate < NeverDate())
-            *o << Color(c4) << setw(7) << e->d178 << setw(0);
+            *o << Color(c4) << setw(7) << e->points << setw(0);
         *o << c_normal << '\n';
     }
     *o << Color(cline);
@@ -240,9 +240,9 @@ void ScoreList(Galaxy *g, int32 mask, OStream *o)
 // 5222:13bb
 int16 GalaxyPlayable(Galaxy *g)
 {
-    if (g_today < g->t44) {
+    if (g_today < g->startdate) {
         kout << "This game cannot be played until " << c_number;
-        PutTime(kout, g->t44) << c_normal << '\n';
+        PutTime(kout, g->startdate) << c_normal << '\n';
         return 0;
     }
     if (g_today > g->enddate) {

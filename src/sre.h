@@ -58,6 +58,11 @@ void ScoreListAll(Galaxy *g);
 int16 MaskTest(int32 mask, int16 bit);
 void MaskSet(int32 *mask, int16 bit);
 void MaskClear(int32 *mask, int16 bit);
+// Covert operations (the menu's items are one more).
+enum {
+    OP_SPY, OP_INSURGENTAID, OP_SETUP, OP_DISSENSION, OP_DEMORALIZE, OP_BOMBING,
+    OP_INFILTRATION, OP_HOSTAGES, OP_BRIBE
+};
 int32 *OpMask(Empire *e, int16 op);     // 14f6:05dc
 void GalaxyInit(Galaxy *g);
 void GalaxyReset(Galaxy *g);
@@ -95,18 +100,16 @@ void BuildCmdShip(Empire *e);
 void BankInterest(Empire *e);
 void PlanetsMoveToward(Empire *e);
 void UpdateScore(Empire *e);
-void UpdateD1b0(Empire *e);
+void DriftFavor(Empire *e);
 int32 GovCapacity(Empire *e);
-int32 GovCapacity6(Empire *e);
+int32 GovCapacityGenerals(Empire *e);
 const char *InsurgencyName(Empire *e);
 const char *PlanetName(int8 type);
 void InsurgencyUp(Empire *e);
 int32 FoodNeeded(Empire *e, int16 who);  // 512f:0105
-int32 Neglected(Empire *e, int16 i);
-void SetNeglected(Empire *e, int16 i, int32 v);
 void InsurgencyDown(Empire *e);
-void ClearSpending(uint8 *s);
-void SetTreaty(Treaty &t, int16 type, uint8 a);
+void ClearShortages(Empire *e);
+void SetTreaty(Treaty &t, int16 type, uint8 days);
 
 // spending (1af6)
 int32 PriceSoldiers(Empire *e);

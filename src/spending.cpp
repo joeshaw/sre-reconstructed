@@ -1,13 +1,13 @@
 // Government spending: prices and the buy/sell menu (segment 1af6).
 #include "sre.h"
 
-// Prices.  The galaxy's w384 flag selects the formulas that grow with
+// Prices.  The galaxy's inflation flag selects the formulas that grow with
 // the empire's year and forces instead of only its net worth.
 
 // 1af6:0006
 int32 PriceSoldiers(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 1000 + 180;
     return (int32)(int16)((e->year << 1) + 180) + e->soldiers / 1800 + e->fighters / 12400 +
            NetWorth(e) / 5000;
@@ -16,7 +16,7 @@ int32 PriceSoldiers(Empire *e)
 // 1af6:00b8
 int32 PriceFighters(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 800 + 240;
     return (int32)(int16)((int16)(e->year * 5) / 2 + 240) + e->soldiers / 7000 +
            e->fighters / 1690 + NetWorth(e) / 400;
@@ -25,7 +25,7 @@ int32 PriceFighters(Empire *e)
 // 1af6:0172
 int32 PriceStations(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 700 + 320;
     return (int32)(int16)(e->year * 3 + 320) + e->soldiers / 7500 + e->fighters / 9000 +
            e->stations / 1460 + NetWorth(e) / 300;
@@ -34,7 +34,7 @@ int32 PriceStations(Empire *e)
 // 1af6:024c
 int32 PriceGenerals(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 300 + 670;
     return 14 * (int32)e->year + e->soldiers / 1790 + e->generals / 170 +
            TotalPlanets(e) / 10 + 670;
@@ -43,7 +43,7 @@ int32 PriceGenerals(Empire *e)
 // 1af6:0307
 int32 PriceCmdShip(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 100 + 8800;
     return e->soldiers / 850 + e->fighters / 950 + 5000;
 }
@@ -51,7 +51,7 @@ int32 PriceCmdShip(Empire *e)
 // 1af6:0379
 int32 PricePlanet(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 100 + TotalPlanets(e) + 13000;
     int32 k;
     if (e->year < 0)
@@ -67,7 +67,7 @@ int32 PricePlanet(Empire *e)
 // 1af6:0495
 int32 PriceAgents(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 200 + 4300;
     return e->agents + 18 * (int32)e->year + 7 * TotalPlanets(e) + e->score / 10 + 2218;
 }
@@ -75,7 +75,7 @@ int32 PriceAgents(Empire *e)
 // 1af6:0542
 int32 PriceHeavyCruisers(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 600 + 1100;
     return 7 * (int32)e->year + e->fighters / 1220 + TotalPlanets(e) / 5 + e->stations / 2500 +
            NetWorth(e) / 150 + 1100;
@@ -84,7 +84,7 @@ int32 PriceHeavyCruisers(Empire *e)
 // 1af6:0624
 int32 PriceCarriers(Empire *e)
 {
-    if (g_galaxy.w384 == 0)
+    if (g_galaxy.inflation == 0)
         return NetWorth(e) / 700 + 850;
     return 7 * (int32)e->year + TotalPlanets(e) / 10 + NetWorth(e) / 100 + 850;
 }
@@ -198,7 +198,7 @@ static void ReleasePlanets(Player *p, Empire *e, Galaxy *g)
 {
     int16 show = 1;
     while (TotalPlanets(e) > 0) {
-        if (!((p->prefs1 >> 2) & 1))
+        if (!(HasPref(p->prefs1, PF1_SHORTMENUS)))
             show = 1;
         Menu m("SellPlanets", "Release Planets", 7, 8, 1, 9, 7, 3, 7, 7, 7, 7);
         m.prompt = new ReleasePrompt;
@@ -208,9 +208,9 @@ static void ReleasePlanets(Player *p, Empire *e, Galaxy *g)
             return;
         }
         int32 n = HowMany(Planets(e, k)->count);
-        e->w192 -= (int16)n;
+        e->planetsbought -= (int16)n;
         Planets(e, k)->count -= n;
-        g->d392 += n;
+        g->marketplanets += n;
         show = 0;
     }
 }
@@ -235,8 +235,8 @@ struct BuyPlanetsPrompt : MenuHook {
     int16 Call()
     {
         kout << c_normal << "Current earnings:  [Ore = ";
-        kout << c_number << e->planets[P_ORE].b << c_normal << "] [Tourism = ";
-        kout << c_number << e->planets[P_TOURISM].b << c_normal << "] [Petroleum = ";
+        kout << c_number << e->planets[P_ORE].output << c_normal << "] [Tourism = ";
+        kout << c_number << e->planets[P_TOURISM].output << c_normal << "] [Petroleum = ";
         int32 oil = OilPrice();
         kout << c_number << oil << c_normal << "].\n";
         return 1;
@@ -246,7 +246,7 @@ struct BuyPlanetsPrompt : MenuHook {
 // 61a7:0b7f
 static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
 {
-    int32 avail = g->d392;
+    int32 avail = g->marketplanets;
     if (e->year < 0 && 300 - TotalPlanets(e) > avail)
         avail = 300 - TotalPlanets(e);
     if (avail + TotalPlanets(e) > 30000)
@@ -259,13 +259,13 @@ static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
     if (max > avail)
         max = avail;
     kout << "There are " << c_number << avail << c_normal << " planets available.\n";
-    if (g_galaxy.d38e >= 0 && g_galaxy.d38e - e->w192 < max) {
-        max = g_galaxy.d38e - e->w192;
-        kout << "You may buy " << c_number << g_galaxy.d38e << c_normal << " planets per turn.\n";
+    if (g_galaxy.planetsperturn >= 0 && g_galaxy.planetsperturn - e->planetsbought < max) {
+        max = g_galaxy.planetsperturn - e->planetsbought;
+        kout << "You may buy " << c_number << g_galaxy.planetsperturn << c_normal << " planets per turn.\n";
     }
     int16 show = 1;
     while (max > 0) {
-        if (!((p->prefs1 >> 2) & 1))
+        if (!(HasPref(p->prefs1, PF1_SHORTMENUS)))
             show = 1;
         Menu m("BuyPlanets", "Buy Planets", 7, 1, 1, 9, 0xf, 0xb, 7, 7, 7, 7);
         m.prompt = new BuyPlanetsPrompt(e);
@@ -274,28 +274,28 @@ static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
         if (k == -1)
             return;
         show = 0;
-        if (!(p->w70 & (1 << k))) {
+        if (!(p->seenplanets & (1 << k))) {
             String s("Planet");
             s += (char)k;
             ShowScreen(0, s, 0);
-            p->w70 |= (int16)(1 << k);
+            p->seenplanets |= (int16)(1 << k);
             ShowHelpTopic("planet", PlanetName((int8)k));
         }
-        if (k == 9 && e->d188 > 0)
-            kout << "There are " << c_number << e->d188 << c_normal
+        if (k == 9 && e->pollution > 0)
+            kout << "There are " << c_number << e->pollution << c_normal
                  << " exatons of pollution in the atmosphere.\n";
         if (k == 3)
-            kout << "Each food planet can produce " << c_number << e->planets[3].b << c_normal
+            kout << "Each food planet can produce " << c_number << e->planets[3].output << c_normal
                  << " megatons of food each year.\n";
         if (k == 8)
-            kout << "Each supply planet can train " << c_number << e->planets[8].b << c_normal
+            kout << "Each supply planet can train " << c_number << e->planets[8].output << c_normal
                  << " military units per year.  Soldiers count as 1 unit, fighters 1.3, defense stations 1.7, generals 7, carriers 9.5, and cruisers 12.\n";
         int32 n = BuyPlanets(&e->money, price, &max, &e->score);
-        e->w192 += (int16)n;
+        e->planetsbought += (int16)n;
         Planets(e, k)->count += n;
-        g->d392 -= n;
-        if (g->d392 < 0)
-            g->d392 = 0;
+        g->marketplanets -= n;
+        if (g->marketplanets < 0)
+            g->marketplanets = 0;
     }
 }
 
@@ -385,7 +385,7 @@ void Spending(Player *p, Empire *e, Galaxy *g)
             buy.Add("", 'V', 0x50);
             sell.Add("", 'V', 0x50);
         }
-        if ((p->prefs2 >> 4) & 1)
+        if (HasPref(p->prefs2, PF2_ENTERSTAYS))
             buy.Add("Quit", 'Q', 0x63);
         int32 *field[10] = { 0,          &e->soldiers, &e->fighters,      &e->stations, &e->generals,
                              0,          0,            &e->agents,        &e->heavycruisers,
@@ -421,7 +421,7 @@ void Spending(Player *p, Empire *e, Galaxy *g)
             if (s)
                 s->AddColumn(owned[i]);
         }
-        if (!((p->prefs1 >> 2) & 1))
+        if (!(HasPref(p->prefs1, PF1_SHORTMENUS)))
             show = 1;
         int16 r;
         if (selling) {
@@ -433,7 +433,7 @@ void Spending(Player *p, Empire *e, Galaxy *g)
         } else {
             r = buy.Run(show, -1);
         }
-        if (r == -1 && !((p->prefs2 >> 4) & 1))
+        if (r == -1 && !(HasPref(p->prefs2, PF2_ENTERSTAYS)))
             return;
         if (r == 0x63)
             return;
@@ -443,7 +443,7 @@ void Spending(Player *p, Empire *e, Galaxy *g)
             Buy(&e->money, price[r], field[r], names[r], -1);
             break;
         case 4: {
-            int32 cap = GovCapacity6(e);
+            int32 cap = GovCapacityGenerals(e);
             if (cap <= 0)
                 kout << "One government planet is required for every 50 generals.  You don't have space on your planets for more generals.\n";
             else

@@ -528,9 +528,9 @@ int16 SendMessage(int16 from, String name)
     if (from != -1) {
         // Spies planted in the sender's court get copies.
         for (int16 i = 0; i < 25; i++) {
-            if ((uint8)g_empires[from].b2d3[i] > 0 && !m->Receives(i)) {
+            if ((uint8)g_empires[from].intercepts[i] > 0 && !m->Receives(i)) {
                 m->AddRecipient(i);
-                g_empires[from].b2d3[i]--;
+                g_empires[from].intercepts[i]--;
             }
         }
     }

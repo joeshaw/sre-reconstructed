@@ -7,7 +7,7 @@ static Resource r_foodmarket("FoodMarket.Name", "the Solar Food Market");     //
 // 512f:0000: the price of food, given the supply.
 static int32 FoodPrice(Galaxy *g, int32 extra)
 {
-    int32 q = g->d388 + extra;
+    int32 q = g->marketfood + extra;
     if (q < 0)
         q = 0;
     if (q < 160000)
@@ -56,7 +56,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
     kout << c_normal << "\nWelcome to " << Color(14) << name << '\n' << c_normal;
     int32 people = FoodNeeded(e, 1);
     int32 army = FoodNeeded(e, 2);
-    int32 grown = e->planets[P_FOOD].count * e->planets[P_FOOD].b;
+    int32 grown = e->planets[P_FOOD].count * e->planets[P_FOOD].output;
     int32 price = FoodPrice(g, e->food - people - army);
     const char *demand = FoodDemand(g, e->food - people - army);
     if (FoodNeeded(e, 0) > grown && e->food / 3 < FoodNeeded(e, 0))
@@ -64,7 +64,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
              << "Your advisors inform you that your food planets do not produce enough food for you to be self-sufficient.\n"
              << c_normal;
     for (;;) {
-        kout << "Current quantity available is " << c_number << g->d388 << c_normal << ".  ";
+        kout << "Current quantity available is " << c_number << g->marketfood << c_normal << ".  ";
         kout << "Food is in " << demand << " demand.\n";
         kout << "You currently have " << c_number << e->food << c_normal << " megatons of food.\n";
         kout << "Would you like to ";
@@ -87,8 +87,8 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
         } while (c == 0);
         if (c == 'B') {
             int32 max = e->money.get() / price;
-            if (g->d388 < max)
-                max = g->d388;
+            if (g->marketfood < max)
+                max = g->marketfood;
             int32 need = people + army - e->food;
             if (need < 0)
                 need = 0;
@@ -100,10 +100,10 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
             int32 n;
             kin >> defval(need > 0 ? need : 0) >> maxval(max) >> n;
             e->money.sub(n * price);
-            if (g->d3ac < 1500000000)
-                g->d3ac += n * price / 1000;
+            if (g->coordfund < 1500000000)
+                g->coordfund += n * price / 1000;
             e->food += n;
-            g->d388 -= n;
+            g->marketfood -= n;
         } else if (c == 'S') {
             kout << "Sell" << c_normal << "\nAt " << c_number << price / 2 << c_normal << how
                  << "sell? \n" << c_bracket << '[' << c_bold << "MAX=" << e->food << c_bracket << ']'
@@ -111,11 +111,11 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
             int32 n;
             kin >> defval(0) >> maxval(e->food) >> n;
             e->money.add(n * (price / 2));
-            g->d3ac -= n * (price / 2) / 1000;
-            if (g->d3ac < 0)
-                g->d3ac = 0;
+            g->coordfund -= n * (price / 2) / 1000;
+            if (g->coordfund < 0)
+                g->coordfund = 0;
             e->food -= n;
-            g->d388 += n;
+            g->marketfood += n;
         } else if (c == 'V') {
             kout << "Visit Bank" << c_normal << '\n';
             Bank(p, e, g);
@@ -124,14 +124,13 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
             continue;
         kout << "Continue" << c_normal << "\n\n";
         int32 food = e->food;
-        uint8 flags = e->b1c4;
-        int8 b1c5 = e->b1c5;
-        int32 starving;
-        memcpy(&starving, e->u_1c7 + 0x5c, 4);
+        uint8 flags = e->shortfalls;
+        int8 effchange = e->effchange;
+        int32 starving = e->starving;
         int32 fedpeople, fedarmy;
         if (people > 0) {
             int32 def = people < food ? people : food;
-            if ((p->prefs1 >> 3) & 1)
+            if (HasPref(p->prefs1, PF1_TERSE))
                 kout << "People:  " << c_number << people << c_normal << '\n';
             else
                 kout << "Your people require " << c_number << people << c_normal
@@ -139,7 +138,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
             kout << give;
             kin >> defval(def) >> maxval(food) >> fedpeople;
             if (fedpeople < people) {
-                flags |= 2;
+                flags |= SF_STARVED;
                 starving = (people - fedpeople) * e->population / people;
                 if (starving < 0)
                     starving = 0;
@@ -150,7 +149,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
         }
         if (army > 0) {
             int32 def = army < food ? army : food;
-            if ((p->prefs1 >> 3) & 1)
+            if (HasPref(p->prefs1, PF1_TERSE))
                 kout << "Army:    " << c_number << army << c_normal << '\n';
             else
                 kout << "\nYour Army needs " << c_number << army << c_normal
@@ -159,9 +158,9 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
             kin >> defval(def) >> maxval(food) >> fedarmy;
             if (fedarmy < army) {
                 int16 k = (int16)(-((39 * (army - fedarmy)) / army));
-                if (b1c5 > k)
-                    b1c5 = (int8)k;
-                flags |= 8;
+                if (effchange > k)
+                    effchange = (int8)k;
+                flags |= SF_ARMY;
             }
             food -= fedarmy;
         } else {
@@ -174,9 +173,9 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
                 continue;
             }
         }
-        e->b1c4 = flags;
-        e->b1c5 = b1c5;
-        memcpy(e->u_1c7 + 0x5c, &starving, 4);
+        e->shortfalls = flags;
+        e->effchange = effchange;
+        e->starving = starving;
         e->food = food;
         return;
     }

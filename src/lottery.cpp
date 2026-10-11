@@ -18,14 +18,14 @@ void BuyTickets(Player *pl, Empire *e, Galaxy *g)
 {
     (void)pl;
     int32 max = e->money.get() / 10000;
-    if ((int32)(int16)(32000 - g->w3a4) < max)
-        max = (int32)(int16)(32000 - g->w3a4);
-    if ((int32)(int16)(2000 - e->w172) < max)
-        max = (int32)(int16)(2000 - e->w172);
-    if (e->year < 0 && (int32)(int16)(100 - e->w172) < max)
-        max = (int32)(int16)(100 - e->w172);
-    kout << "You currently have " << c_number << e->w172 << c_normal << " tickets.\n";
-    int32 jp = Jackpot(g->w3a4);
+    if ((int32)(int16)(32000 - g->lotterytickets) < max)
+        max = (int32)(int16)(32000 - g->lotterytickets);
+    if ((int32)(int16)(2000 - e->tickets) < max)
+        max = (int32)(int16)(2000 - e->tickets);
+    if (e->year < 0 && (int32)(int16)(100 - e->tickets) < max)
+        max = (int32)(int16)(100 - e->tickets);
+    kout << "You currently have " << c_number << e->tickets << c_normal << " tickets.\n";
+    int32 jp = Jackpot(g->lotterytickets);
     kout << "The jackpot is currently " << c_number << jp << c_normal << " credits.\n";
     kout << "At " << (int32)10000 << " credits each, how many tickets would you like to buy?  \n";
     PutMax(max);
@@ -34,23 +34,23 @@ void BuyTickets(Player *pl, Empire *e, Galaxy *g)
     if (n <= 0)
         return;
     e->money.sub(10000 * (int32)n);
-    e->w172 += n;
-    g->w3a4 += n;
+    e->tickets += n;
+    g->lotterytickets += n;
     kout << "You have bought " << c_number << n << c_normal << " tickets for tomorrow's lottery.\n";
 }
 
 // 55e7:001d
 void Lottery(Player *pl, Empire *e, Galaxy *g)
 {
-    if (g->w3a6 == e->id) {
+    if (g->lotterywinner == e->id) {
         kout << c_normal << "\nYou've won the " << Color(14) << "Super Daily Lottery" << c_normal << "!!!\n";
-        kout << c_number << g->d3a8 << c_normal << " credits has been placed in your bank account.\n\n";
-    } else if (g->w3a6 != -1 && Exists(g_empires[g->w3a6])) {
-        Empire *w = &g_empires[g->w3a6];
+        kout << c_number << g->jackpot << c_normal << " credits has been placed in your bank account.\n\n";
+    } else if (g->lotterywinner != -1 && Exists(g_empires[g->lotterywinner])) {
+        Empire *w = &g_empires[g->lotterywinner];
         kout << '\n' << c_number;
         PutUntranslated(kout, String(w->name)) << c_normal;
         kout << " has won the Super Daily Lottery today!\n";
-        kout << "(" << c_number << g->d3a8 << c_normal << " credits)\n";
+        kout << "(" << c_number << g->jackpot << c_normal << " credits)\n";
     }
     if (e->money.get() < 2000)
         return;

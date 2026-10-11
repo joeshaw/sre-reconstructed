@@ -16,7 +16,7 @@ struct DoubleAgentPrompt : MenuHook {
 
 static int16 Spies(Empire *o, Empire *e)
 {
-    return Exists(*o) && MaskTest(*OpMask(o, 8), e->id);
+    return Exists(*o) && MaskTest(*OpMask(o, OP_BRIBE), e->id);
 }
 
 // 432f:006f
@@ -29,7 +29,7 @@ void DoubleAgents(Player *p, Empire *e)
     while (n < 0) {
         int16 i = Random(25);
         if (Spies(&g_empires[i], e)) {
-            MaskClear(OpMask(&g_empires[i], 8), e->id);
+            MaskClear(OpMask(&g_empires[i], OP_BRIBE), e->id);
             n++;
         }
     }
@@ -68,7 +68,7 @@ void DoubleAgents(Player *p, Empire *e)
                 Empire *o = &g_empires[i];
                 if (Spies(o, e) && Random(3) != 0) {
                     MaskSet(&found, i);
-                    MaskClear(OpMask(o, 8), e->id);
+                    MaskClear(OpMask(o, OP_BRIBE), e->id);
                     n++;
                 }
             }
@@ -91,7 +91,7 @@ void DoubleAgents(Player *p, Empire *e)
             // double-spies were taken out above.
             for (int16 i = 0; i < 25; i++) {
                 if (Exists(g_empires[i])) {
-                    MaskClear(OpMask(&g_empires[i], 8), e->id);
+                    MaskClear(OpMask(&g_empires[i], OP_BRIBE), e->id);
                     n++;
                 }
             }
@@ -122,8 +122,8 @@ void DoubleAgents(Player *p, Empire *e)
                     continue;
                 }
                 Empire *o = &g_empires[i];
-                MaskClear(OpMask(o, 8), e->id);
-                MaskSet(OpMask(e, 8), o->id);
+                MaskClear(OpMask(o, OP_BRIBE), e->id);
+                MaskSet(OpMask(e, OP_BRIBE), o->id);
                 kout << "You hired an agent from " << c_empire << Untr(o->name) << c_normal
                      << ".\n";
                 break;

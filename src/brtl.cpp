@@ -135,13 +135,13 @@ static const uint16 YDays[14] = { 7966, 0, 31, 59, 90, 120, 151, 181, 212, 243, 
 // 1000:4cc8 __isDST(year - 1970, month (0 = use yday), yday, hour)
 static int16 isDST(uint16 year, uint16 month, uint16 yday, uint8 hour)
 {
-    uint16 cx;
+    uint16 change;      // the day of the year the clocks change (a Sunday)
     if (month == 0) {
-        uint16 si = yday;
+        uint16 day = yday;
         if (yday >= 59 && ((year + 70) & 3) == 0)
-            si--;
+            day--;
         month = 0;
-        while (YDAYS(month) <= si)
+        while (YDAYS(month) <= day)
             month++;
     } else {
         yday += YDAYS(month - 1);
@@ -155,24 +155,25 @@ static int16 isDST(uint16 year, uint16 month, uint16 yday, uint8 hour)
     if (month != 4 && month != 10)
         return 1;
     if ((int16)year > 16 && month == 4)
-        cx = YDAYS(month - 1) + 7;
+        change = YDAYS(month - 1) + 7;
     else
-        cx = YDAYS(month);
+        change = YDAYS(month);
     if (((year + 0x7b2) & 3) != 0)
-        cx--;
-    uint16 bx = (uint16)(((int16)(year + 1) >> 2) + cx);
-    uint16 ax = (uint16)(0x16d * year + bx + 4);
-    cx -= ax % 7;
+        change--;
+    // Back to a Sunday: 1 January 1970 was a Thursday.
+    uint16 days = (uint16)(((int16)(year + 1) >> 2) + change);
+    uint16 epochday = (uint16)(0x16d * year + days + 4);
+    change -= epochday % 7;
     if (month == 4) {
-        if (yday > cx)
+        if (yday > change)
             return 1;
-        if (yday != cx)
+        if (yday != change)
             return 0;
         return hour >= 2;
     }
-    if (yday < cx)
+    if (yday < change)
         return 1;
-    if (yday != cx)
+    if (yday != change)
         return 0;
     return hour <= 1;
 }
@@ -180,10 +181,10 @@ static int16 isDST(uint16 year, uint16 month, uint16 yday, uint8 hour)
 int32 b_dostounix(const b_date *d, const b_dostime *t)
 {
     int32 x = TIMEZONE + 315532800;
-    int16 si = d->da_year - 1980;
-    x += (int32)(si >> 2) * 126230400;
-    x += (int32)(si & 3) * 31536000;
-    if (si & 3)
+    int16 years = d->da_year - 1980;
+    x += (int32)(years >> 2) * 126230400;
+    x += (int32)(years & 3) * 31536000;
+    if (years & 3)
         x += 86400;
     int16 days = 0;
     for (int16 i = d->da_mon - 1; i > 0;) {

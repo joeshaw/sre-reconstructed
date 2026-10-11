@@ -281,9 +281,9 @@ Event *EventCovertSetup::Execute()
         AttackMessage(rv, t->name, sev);
         AttackNews(t, v, 0, sev);
         SetTreaty(t->treaty[v->id], 0, 0);
-        t->treaty[v->id].setc(0);
+        t->treaty[v->id].setstatus(TS_NONE);
         SetTreaty(v->treaty[t->id], 0, 0);
-        v->treaty[t->id].setc(0);
+        v->treaty[t->id].setstatus(TS_NONE);
         a->agents += 1;
     } else if (Exists(*t) && Exists(*v)) {
         CovertReport ra(a->id);
@@ -464,7 +464,7 @@ void ClearCovertReports()
 // 4c48:32bd
 int16 ShowCovertReports(Player *p, Empire *e)
 {
-    return ShowReports(e->id, COVERT_FILE, (p->prefs2 >> 3) & 1, 5, 13);
+    return ShowReports(e->id, COVERT_FILE, HasPref(p->prefs2, PF2_REPORTDATES), 5, 13);
 }
 
 // 4c48:32f1: run the events that are due.

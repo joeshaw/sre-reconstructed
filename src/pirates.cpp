@@ -14,19 +14,19 @@ void PirateInit(Pirate *p)
 {
     p->lasthour = g_now;
     p->money = 0;
-    p->d94 = 0;
-    p->d98 = 0;
-    p->d9c = 0;
-    p->da0 = 0;
-    p->da4 = 0;
-    p->da8 = 0;
-    p->dac = 0;
-    p->db0 = 0;
+    p->food = 0;
+    p->soldiers = 0;
+    p->fighters = 0;
+    p->stations = 0;
+    p->heavycruisers = 0;
+    p->carriers = 0;
+    p->generals = 0;
+    p->agents = 0;
     p->color = 7;
     for (int16 i = 0; i < 16; i++)
-        p->wb4[i] = 0;
+        p->planets[i] = 0;
     for (int16 i = 0; i < 25; i++)
-        p->wd4[i] = 0;
+        p->hatred[i] = 0;
     for (int16 i = 0; i < 0x69; i++)
         p->u_026[i] = 0;
 }
@@ -45,15 +45,15 @@ int32 PiratePlanets(Pirate *p)
 {
     int32 n = 0;
     for (int16 i = 0; i < 16; i++)
-        n += p->wb4[i];
+        n += p->planets[i];
     return n;
 }
 
 // 4b60:022f
 int32 PirateNetWorth(Pirate *p)
 {
-    return 10 * PiratePlanets(p) + p->money / 100000 + 7 * p->db0 + p->d98 + p->d9c + p->d94 / 10000 +
-           3 * p->da4 + (p->da0 << 1) + (p->da8 << 1) + 5 * p->dac;
+    return 10 * PiratePlanets(p) + p->money / 100000 + 7 * p->agents + p->soldiers + p->fighters + p->food / 10000 +
+           3 * p->heavycruisers + (p->stations << 1) + (p->carriers << 1) + 5 * p->generals;
 }
 
 // 4b60:034a: pirates rebuild once an hour.
@@ -64,32 +64,32 @@ void PirateHourly(Pirate *p)
         return;
     p->lasthour = now;
     int16 lv = p->level;
-    if ((int32)(int16)(lv * 3000) > p->d98)
-        p->d98 += (int32)Random(100) + (5 * (int32)p->wb4[8]) / 10;
-    if ((int32)(int16)(lv * 3000) > p->d9c)
-        p->d9c += (int32)Random(100) + (4 * (int32)p->wb4[8]) / 10;
-    if ((int32)(int16)(lv * 3000) > p->da4)
-        p->da4 += (int32)Random(100) + (int32)p->wb4[8] / 10;
-    if ((int32)(int16)(lv * 3000) > p->da0)
-        p->da0 += (int32)Random(100) + (4 * (int32)p->wb4[8]) / 10;
-    if ((int32)(int16)(lv * 300) > p->da8)
-        p->da8 += (int32)Random(10) + (2 * (int32)p->wb4[8]) / 10;
-    if ((int32)(int16)(lv * 300) > p->dac)
-        p->dac += (int32)Random(10) + (2 * (int32)p->wb4[8]) / 10;
-    if ((int32)(int16)(lv * 500) > p->db0)
-        p->db0 += (int32)Random(10);
-    if (10000000 * (int32)lv > p->d94)
-        p->d94 += (int32)Random(30) + 6 * (int32)p->wb4[3];
+    if ((int32)(int16)(lv * 3000) > p->soldiers)
+        p->soldiers += (int32)Random(100) + (5 * (int32)p->planets[8]) / 10;
+    if ((int32)(int16)(lv * 3000) > p->fighters)
+        p->fighters += (int32)Random(100) + (4 * (int32)p->planets[8]) / 10;
+    if ((int32)(int16)(lv * 3000) > p->heavycruisers)
+        p->heavycruisers += (int32)Random(100) + (int32)p->planets[8] / 10;
+    if ((int32)(int16)(lv * 3000) > p->stations)
+        p->stations += (int32)Random(100) + (4 * (int32)p->planets[8]) / 10;
+    if ((int32)(int16)(lv * 300) > p->carriers)
+        p->carriers += (int32)Random(10) + (2 * (int32)p->planets[8]) / 10;
+    if ((int32)(int16)(lv * 300) > p->generals)
+        p->generals += (int32)Random(10) + (2 * (int32)p->planets[8]) / 10;
+    if ((int32)(int16)(lv * 500) > p->agents)
+        p->agents += (int32)Random(10);
+    if (10000000 * (int32)lv > p->food)
+        p->food += (int32)Random(30) + 6 * (int32)p->planets[3];
     if (10000000 * (int32)lv > p->money) {
         p->money += 10000 * (int32)lv;
-        p->money += 230 * (int32)p->wb4[0];
-        p->money += 50 * (int32)p->wb4[1];
-        p->money += 260 * (int32)p->wb4[2];
-        p->money += 210 * (int32)p->wb4[5];
-        p->money += 70 * (int32)p->wb4[7];
+        p->money += 230 * (int32)p->planets[0];
+        p->money += 50 * (int32)p->planets[1];
+        p->money += 260 * (int32)p->planets[2];
+        p->money += 210 * (int32)p->planets[5];
+        p->money += 70 * (int32)p->planets[7];
     }
-    if (10000 * (int32)lv > p->db0)
-        p->db0 += (int32)p->wb4[6] << 1;
+    if (10000 * (int32)lv > p->agents)
+        p->agents += (int32)p->planets[6] << 1;
 }
 
 static const char *const ADJ[19] = {

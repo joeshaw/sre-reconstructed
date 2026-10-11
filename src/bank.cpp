@@ -382,7 +382,7 @@ void Bank(Player *p, Empire *e, Galaxy *g)
                 } else {
                     e->bank.sub(n + n * (int32)g->interest / 100);
                     e->money.add(n);
-                    e->d1a4 += payment;
+                    e->loanpayment += payment;
                 }
             }
         }

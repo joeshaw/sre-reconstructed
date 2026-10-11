@@ -34,7 +34,7 @@ String TreatyDesc(Treaty t)
     String s = TreatyName(t.type());
     if (t.type() != 7)
         return s;
-    return s + " (" + IntStr(t.e()) + "%/" + IntStr(t.d()) + "%)";
+    return s + " (" + IntStr(t.soldierpct()) + "%/" + IntStr(t.cruiserpct()) + "%)";
 }
 
 static int16 Alive(Empire *e)
@@ -78,16 +78,16 @@ static void Relations(Empire *me, int32 mark)
         Treaty *theirs = &o->treaty[me->id];
         if (mine.type() != 0) {
             kout << c_number << TreatyDesc(mine);
-            if (mine.a > 0)
-                kout << ' ' << c_bracket << '[' << c_bold << (int16)mine.a << c_bracket << ']'
+            if (mine.days > 0)
+                kout << ' ' << c_bracket << '[' << c_bold << (int16)mine.days << c_bracket << ']'
                      << c_normal;
         } else if (theirs->type() != 0) {
             kout << Color(10) << TreatyDesc(*theirs) << ' ';
-            switch (theirs->c()) {
-            case 1: kout << "Proposed"; break;
-            case 2: kout << "Rejected"; break;
-            case 3: kout << "Accepted"; break;
-            case 4: kout << "Treaty Broken"; break;
+            switch (theirs->status()) {
+            case TS_PROPOSED: kout << "Proposed"; break;
+            case TS_REJECTED: kout << "Rejected"; break;
+            case TS_ACCEPTED: kout << "Accepted"; break;
+            case TS_BROKEN: kout << "Treaty Broken"; break;
             }
         } else {
             kout << c_normal << TreatyName(0);
@@ -110,7 +110,7 @@ static int16 CheckProposal(Empire *o, int16 meid, int16 type, int16 days)
 {
     int16 shown = 0;
     Treaty *t = &o->treaty[meid];
-    if (t->c() == 2) {
+    if (t->status() == TS_REJECTED) {
         kout << "You just rejected " << Untr(o->name) << "'s treaty.  ";
         if (!YesNo(0, "Do you wish to send a new treaty instead"))
             return 0;
@@ -120,23 +120,23 @@ static int16 CheckProposal(Empire *o, int16 meid, int16 type, int16 days)
              << " is the Weapons Master; you cannot get a defense treaty with today's Weapons Master.\n";
         return 0;
     }
-    if (t->c() == 1) {
+    if (t->status() == TS_PROPOSED) {
         kout << "You have already proposed a " << c_number << TreatyDesc(*t) << c_normal;
-        if (t->a > 0)
-            kout << " for " << (int16)t->a << " turns";
+        if (t->days > 0)
+            kout << " for " << (int16)t->days << " turns";
         kout << " to " << Untr(o->name) << "!\n";
         shown = 1;
     }
-    if (t->c() == 4) {
+    if (t->status() == TS_BROKEN) {
         kout << "You have sent word that you would like to break a treaty!\n";
         shown = 1;
     }
     if (!shown) {
         Treaty *mine = &g_empires[meid].treaty[o->id];
-        if (mine->type() == type && mine->a >= days) {
+        if (mine->type() == type && mine->days >= days) {
             kout << "You already have a " << c_number << TreatyDesc(*mine) << c_normal;
-            if (mine->a > 0)
-                kout << " for " << (int16)mine->a << " turns";
+            if (mine->days > 0)
+                kout << " for " << (int16)mine->days << " turns";
             kout << " with " << Untr(o->name) << "!\n";
             return 0;
         }
@@ -155,8 +155,8 @@ static void Propose(Player *p, Empire *me, int16 type)
     }
     Treaty t = { 0, 0, 0 };
     SetTreaty(t, type, 0);
-    if (t.d() > 0 || t.e() > 0)
-        kout << "This treaty will provide " << t.e() << "% soldier defense and " << t.d()
+    if (t.cruiserpct() > 0 || t.soldierpct() > 0)
+        kout << "This treaty will provide " << t.soldierpct() << "% soldier defense and " << t.cruiserpct()
              << "% cruiser defense.\n";
     int16 days = -1, soldiers = 0, cruisers = 0;
     int32 chosen = 0;
@@ -193,12 +193,12 @@ static void Propose(Player *p, Empire *me, int16 type)
         kout << Color(10) << (char)(i + 'A') << c_normal << ": ";
         Treaty *ot = &o->treaty[me->id];
         SetTreaty(*ot, type, (uint8)days);
-        ot->setc(1);
+        ot->setstatus(TS_PROPOSED);
         if (type == 7) {
             ot->settype(7);
-            ot->a = (uint8)days;
-            ot->sete(soldiers);
-            ot->setd(cruisers);
+            ot->days = (uint8)days;
+            ot->setsoldierpct(soldiers);
+            ot->setcruiserpct(cruisers);
         }
         kout << c_number << TreatyName(type) << c_normal << " proposed";
         if (days > 0)
@@ -227,23 +227,23 @@ static void BreakTreaty(Player *p, Empire *me)
         Treaty *theirs = &o->treaty[me->id];
         if (mine->type() == 0) {
             kout << "You have no relations with " << c_empire << Untr(o->name) << c_normal << "!\n";
-        } else if (mine->a == 0) {
+        } else if (mine->days == 0) {
             kout << "You break the " << c_number << TreatyDesc(*mine) << c_normal << ".\n";
             SetTreaty(*mine, 0, 0);
-            mine->setc(0);
-            theirs->setc(4);
-        } else if (theirs->c() == 1) {
+            mine->setstatus(TS_NONE);
+            theirs->setstatus(TS_BROKEN);
+        } else if (theirs->status() == TS_PROPOSED) {
             kout << "You have proposed a " << c_number << TreatyDesc(*theirs) << c_normal << " to "
                  << c_empire << Untr(o->name) << c_normal << ".  ";
             if (YesNo(0, "Do you wish to cancel the proposal")) {
                 *theirs = *mine;
-                mine->setc(0);
-                theirs->setc(0);
+                mine->setstatus(TS_NONE);
+                theirs->setstatus(TS_NONE);
             }
-        } else if (theirs->c() == 4) {
+        } else if (theirs->status() == TS_BROKEN) {
             kout << "You have already sent word that you wish to break the treaty!\n";
         } else {
-            theirs->setc(4);
+            theirs->setstatus(TS_BROKEN);
             kout << "You send word that you wish to break the treaty.\n";
         }
     }
@@ -302,54 +302,54 @@ void TreatyMessages(Player *p, Empire *me)
             continue;
         Treaty *a = &me->treaty[o->id];
         Treaty *b = &o->treaty[me->id];
-        if (a->c() == 4) {
+        if (a->status() == TS_BROKEN) {
             kout << Color(15) << Untr(o->name) << c_normal << " has ";
-            if (a->a > 0)
+            if (a->days > 0)
                 kout << "dishonorably ";
             kout << "broken a treaty with you!\n";
             SetTreaty(*a, 0, 0);
-            a->setc(0);
+            a->setstatus(TS_NONE);
             SetTreaty(*b, 0, 0);
-            b->setc(0);
+            b->setstatus(TS_NONE);
         }
-        if (a->c() == 1) {
+        if (a->status() == TS_PROPOSED) {
             if (me->id == g_galaxy.weaponsmaster && TotalPlanets(me) > 500 && a->type() != 2 &&
                 a->type() != 1) {
                 kout << "Because you are the Weapons Master, the treaty has been changed to Neutrality.\n";
-                SetTreaty(*a, 1, a->a);
+                SetTreaty(*a, 1, a->days);
             }
             kout << Color(15) << Untr(o->name) << c_normal << " proposes a " << c_number
                  << TreatyName(a->type()) << c_normal;
-            if (a->a > 0)
-                kout << " for " << c_number << (int16)a->a << c_normal << " days";
+            if (a->days > 0)
+                kout << " for " << c_number << (int16)a->days << c_normal << " days";
             kout << ".\n";
             if (a->type() == 7) {
-                kout << "It involves " << c_number << a->e() << c_normal << "% soldier defense and ";
-                kout << c_number << a->d() << c_normal << "% cruiser defense.\n";
+                kout << "It involves " << c_number << a->soldierpct() << c_normal << "% soldier defense and ";
+                kout << c_number << a->cruiserpct() << c_normal << "% cruiser defense.\n";
             }
             if (YesNo(1, "Do you accept")) {
                 kout << "Treaty Accepted";
                 *b = *a;
-                b->setc(3);
-                a->setc(0);
+                b->setstatus(TS_ACCEPTED);
+                a->setstatus(TS_NONE);
             } else {
                 int16 type = a->type();
-                uint8 days = a->a;
+                uint8 days = a->days;
                 kout << "Treaty Rejected";
                 *a = *b;
-                a->setc(0);
+                a->setstatus(TS_NONE);
                 SetTreaty(*b, type, days);
-                b->setc(2);
+                b->setstatus(TS_REJECTED);
             }
             kout << c_normal << ".\n";
         }
-        if (a->c() == 3) {
+        if (a->status() == TS_ACCEPTED) {
             kout << c_number << Untr(o->name) << c_normal << " accepts the " << c_number
                  << TreatyDesc(*a) << c_normal << ".\n";
-            a->setc(0);
-            b->setc(0);
+            a->setstatus(TS_NONE);
+            b->setstatus(TS_NONE);
         }
-        if (a->c() == 2) {
+        if (a->status() == TS_REJECTED) {
             kout << c_number << Untr(o->name) << c_normal << " rejects the " << c_number
                  << TreatyDesc(*a) << c_normal << " proposal.\n";
             *a = *b;

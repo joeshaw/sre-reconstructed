@@ -15,7 +15,7 @@ void Advisors(Player *p, Empire *e)
     const char *hint = "hint";
     kout << '\n';
     int32 need = FoodNeeded(e, 0);
-    int32 grown = e->planets[P_FOOD].count * e->planets[P_FOOD].b;
+    int32 grown = e->planets[P_FOOD].count * e->planets[P_FOOD].output;
     int32 food = e->food;
     Advisor("Agricultural Advisor");
     kout << " reports that your food planets produce " << c_number << grown << c_normal
@@ -34,13 +34,13 @@ void Advisors(Player *p, Empire *e)
         kout << " is not in her office.  Her employees say that she is out playing tennis, and she will be back shortly.\n\n";
     } else {
         Advisor("Economic Advisor");
-        kout << "'s report states that your empire has an efficiency of " << c_number << e->d1b4
+        kout << "'s report states that your empire has an efficiency of " << c_number << e->efficiency
              << c_normal << " credits per planet (profit).";
-        if (e->d1b4 > 2000)
+        if (e->efficiency > 2000)
             kout << "  Congratulations!";
-        else if (e->d1b4 > 1500)
+        else if (e->efficiency > 1500)
             kout << "  That is a respectable amount of profit.  You are a wise ruler!";
-        else if (e->d1b4 < 0)
+        else if (e->efficiency < 0)
             kout << "  This is not very good for your empire!!!";
         int32 money = e->planets[P_TOURISM].count + e->planets[P_PETROLEUM].count +
                       e->planets[P_ORE].count + e->planets[P_URBAN].count +
@@ -103,8 +103,8 @@ void Advisors(Player *p, Empire *e)
         kout << " reports that your covert agent / planet ratio is " << c_number << a << c_normal
              << ':' << c_number << b << c_normal << ".\n\n";
     }
-    if (e->d1b0 > 100 || e->d1b0 < -50) {
-        const char *un = e->d1b0 < 0 ? "un" : "";
+    if (e->favor > 100 || e->favor < -50) {
+        const char *un = e->favor < 0 ? "un" : "";
         Advisor("Chief of Relations");
         kout << " says that the Galactic Coordinator looks " << un << "favorably upon you.\n\n";
     }
@@ -116,11 +116,11 @@ void Advisors(Player *p, Empire *e)
         ShowHelpTopic(hint, "soldiers");
     if (e->stations == 0)
         ShowHelpTopic(hint, "defense-stations");
-    if (e->d188 != 0)
+    if (e->pollution != 0)
         ShowHelpTopic(hint, "pollution");
-    if (e->w172 == 0)
+    if (e->tickets == 0)
         ShowHelpTopic(hint, "lottery");
-    if (e->d293 == 0)
+    if (e->researchpoints == 0)
         ShowHelpTopic(hint, "research");
     Pause();
 }

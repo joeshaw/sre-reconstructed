@@ -93,14 +93,14 @@ static void Key(char c)
 static void StartTurn(Empire *e)
 {
     e->phase = 0;
-    e->m1bc.set(0);
-    e->b1c4 &= ~1;
-    e->b1c4 &= ~2;
-    e->b1c4 &= ~4;
-    e->b1c4 &= ~8;
-    ClearSpending(e->u_1c7);
-    e->b1c6 = 0;
-    e->b1c5 = 0;
+    e->income.set(0);
+    e->shortfalls &= ~SF_NEGLECT;
+    e->shortfalls &= ~SF_STARVED;
+    e->shortfalls &= ~SF_UNUSED;
+    e->shortfalls &= ~SF_ARMY;
+    ClearShortages(e);
+    e->effnext = 0;
+    e->effchange = 0;
 }
 
 // Phase 14: attacks, trades and messages.
@@ -186,7 +186,7 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         StartTurn(e);
         break;
     case 1:
-        e->w192 = 0;
+        e->planetsbought = 0;
         BuildCmdShip(e);
         BankInterest(e);
         break;
@@ -218,9 +218,9 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         FoodMarket(p, e, g);
         break;
     case 8:
-        e->d22f[0] = 0;
-        e->d22f[1] = 0;
-        e->d22f[2] = 0;
+        e->aidmask = 0;
+        e->dissensionmask = 0;
+        e->demoralizemask = 0;
         break;
     case 9:
         PrevPhase(e);
@@ -253,7 +253,7 @@ static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
         break;
     case 18:
         UpdateScore(e);
-        UpdateD1b0(e);
+        DriftFavor(e);
         break;
     case 19:
         CivilWar(p, e);
@@ -320,7 +320,7 @@ void PlayGame(Player *p)
         return;
     }
     g_current = e;
-    e->flags |= g_galaxy.w386;
+    e->flags |= g_galaxy.localonly;
     g_local = e->flags;
     {
         String name(e->name);
@@ -359,7 +359,7 @@ void PlayGame(Player *p)
         FirstTurn(p, e);
     e->lastplay = g_now;
     p->lastplay = g_now;
-    e->w2a1 = (int16)r_inactivetimeout.Long();
+    e->inactivedays = (int16)r_inactivetimeout.Long();
     if (r_messages.Bool())
         ReadMessages(p, e);
     if (e->turnsused >= e->turnsperday && !g_local) {

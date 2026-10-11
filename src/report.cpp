@@ -214,7 +214,7 @@ int16 ShowNewReports(Player *p, Empire *e)
     if (!g_newreports)
         return 0;
     g_newreports = 0;
-    return ShowReports(e->id, REPORT_FILE, (p->prefs2 >> 3) & 1, 1, 3);
+    return ShowReports(e->id, REPORT_FILE, HasPref(p->prefs2, PF2_REPORTDATES), 1, 3);
 }
 
 // 69d7:07bb
