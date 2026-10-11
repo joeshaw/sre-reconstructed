@@ -92,7 +92,7 @@ static void Key(char c)
 // The start of a turn's phases (inlined in 1e7b:0731 and 1e7b:0f61).
 static void StartTurn(Empire *e)
 {
-    e->phase = 0;
+    e->phase = PH_START;
     e->income.set(0);
     e->shortfalls &= ~SF_NEGLECT;
     e->shortfalls &= ~SF_STARVED;
@@ -103,7 +103,7 @@ static void StartTurn(Empire *e)
     e->effchange = 0;
 }
 
-// Phase 14: attacks, trades and messages.
+// PH_ACTION: attacks, trades and messages.
 static void ActionPhase(Player *p, Empire *e)
 {
     int16 cantrade = r_trading.Bool() && e->year >= 0;
@@ -182,87 +182,87 @@ static void ActionPhase(Player *p, Empire *e)
 static int16 Phase(Player *p, int16 phase, Empire *e, Galaxy *g)
 {
     switch (phase) {
-    case 0:
+    case PH_START:
         StartTurn(e);
         break;
-    case 1:
+    case PH_INTEREST:
         e->planetsbought = 0;
         BuildCmdShip(e);
         BankInterest(e);
         break;
-    case 2:
+    case PH_REPORTS:
         TradeArrivals(p, e);
         ProcessEvents();
         PrevPhase(e);
         ShowNewReports(p, e);
         HLine(Color(8), 0x4b);
         break;
-    case 3:
+    case PH_TURNREPORT:
         TurnReport(p, e);
         break;
-    case 4:
+    case PH_ADVISOR:
         PrevPhase(e);
         Advisor(p, e);
         Pause();
         break;
-    case 5:
+    case PH_STATUS:
         PrevPhase(e);
         ShowStatus(e);
         break;
-    case 6:
+    case PH_UPKEEP:
         PrevPhase(e);
         PayUpkeep(p, e, g);
         break;
-    case 7:
+    case PH_FOOD:
         PrevPhase(e);
         FoodMarket(p, e, g);
         break;
-    case 8:
+    case PH_TURNOPS:
         e->aidmask = 0;
         e->dissensionmask = 0;
         e->demoralizemask = 0;
         break;
-    case 9:
+    case PH_COVERT:
         PrevPhase(e);
         CovertOps(p, e, g);
         break;
-    case 10:
+    case PH_BANK:
         PrevPhase(e);
         if (g_system.regstate)
             Bank(p, e, g);
         break;
-    case 11:
+    case PH_SPENDING:
         PrevPhase(e);
         Spending(p, e, g);
         break;
-    case 12:
+    case PH_DOUBLEAGENTS:
         DoubleAgents(p, e);
         break;
-    case 13:
+    case PH_UNUSED13:
         break;
-    case 14:
+    case PH_ACTION:
         ActionPhase(p, e);
         break;
-    case 15:
+    case PH_UNUSED15:
         break;
-    case 16:
+    case PH_ENDTURN:
         EndOfTurn(p, e, g);
         break;
-    case 17:
+    case PH_POPULATION:
         Population(p, e);
         break;
-    case 18:
+    case PH_SCORE:
         UpdateScore(e);
         DriftFavor(e);
         break;
-    case 19:
+    case PH_CIVILWAR:
         CivilWar(p, e);
         Desertion(p, e);
         break;
-    case 20:
+    case PH_PLANETS:
         PlanetsMoveToward(e);
         break;
-    case 21: {
+    case PH_CONTINUE: {
         int16 done = e->turnsused >= e->turnsperday && !g_local;
         if (done)
             Pause();
@@ -320,13 +320,13 @@ void PlayGame(Player *p)
         return;
     }
     g_current = e;
-    e->flags |= g_galaxy.localonly;
-    g_local = e->flags;
+    e->localplay |= g_galaxy.localonly;
+    g_local = e->localplay;
     {
         String name(e->name);
         StatusBar(g_door.name, name.c_str(), (char)(e->id + 'A'));
     }
-    if (e->flags && g_door.port) {
+    if (e->localplay && g_door.port) {
         kout << "This game is configured to be a local-only game.  Remote players are not allowed to play.\n";
         GalaxyClose();
         return;
@@ -355,7 +355,7 @@ void PlayGame(Player *p)
         kout << "Congratulations" << c_normal << "!\n";
     ShowCovertReports(p, e);
     ShowBattleReports(p, e);
-    if (e->phase == 0 && e->turnsused == 0)
+    if (e->phase == PH_START && e->turnsused == 0)
         FirstTurn(p, e);
     e->lastplay = g_now;
     p->lastplay = g_now;
@@ -364,13 +364,13 @@ void PlayGame(Player *p)
         ReadMessages(p, e);
     if (e->turnsused >= e->turnsperday && !g_local) {
         kout << "You have used all of your turns for today.\n\n";
-        if (e->year < 0 && g_galaxy.grantdays > 1)
+        if (e->year < 0 && g_galaxy.daylength > 1)
             kout << "(You receive " << g_galaxy.grantturns << " turns every "
-                 << g_galaxy.grantdays << " days.\n";
+                 << g_galaxy.daylength << " days.\n";
         return;
     }
     TreatyMessages(p, e);
-    if (e->phase > 1)
+    if (e->phase > PH_INTEREST)
         kout << "Continuing previously interrupted turn...\n";
     while (e->turnsused < e->turnsperday || g_local) {
         int16 ph = e->phase;

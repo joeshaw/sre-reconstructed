@@ -65,31 +65,31 @@ void PirateHourly(Pirate *p)
     p->lasthour = now;
     int16 lv = p->level;
     if ((int32)(int16)(lv * 3000) > p->soldiers)
-        p->soldiers += (int32)Random(100) + (5 * (int32)p->planets[8]) / 10;
+        p->soldiers += (int32)Random(100) + (5 * (int32)p->planets[P_SUPPLY]) / 10;
     if ((int32)(int16)(lv * 3000) > p->fighters)
-        p->fighters += (int32)Random(100) + (4 * (int32)p->planets[8]) / 10;
+        p->fighters += (int32)Random(100) + (4 * (int32)p->planets[P_SUPPLY]) / 10;
     if ((int32)(int16)(lv * 3000) > p->heavycruisers)
-        p->heavycruisers += (int32)Random(100) + (int32)p->planets[8] / 10;
+        p->heavycruisers += (int32)Random(100) + (int32)p->planets[P_SUPPLY] / 10;
     if ((int32)(int16)(lv * 3000) > p->stations)
-        p->stations += (int32)Random(100) + (4 * (int32)p->planets[8]) / 10;
+        p->stations += (int32)Random(100) + (4 * (int32)p->planets[P_SUPPLY]) / 10;
     if ((int32)(int16)(lv * 300) > p->carriers)
-        p->carriers += (int32)Random(10) + (2 * (int32)p->planets[8]) / 10;
+        p->carriers += (int32)Random(10) + (2 * (int32)p->planets[P_SUPPLY]) / 10;
     if ((int32)(int16)(lv * 300) > p->generals)
-        p->generals += (int32)Random(10) + (2 * (int32)p->planets[8]) / 10;
+        p->generals += (int32)Random(10) + (2 * (int32)p->planets[P_SUPPLY]) / 10;
     if ((int32)(int16)(lv * 500) > p->agents)
         p->agents += (int32)Random(10);
     if (10000000 * (int32)lv > p->food)
-        p->food += (int32)Random(30) + 6 * (int32)p->planets[3];
+        p->food += (int32)Random(30) + 6 * (int32)p->planets[P_FOOD];
     if (10000000 * (int32)lv > p->money) {
         p->money += 10000 * (int32)lv;
-        p->money += 230 * (int32)p->planets[0];
-        p->money += 50 * (int32)p->planets[1];
-        p->money += 260 * (int32)p->planets[2];
-        p->money += 210 * (int32)p->planets[5];
-        p->money += 70 * (int32)p->planets[7];
+        p->money += 230 * (int32)p->planets[P_PETROLEUM];
+        p->money += 50 * (int32)p->planets[P_EDUCATION];
+        p->money += 260 * (int32)p->planets[P_TOURISM];
+        p->money += 210 * (int32)p->planets[P_ORE];
+        p->money += 70 * (int32)p->planets[P_URBAN];
     }
     if (10000 * (int32)lv > p->agents)
-        p->agents += (int32)p->planets[6] << 1;
+        p->agents += (int32)p->planets[P_GOVERNMENT] << 1;
 }
 
 static const char *const ADJ[19] = {

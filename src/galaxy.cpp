@@ -33,7 +33,7 @@ void GalaxyInit(Galaxy *g)
     g->nukepercent = 20;
     g->psionicprice = 10000000;
     g->newspaper = 0;
-    g->grantdays = 1;
+    g->daylength = 1;
     g->marketfood = 7000000;
     g->regenseconds = 3;
     g->marketplanets = 100;

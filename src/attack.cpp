@@ -28,7 +28,7 @@ static int8 Clamp100(int16 v)
 // The treaty an attack breaks (SetTreaty inlined, and the state reset).
 static void BreakTreaty(Treaty &t)
 {
-    SetTreaty(t, 0, 0);
+    SetTreaty(t, TT_NONE, 0);
     t.setstatus(TS_NONE);
 }
 
@@ -76,10 +76,10 @@ static int16 CanAttack(Empire *me, Empire *t)
         return 0;
     }
     Treaty &tr = me->treaty[t->id];
-    if (tr.type() != 0) {
+    if (tr.type() != TT_NONE) {
         kout << "You have a " << Color(10) << TreatyName(tr.type()) << c_normal;
         kout << " with " << c_number << Untr(t->name) << c_normal << ".\n";
-        if (tr.type() == 1) {
+        if (tr.type() == TT_NEUTRALITY) {
             kout << "Your Neutrality Treaty prevents you from attacking.\n";
             return 0;
         }
@@ -182,11 +182,11 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
     s_forces.Add(me->generals, "general");
     s_forces.Add(me->heavycruisers, "heavy cruiser");
     s_forces.Add(me->lightcruisers, "light cruiser");
-    if ((me->weapons >> 3) & 1)
+    if (HasWeapon(me, W_MOTHERSHIP))
         s_forces.Add(1, "mothership");
     kout << "You have " << s_forces << '.';
     // (Any carrier or mothership lets up to 100,000 fighters fly.)
-    int32 fcap = (100 * me->carriers + ((me->weapons >> 3) & 1)) != 0 ? 100000 : 0;
+    int32 fcap = (100 * me->carriers + HasWeapon(me, W_MOTHERSHIP)) != 0 ? 100000 : 0;
     int32 scap = 50 * me->generals <= me->soldiers ? 50 * me->generals : me->soldiers;
     fcap = me->fighters < fcap ? me->fighters : fcap;
     int16 nogen = me->soldiers > scap, nocarrier = me->fighters > fcap;
@@ -246,14 +246,19 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
     hd += t->heavycruisers;
     int32 hd0 = hd;
     kout << Color(12);
+    // The forces: s soldiers, f fighters (the defender's defense stations
+    // fight as its fighters), h heavy and l light cruisers; a the
+    // attacker's, d the defender's (stations and tlight).  A hit costs 2%
+    // of both sides' forces of a kind (ds, df, dh, dl), and the battle
+    // goes on until either side is down to a tenth of its forces.
     int32 ds = (sa + sd) / 50 + 1;
     int32 df = (fa + stations) / 50 + 1;
     int32 dh = (ha + hd) / 50 + 1;
     int32 dl = (la + tlight) / 50 + 1;
-    int32 qa = (sa + fa + ha + la) / 10;
-    int32 qd = (sd + stations + hd + tlight) / 10;
+    int32 lasta = (sa + fa + ha + la) / 10;
+    int32 lastd = (sd + stations + hd + tlight) / 10;
     int16 round = 0;
-    while (sa + fa + ha + la > qa && sd + stations + hd + tlight > qd) {
+    while (sa + fa + ha + la > lasta && sd + stations + hd + tlight > lastd) {
         if (round >= 3 && Random(200) < t->effectiveness + 90)
             Hit(&sa, ds, &ha, dh, &fa, df, &la, dl);
         if (round >= 3 && Random(200) < me->effectiveness + 90)
@@ -556,7 +561,7 @@ static int16 Guerilla(Player *p, Empire *me, Empire *t)
 static int16 Nuclear(Player *p, Empire *me, Empire *t)
 {
     int16 div = (int16)(100 / g_galaxy.nukepercent + 1);
-    if (!(me->weapons & 1)) {
+    if (!HasWeapon(me, W_NUCLEAR)) {
         kout << "You have no nuclear weapons!\n";
         return 0;
     }
@@ -565,7 +570,7 @@ static int16 Nuclear(Player *p, Empire *me, Empire *t)
     if (!YesNo(0, "The Galactic Coordinator has outlawed nuclear weapons due to the environmental destruction they cause.  By using the bomb, you will be seriously angering It.\nAre you sure you wish to do this"))
         return 0;
     BreakTreaties(me, t);
-    me->weapons &= ~1;
+    me->weapons &= ~W_NUCLEAR;
     me->attacks++;
     if (g_galaxy.nukelimit > 50)
         g_galaxy.nukelimit -= 30;
@@ -606,7 +611,7 @@ static int16 Nuclear(Player *p, Empire *me, Empire *t)
 // 5c5c:0f19
 static int16 Chemical(Player *p, Empire *me, Empire *t)
 {
-    if (!((me->weapons >> 1) & 1)) {
+    if (!HasWeapon(me, W_CHEMICAL)) {
         kout << "You have no chemical weapons!\n";
         return 0;
     }
@@ -616,7 +621,7 @@ static int16 Chemical(Player *p, Empire *me, Empire *t)
         return 0;
     me->favor = 0;
     BreakTreaties(me, t);
-    me->weapons &= ~2;
+    me->weapons &= ~W_CHEMICAL;
     me->attacks++;
     if (Random(10) == 0 && t->agents > 0) {
         // The target's agents sabotage the weapon.
@@ -657,7 +662,7 @@ static int16 Chemical(Player *p, Empire *me, Empire *t)
 static int16 Psionic(Player *p, Empire *me, Empire *t)
 {
     (void)p;
-    if (!((me->weapons >> 2) & 1)) {
+    if (!HasWeapon(me, W_PSIONIC)) {
         kout << "You have no psionic bomb!\n";
         return 0;
     }
@@ -666,7 +671,7 @@ static int16 Psionic(Player *p, Empire *me, Empire *t)
     if (!YesNo(0, "Are you sure you wish to attack with the psionic weapon"))
         return 0;
     BreakTreaties(me, t);
-    me->weapons &= ~4;
+    me->weapons &= ~W_PSIONIC;
     me->attacks++;
     t->insurgency = 7;
     t->effectiveness = 0;
@@ -694,11 +699,11 @@ int16 Attack(Player *p, Empire *e, char how)
             m.Add("Pirate Raid", key++, 3);
         if (r_piratespy.Bool())
             m.Add("Spy on Pirates", key++, 4);
-        if (e->weapons & 1)
+        if (HasWeapon(e, W_NUCLEAR))
             m.Add("Nuclear Offensive", key++, 5);
-        if ((e->weapons >> 1) & 1)
+        if (HasWeapon(e, W_CHEMICAL))
             m.Add("Chemical Warfare", key++, 6);
-        if ((e->weapons >> 2) & 1)
+        if (HasWeapon(e, W_PSIONIC))
             m.Add("Psionic Attack", key++, 7);
         if (g_system.regstate)
             m.Add("", 'V', 0x50);

@@ -281,14 +281,14 @@ static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
             p->seenplanets |= (int16)(1 << k);
             ShowHelpTopic("planet", PlanetName((int8)k));
         }
-        if (k == 9 && e->pollution > 0)
+        if (k == P_ANTIPOLLUTION && e->pollution > 0)
             kout << "There are " << c_number << e->pollution << c_normal
                  << " exatons of pollution in the atmosphere.\n";
-        if (k == 3)
-            kout << "Each food planet can produce " << c_number << e->planets[3].output << c_normal
+        if (k == P_FOOD)
+            kout << "Each food planet can produce " << c_number << e->planets[P_FOOD].output << c_normal
                  << " megatons of food each year.\n";
-        if (k == 8)
-            kout << "Each supply planet can train " << c_number << e->planets[8].output << c_normal
+        if (k == P_SUPPLY)
+            kout << "Each supply planet can train " << c_number << e->planets[P_SUPPLY].output << c_normal
                  << " military units per year.  Soldiers count as 1 unit, fighters 1.3, defense stations 1.7, generals 7, carriers 9.5, and cruisers 12.\n";
         int32 n = BuyPlanets(&e->money, price, &max, &e->score);
         e->planetsbought += (int16)n;

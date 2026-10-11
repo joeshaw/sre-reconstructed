@@ -73,10 +73,10 @@ static void Produce(Empire *e, Income *r)
         total += credits / 1000;
     }
     if (P(e, P_TOURISM).count) {
-        int32 a = Random(1000);
-        int32 b = Random(1000);
+        int32 up = Random(1000);
+        int32 down = Random(1000);
         r->tourism = P(e, P_TOURISM).count *
-                     (P(e, P_TOURISM).output + a - b - 350 * (int32)e->insurgency - e->pollution / 10);
+                     (P(e, P_TOURISM).output + up - down - 350 * (int32)e->insurgency - e->pollution / 10);
         if (r->tourism < 0)
             r->tourism = 0;
         e->money.add(r->tourism);
@@ -127,7 +127,7 @@ static void Produce(Empire *e, Income *r)
     if (e->population > 0) {
         r->taxes = 3 * (e->population * (int32)e->taxrate) / ((int32)e->insurgency + 1);
         for (int16 i = 0; i < MAXEMPIRES; i++) {
-            if (e->treaty[i].type() != 2)
+            if (e->treaty[i].type() != TT_FREETRADE)
                 continue;
             Empire *o = &g_empires[i];
             if (Exists(*o))

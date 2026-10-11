@@ -359,11 +359,13 @@ static int16 ChoosePirate(int16 id)
         if (h > 0)
             sum += h * k;
     }
+    // A random number up to sum, from two 15-bit halves (truncated to
+    // 16 bits, as in the original).
     int16 hi = (int16)((sum >> 15) + 1);
-    int16 a = (int16)(((int32)hi * b_rand()) / 0x8000);
+    int16 rhi = (int16)(((int32)hi * b_rand()) / 0x8000);
     int16 lo = (int16)((sum & 0x7fff) + 1);
-    int16 b = (int16)(((int32)lo * b_rand()) / 0x8000);
-    int32 r = (int16)((uint16)(a << 15) | (uint16)b);
+    int16 rlo = (int16)(((int32)lo * b_rand()) / 0x8000);
+    int32 r = (int16)((uint16)(rhi << 15) | (uint16)rlo);
     for (int16 k = 1; k <= 9; k++) {
         int32 h = g_pirates[k - 1].hatred[id];
         if (h > 0)
@@ -376,7 +378,7 @@ static int16 ChoosePirate(int16 id)
 
 // A weapon for sale on the underground market.
 static void Offer(Empire *e, int32 price, const char *buyprompt, const char *bought,
-                  const char *cannot, int16 bit)
+                  const char *cannot, int16 weapon)
 {
     if (e->money.get() >= price || e->money.get() + e->bank.get() >= price) {
         if (!YesNo(2, buyprompt))
@@ -386,7 +388,7 @@ static void Offer(Empire *e, int32 price, const char *buyprompt, const char *bou
             e->bank.sub(price);
         }
         kout << bought;
-        e->weapons |= bit;
+        e->weapons |= weapon;
         if (e->money.get() >= price) {
             e->money.sub(price);
         } else {
@@ -422,8 +424,8 @@ void Advisor(Player *pl, Empire *e)
             kout << '\n';
             d.Show();
         }
-    } else if (e->researchpoints >= 10000 && !(e->weapons & 8)) {
-        e->weapons |= 8;
+    } else if (e->researchpoints >= 10000 && !HasWeapon(e, W_MOTHERSHIP)) {
+        e->weapons |= W_MOTHERSHIP;
         kout << Color(14)
              << "Your research planets develop a Mothership carrier capable of carrying 100,000 fighters into battle.\n"
              << c_normal;
@@ -452,7 +454,7 @@ void Advisor(Player *pl, Empire *e)
                  << " generals kill each other in military conflicts caused by overpopulation of generals.\n";
     }
     if (g_system.regstate && r_nuclear.Bool()) {
-        if ((2 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !(e->weapons & 1) &&
+        if ((2 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !HasWeapon(e, W_NUCLEAR) &&
             e->year > 0) {
             MaybeScreen(3, "Nuclear");
             kout << "You are approached by ";
@@ -466,22 +468,22 @@ void Advisor(Player *pl, Empire *e)
             kout << " who offers you a " << Color(14) << "Nuclear Bomb" << c_normal << "!\n";
             Offer(e, 3000000, "Buy a nuclear bomb for 3,000,000 credits",
                   "You have bought one nuclear bomb from the underground trading market.\n",
-                  "But you can't afford it right now.\n", 1);
+                  "But you can't afford it right now.\n", W_NUCLEAR);
         }
     }
     if (g_system.regstate && r_chemical.Bool()) {
-        if ((2 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !(e->weapons & 2) &&
+        if ((2 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !HasWeapon(e, W_CHEMICAL) &&
             e->year > 0) {
             MaybeScreen(3, "Chemical");
             kout << "A well-dressed trader approaches you and offers to sell a megaton of "
                  << Color(14) << "Chemicals" << c_normal << " for chemical warfare.\n";
             Offer(e, 1000000, "Buy a barrel of chemicals for 1,000,000 credits",
                   "You have bought one barrel of chemicals from the underground trading market.\n",
-                  "But you can't afford it.\n", 2);
+                  "But you can't afford it.\n", W_CHEMICAL);
         }
     }
     if (g_system.regstate && r_psionic.Bool()) {
-        if ((4 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !(e->weapons & 4) &&
+        if ((4 * e->agents) / (TotalPlanets(e) + 200) > Random(20) && !HasWeapon(e, W_PSIONIC) &&
             e->year > 0) {
             int32 price = g_galaxy.psionicprice;
             MaybeScreen(3, "Psionic");
@@ -496,7 +498,7 @@ void Advisor(Player *pl, Empire *e)
                         e->bank.sub(price);
                     }
                     kout << "You have bought a psionic bomb from the smuggler.\n";
-                    e->weapons |= 4;
+                    e->weapons |= W_PSIONIC;
                     if (e->money.get() >= price) {
                         e->money.sub(price);
                     } else {

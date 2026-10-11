@@ -42,7 +42,7 @@ static void ReadKeyFile()
     char key[0x100];
     IFStream f(KEY_FILE, 0);
     int16 kind = 0;
-    s->regstate = 0;
+    s->regstate = RS_UNREGISTERED;
     strcpy(s->bank, DEFAULT_BANK);
     if (f.fail())
         return;
@@ -74,9 +74,9 @@ static void ReadKeyFile()
     if (kind == 2 && s->regto[0] == 'W' && b_tolower((int)(int8)s->regto[1]) == 'a' &&
         s->regto[7] == 'J' && s->regto[13] == 'K')
         key[3] = 0;
-    s->regstate = (key[(int8)key[0] - 0x4f] == 'I') ? 2 : 0;
+    s->regstate = (key[(int8)key[0] - 0x4f] == 'I') ? RS_REGISTERED : RS_UNREGISTERED;
     if (strcmp(key, KEY_BETA) == 0)
-        s->regstate = 4;
+        s->regstate = RS_BETA;
 }
 
 // The game is always registered.  The registered name and the bank's name
@@ -88,7 +88,7 @@ void CheckRegistration()
 {
     System *s = &g_system;
     ReadKeyFile();
-    if (s->regstate != 0 || getenv("SRE_UNREGISTERED"))
+    if (s->regstate != RS_UNREGISTERED || getenv("SRE_UNREGISTERED"))
         return;
     char line[0x100];
     IFStream f(KEY_FILE, 0);
@@ -99,7 +99,7 @@ void CheckRegistration()
     if (f.fail() || DecodeLine(line, s->bank))
         strcpy(s->bank, DEFAULT_BANK);
     g_regname = s->regto;
-    s->regstate = 2;
+    s->regstate = RS_REGISTERED;
 }
 
 // 68a3:039f: read a registration line, colouring as it is typed.
@@ -156,16 +156,16 @@ int16 Register()
         if (bad) {
             kout << Color(14) << "\nInvalid registration line.\n";
             kout << c_normal << "SRE is currently unregistered.\n";
-            s->regstate = 0;
+            s->regstate = RS_UNREGISTERED;
             return 0;
         }
         f << in << '\n';
     }
     kout << "\n ";
     HLine(Color(12), 0x4e);
-    s->regstate = 2;
+    s->regstate = RS_REGISTERED;
     if (strcmp(lines[3], KEY_BETA) == 0)
-        s->regstate = 4;
+        s->regstate = RS_BETA;
     kout << c_normal << "This program is registered to:  " << Color(14) << lines[1] << '\n';
     kout << c_normal << "Bank name is:  \"" << Color(11) << lines[2] << c_normal << "\"\n";
     kout << "\nThank you for registering this program!\n";

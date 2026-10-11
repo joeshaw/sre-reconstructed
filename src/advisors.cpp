@@ -81,7 +81,7 @@ void Advisors(Player *p, Empire *e)
              << e->soldiers << c_normal << " soldiers and your generals can lead " << c_number
              << 50 * e->generals << c_normal << " to battle.\n\n";
     }
-    if (!sick && e->carriers + ((e->weapons >> 3) & 1) < (e->fighters + 99) / 100) {
+    if (!sick && e->carriers + HasWeapon(e, W_MOTHERSHIP) < (e->fighters + 99) / 100) {
         Advisor("Chief of Military Maneuvers");
         kout << " asks you to buy more carriers to carry your fighters.  You have " << c_number
              << e->fighters << c_normal << " fighters and your carriers can take " << c_number

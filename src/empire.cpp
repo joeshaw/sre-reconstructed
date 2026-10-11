@@ -53,12 +53,12 @@ int32 NetWorth(Empire *e)
     int32 t = 0;
     for (int16 i = 0; i < 25; i++) {
         Treaty tr = e->treaty[i];
-        if (tr.type() == 0)
+        if (tr.type() == TT_NONE)
             continue;
         t += ((int32)tr.days + 5) / 3;
-        if (tr.type() == 2)
+        if (tr.type() == TT_FREETRADE)
             continue;
-        if (tr.type() == 1)
+        if (tr.type() == TT_NEUTRALITY)
             continue;
         t += 1;
     }
@@ -151,19 +151,19 @@ void EmpireInit(Empire *e)
     e->lastplay = g_now;
     e->created = g_now;
     e->inactivedays = 4;
-    SetPlanets(e, 0, 0, 1900, 1900);
-    SetPlanets(e, 1, 3, 17, 39);
-    SetPlanets(e, 2, 9, 2650, 3100);
-    SetPlanets(e, 3, 1, 46, 53);
-    SetPlanets(e, 4, 1, 9, 11);
-    SetPlanets(e, 5, 9, 2200, 2500);
-    SetPlanets(e, 6, 1, 2, 3);
-    SetPlanets(e, 7, 3, 200, 210);
-    SetPlanets(e, 8, 0, 11, 15);
-    SetPlanets(e, 9, 0, 10, 10);
+    SetPlanets(e, P_PETROLEUM, 0, 1900, 1900);
+    SetPlanets(e, P_EDUCATION, 3, 17, 39);
+    SetPlanets(e, P_TOURISM, 9, 2650, 3100);
+    SetPlanets(e, P_FOOD, 1, 46, 53);
+    SetPlanets(e, P_RESEARCH, 1, 9, 11);
+    SetPlanets(e, P_ORE, 9, 2200, 2500);
+    SetPlanets(e, P_GOVERNMENT, 1, 2, 3);
+    SetPlanets(e, P_URBAN, 3, 200, 210);
+    SetPlanets(e, P_SUPPLY, 0, 11, 15);
+    SetPlanets(e, P_ANTIPOLLUTION, 0, 10, 10);
     for (int16 i = 0; i < 26; i++) {
         Treaty &t = e->treaty[i];
-        t.settype(0);
+        t.settype(TT_NONE);
         t.days = 0;
         t.setsoldierpct(0);
         t.setcruiserpct(0);
@@ -186,7 +186,7 @@ void EmpireInit(Empire *e)
     e->supplyrates[5] = Clamp100(10);
     e->tradegoods = 0;
     e->tickets = 0;
-    e->flags = 0;
+    e->localplay = 0;
     e->insurgency = 0;
     e->effectiveness = Clamp100(100);
     e->cmdship = Clamp100(0);
@@ -223,13 +223,13 @@ void EmpireInit(Empire *e)
     e->draftrate = Clamp100(5);
     e->w1ae = 0;
     e->favor = 0;
-    e->phase = 0;
+    e->phase = PH_START;
     e->income.set(0);
     e->shortfalls &= ~(SF_NEGLECT | SF_STARVED | SF_UNUSED | SF_ARMY);
     ClearShortages(e);
     e->effnext = 0;
     e->effchange = 0;
-    e->weapons &= ~0x0f;
+    e->weapons &= ~(W_NUCLEAR | W_CHEMICAL | W_PSIONIC | W_MOTHERSHIP);
     e->weapons &= 0x0f;
     e->troubles = 0;
     e->bonuses = 0;
@@ -355,10 +355,10 @@ void EmpireStatus(Empire *e, int16 full)
     StatusItem(e->heavycruisers, "Heavy Cruiser", 0);
     StatusItem(e->lightcruisers, "Light Cruiser", 0);
     StatusItem(e->carriers, "Carrier", 0);
-    StatusItem((e->weapons >> 3) & 1, "Mothership", 0);
-    StatusItem(e->weapons & 1, "Nuclear Bomb", 1);
-    StatusItem((e->weapons >> 1) & 1, "Chemical Bomb", 1);
-    StatusItem((e->weapons >> 2) & 1, "Psionic Bomb", 1);
+    StatusItem(HasWeapon(e, W_MOTHERSHIP), "Mothership", 0);
+    StatusItem(HasWeapon(e, W_NUCLEAR), "Nuclear Bomb", 1);
+    StatusItem(HasWeapon(e, W_CHEMICAL), "Chemical Bomb", 1);
+    StatusItem(HasWeapon(e, W_PSIONIC), "Psionic Bomb", 1);
     WrapAt(0x34);
     kout << Color(8) << '[' << c_normal << "Effectiveness=" << c_number << (int16)e->effectiveness
          << c_normal << "%" << Color(8) << "] " << c_normal;
@@ -377,28 +377,28 @@ void EmpireStatus(Empire *e, int16 full)
          << ")\n" << c_normal;
     if (e->troubles) {
         kout << setw(12) << "Troubles:" << setw(0);
-        if (e->troubles & 1)
+        if (e->troubles & TR_PLAGUE)
             StatusItem(1, "Plague", 1);
-        if (e->troubles & 2)
+        if (e->troubles & TR_FAMINE)
             StatusItem(1, "Famine", 1);
-        if (e->troubles & 4)
+        if (e->troubles & TR_SPACESTORMS)
             StatusItem(1, "Space Storms", 1);
-        if (e->troubles & 8)
+        if (e->troubles & TR_DUSTCLOUD)
             StatusItem(1, "Dust Cloud", 1);
-        if (e->troubles & 0x10)
+        if (e->troubles & TR_GASCLOUD)
             StatusItem(1, "Gas Cloud", 1);
-        if (e->troubles & 0x20)
+        if (e->troubles & TR_BANKFAILURE)
             StatusItem(1, "Bank Failure", 1);
         kout << '\n';
     }
     if (e->bonuses) {
         kout << setw(12) << "Bonuses:" << setw(0);
-        StatusItem(e->bonuses & 1, "Cloaking Device", 1);
-        StatusItem(e->bonuses & 2, "Long Range Scanner", 1);
-        StatusItem(e->bonuses & 4, "Genetically Engineered Food", 1);
-        StatusItem(e->bonuses & 8, "Planetary Shield", 1);
-        StatusItem(e->bonuses & 0x10, "Accura Weapons", 1);
-        StatusItem(e->bonuses & 0x20, "Enhanced Spying", 1);
+        StatusItem(e->bonuses & B_CLOAKING, "Cloaking Device", 1);
+        StatusItem(e->bonuses & B_SCANNER, "Long Range Scanner", 1);
+        StatusItem(e->bonuses & B_GENEFOOD, "Genetically Engineered Food", 1);
+        StatusItem(e->bonuses & B_SHIELD, "Planetary Shield", 1);
+        StatusItem(e->bonuses & B_ACCURA, "Accura Weapons", 1);
+        StatusItem(e->bonuses & B_SPYING, "Enhanced Spying", 1);
         kout << '\n';
     }
     if (full) {
@@ -446,10 +446,10 @@ void ShowStatus(Empire *e)
 // 48cc:2420
 void NextPhase(Empire *e)
 {
-    if (e->phase < 0x15) {
+    if (e->phase < PH_CONTINUE) {
         e->phase++;
     } else {
-        e->phase = 0;
+        e->phase = PH_START;
         e->turnsused++;
         e->year++;
     }
@@ -461,7 +461,7 @@ void PrevPhase(Empire *e)
     if (e->phase >= 0) {
         e->phase--;
     } else {
-        e->phase = 0x15;
+        e->phase = PH_CONTINUE;
         e->turnsused--;
         e->year--;
     }
@@ -559,15 +559,15 @@ void SetTreaty(Treaty &t, int16 type, uint8 days)
     t.days = days;
     t.setsoldierpct(0);
     t.setcruiserpct(0);
-    if (t.type() == 3) {
+    if (t.type() == TT_MINORALLIANCE) {
         t.setsoldierpct(0x14);
         t.setcruiserpct(0x14);
     }
-    if (t.type() == 4)
+    if (t.type() == TT_ARMEDDEFENSE)
         t.setsoldierpct(0x3c);
-    if (t.type() == 5)
+    if (t.type() == TT_CRUISERPROTECTION)
         t.setcruiserpct(0x3c);
-    if (t.type() == 6) {
+    if (t.type() == TT_TOTALDEFENSE) {
         t.setsoldierpct(0x28);
         t.setcruiserpct(0x28);
     }

@@ -197,7 +197,7 @@ static int RealMain()
     LoadTranslation();
     MainMenu();
     ScoreFiles();
-    if (g_system.regstate != 0) {
+    if (g_system.regstate != RS_UNREGISTERED) {
         if (Random(3) == 0) {
             PutUntranslated(kout, String("\nThis game is registered to ")) << Color(14);
             PutUntranslated(kout, String(g_system.regto)) << c_normal << '\n';

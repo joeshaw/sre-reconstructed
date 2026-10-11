@@ -249,7 +249,7 @@ void Maintenance(Galaxy *g)
         }
         StatusEnd(msg);
     }
-    if (g_today - Midnight(g->created) < 86400 * (int32)g->grantdays) {
+    if (g_today - Midnight(g->created) < 86400 * (int32)g->daylength) {
         GalaxyClose();
         return;
     }
@@ -401,8 +401,8 @@ void Maintenance(Galaxy *g)
                     Empire *o = &g_empires[i];
                     uint8 days = e->treaty[i].days;
                     lost = 1;
-                    SetTreaty(o->treaty[e->id], 1, days);
-                    SetTreaty(e->treaty[o->id], 1, days);
+                    SetTreaty(o->treaty[e->id], TT_NEUTRALITY, days);
+                    SetTreaty(e->treaty[o->id], TT_NEUTRALITY, days);
                 }
             }
         }
@@ -413,7 +413,7 @@ void Maintenance(Galaxy *g)
         }
     }
     StatusEnd(msg);
-    if (g_system.regstate != 0) {
+    if (g_system.regstate != RS_UNREGISTERED) {
         if (g->interest < 3) {
             g->interest += 2;
             g_log2 << "Interest rates go up to " << g->interest

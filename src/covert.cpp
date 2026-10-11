@@ -30,31 +30,33 @@ static int16 Alive(Empire *e)
 // 409c:0000: the odds of a covert operation.
 static const char *Chance(Empire *me, Empire *t)
 {
-    int32 a = me->agents * (TotalPlanets(t) + 300);
-    int32 b = t->agents * (TotalPlanets(me) + 300);
-    int32 a0 = a;
-    a += b / 5;
-    b += a0 / 5;
-    while (a > 1 && b > 1) {
-        a >>= 1;
-        b >>= 1;
+    int32 ours = me->agents * (TotalPlanets(t) + 300);
+    int32 theirs = t->agents * (TotalPlanets(me) + 300);
+    int32 ours0 = ours;
+    ours += theirs / 5;
+    theirs += ours0 / 5;
+    // Halve both until one is down to 1: what is left of the other is the
+    // ratio of the two, in powers of two.
+    while (ours > 1 && theirs > 1) {
+        ours >>= 1;
+        theirs >>= 1;
     }
-    if (a == b)
+    if (ours == theirs)
         return "FAIR";
-    if (a <= 1) {
-        if (b > 15)
+    if (ours <= 1) {
+        if (theirs > 15)
             return "NONEXISTENT";
-        if (b > 7)
+        if (theirs > 7)
             return "VERY SLIM";
-        if (b > 3)
+        if (theirs > 3)
             return "SLIM";
         return "UNFAVORABLE";
     }
-    if (a > 15)
+    if (ours > 15)
         return "ALMOST CERTAIN";
-    if (a > 7)
+    if (ours > 7)
         return "FAIRLY GOOD";
-    if (a > 3)
+    if (ours > 3)
         return "GOOD";
     return "FAVORABLE";
 }
@@ -64,31 +66,33 @@ int16 SpySucceeds(Empire *me, Empire *t)
 {
     if (me == t)
         return 1;
-    int32 a = me->agents * (TotalPlanets(t) + 300);
-    int32 b = t->agents * (TotalPlanets(me) + 300);
-    int32 a0 = a;
-    a += b / 5;
-    b += a0 / 5;
-    while (a > 32000 || b > 32000) {
-        a /= 2;
-        b /= 2;
+    // Each side's strength: its agents, against the size of the other.
+    int32 ours = me->agents * (TotalPlanets(t) + 300);
+    int32 theirs = t->agents * (TotalPlanets(me) + 300);
+    int32 ours0 = ours;
+    ours += theirs / 5;
+    theirs += ours0 / 5;
+    while (ours > 32000 || theirs > 32000) {
+        ours /= 2;
+        theirs /= 2;
     }
-    uint16 ea = (uint16)a, eb = (uint16)b;
-    if (ea == 0)
+    uint16 us = (uint16)ours, them = (uint16)theirs;
+    if (us == 0)
         return 0;
-    if (eb == 0)
+    if (them == 0)
         return 1;
-    uint16 x = (uint16)(ea + (uint16)(((int32)(int16)eb * b_rand()) / 0x8000));
-    uint16 y = (uint16)(eb + (uint16)(((int32)(int16)ea * b_rand()) / 0x8000));
-    return x > y;
+    // Each side adds a random part of the other's strength.
+    uint16 ourroll = (uint16)(us + (uint16)(((int32)(int16)them * b_rand()) / 0x8000));
+    uint16 theirroll = (uint16)(them + (uint16)(((int32)(int16)us * b_rand()) / 0x8000));
+    return ourroll > theirroll;
 }
 
 // 409c:0508: a covert operation ends the treaties between two empires.
 static void BreakTreaties(Empire *me, Empire *t)
 {
-    SetTreaty(me->treaty[t->id], 0, 0);
+    SetTreaty(me->treaty[t->id], TT_NONE, 0);
     me->treaty[t->id].setstatus(TS_NONE);
-    SetTreaty(t->treaty[me->id], 0, 0);
+    SetTreaty(t->treaty[me->id], TT_NONE, 0);
     t->treaty[me->id].setstatus(TS_NONE);
 }
 
@@ -104,7 +108,7 @@ static int16 ChooseTarget(Player *p, Empire *me, int16 op)
     if (op != OP_SPY && op != OP_INFILTRATION) {
         for (int16 i = 0; i < MAXEMPIRES; i++) {
             Treaty t = me->treaty[i];
-            if ((t.type() != 0 && t.days > 0) || t.type() == 1)
+            if ((t.type() != TT_NONE && t.days > 0) || t.type() == TT_NEUTRALITY)
                 MaskClear(&allowed, i);
         }
     }

@@ -54,7 +54,7 @@ void Lottery(Player *pl, Empire *e, Galaxy *g)
     }
     if (e->money.get() < 2000)
         return;
-    if (g_system.regstate == 0 && !r_unregistered.Bool())
+    if (g_system.regstate == RS_UNREGISTERED && !r_unregistered.Bool())
         return;
     kout << Color(14) << "\nPick-5 Lottery\n" << c_normal;
     kout << "Would you like to buy a lottery ticket for " << c_number << (int16)2000 << c_normal;
@@ -124,6 +124,6 @@ void Lottery(Player *pl, Empire *e, Galaxy *g)
             kout << "\nYou didn't win this time.  Better luck next time!\n\n";
         }
     }
-    if (g_system.regstate != 0 && YesNo(1, "Would you like to buy Super Daily Lottery Tickets"))
+    if (g_system.regstate != RS_UNREGISTERED && YesNo(1, "Would you like to buy Super Daily Lottery Tickets"))
         BuyTickets(pl, e, g);
 }

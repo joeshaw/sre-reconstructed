@@ -37,23 +37,23 @@ void ResetGalaxy(Galaxy *g)
     ShowHelpTopic("reset-inflation");
     g->inflation = YesNo(1, "Do you want Inflation");
     ShowHelpTopic("reset-maintenance-interval");
-    g->grantdays = AskNumber("How many days before maintenance runs", 1, 14, 1);
-    if (g_system.regstate >= 2) {
+    g->daylength = AskNumber("How many days before maintenance runs", 1, 14, 1);
+    if (g_system.regstate >= RS_REGISTERED) {
         g->grantturns = AskNumber("How many turns should be allowed per maintenance interval", 1,
                                   12, 5);
         g->protection = AskNumber("How many turns of protection", 0, 30, 20);
     }
-    if (g_system.regstate >= 2) {
+    if (g_system.regstate >= RS_REGISTERED) {
         ShowHelpTopic("reset-galactic-coordinator-taxes");
         g->coordtax = AskNumber("What is the galactic tax rate [per 1000 credits]", 0, 100, 15);
     }
-    if (g_system.regstate >= 2) {
+    if (g_system.regstate >= RS_REGISTERED) {
         ShowHelpTopic("reset-planet-market");
         g->marketplanets = AskNumber("How many planets are initially available", 0, 25000, 100);
     }
     ShowHelpTopic("reset-planet-limit");
     g->planetsperturn = AskNumber("How many planets per turn can be bought", -1, 25000, -1);
-    if (g_system.regstate >= 2) {
+    if (g_system.regstate >= RS_REGISTERED) {
         ShowHelpTopic("reset-planet-regeneration");
         g->regenseconds = AskNumber("How many seconds", 1, 32000, 60);
     }
@@ -108,7 +108,7 @@ void DeleteEmpire(Empire *e)
         MaskClear(&o->bombmask, e->id);
         MaskClear(&o->hostagemask, e->id);
         MaskClear(&o->setupmask, e->id);
-        SetTreaty(o->treaty[e->id], 0, 0);
+        SetTreaty(o->treaty[e->id], TT_NONE, 0);
         o->treaty[e->id].setstatus(TS_NONE);
         o->intercepts[e->id] = 0;
     }

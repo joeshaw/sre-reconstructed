@@ -24,12 +24,18 @@ struct Money {
 int16 MoneyOverflow(int32 a, int32 b);
 
 // A diplomatic relation with another empire (4 bytes of bit fields).
+// Treaty types (Treaty::type()).
+enum {
+    TT_NONE, TT_NEUTRALITY, TT_FREETRADE, TT_MINORALLIANCE, TT_ARMEDDEFENSE,
+    TT_CRUISERPROTECTION, TT_TOTALDEFENSE, TT_CUSTOM
+};
+
 // The status of a proposal (or of a break) sent by the other empire.
 enum { TS_NONE, TS_PROPOSED, TS_REJECTED, TS_ACCEPTED, TS_BROKEN };
 
 struct Treaty {
     uint8 days;         // bits 0-7: days left, 0 = no limit
-    uint8 lo;           // bits 8-15: type (low 5 bits) ...
+    uint8 lo;           // bits 8-15: type (TT_*, low 5 bits) ...
     uint16 hi;          // bits 16-31
     int16 type() const { return lo & 0x1f; }
     void settype(int16 t) { lo = (uint8)((lo & 0xe0) | (t & 0x1f)); }
@@ -104,8 +110,8 @@ struct Empire {
     int16 w1ae;                 // 1ae (unused)
     int32 favor;                // 1b0 of the Galactic Coordinator
     int32 efficiency;           // 1b4 profit per planet
-    int16 flags;                // 1b8
-    int16 phase;                // 1ba turn phase
+    int16 localplay;            // 1b8 unlimited turns (Galaxy::localonly)
+    int16 phase;                // 1ba of the turn in progress, PH_*
     Money income;               // 1bc last turn's, in thousands
     Money m1c0;                 // 1c0 (unused)
     uint8 shortfalls;           // 1c4 SF_* this turn
@@ -115,7 +121,7 @@ struct Empire {
     int32 neglected[10];        // 1c7 planets of each type left unmaintained
     uint8 u_1ef[0x34];          // 1ef
     int32 starving;             // 223 people not fed
-    uint16 weapons;             // 227 bits: 1 nuclear, 2 chemical, 4 psionic, 8 mothership
+    uint16 weapons;             // 227 W_*
     int16 attacks;              // 229 made today
     int32 agents;               // 22b covert agents
     // 22f: the empires each covert operation was done to (masks); see OpMask
@@ -145,8 +151,8 @@ struct Empire {
     int8 intercepts[25];        // 2d3 our messages each empire's spies will intercept
     int32 lastnews;             // 2ec when the news was last read
     int32 lightcruisers;        // 2f0
-    int32 troubles;             // 2f4
-    int32 bonuses;              // 2f8
+    int32 troubles;             // 2f4 TR_* (shown, but never set)
+    int32 bonuses;              // 2f8 B_* (shown, but never set)
 };
 
 // 14f6:000f: integrity check of a record (also its encryption key).
@@ -169,7 +175,7 @@ struct Galaxy {
     Checksum empire[25];        // 054
     Checksum pirate[9];         // 2ac
     int16 inflation;            // 384 prices grow with the empire
-    int16 localonly;            // 386 OR-ed into every empire's flags
+    int16 localonly;            // 386 OR-ed into every empire's localplay
     int32 marketfood;           // 388 megatons for sale
     int16 regenseconds;         // 38c a planet comes back every n seconds
     int32 planetsperturn;       // 38e that can be bought, -1 = no limit
@@ -177,7 +183,7 @@ struct Galaxy {
     int16 solarmaster;          // 396
     int16 planetmaster;         // 398
     int16 weaponsmaster;        // 39a
-    int16 grantdays;            // 39c turns are granted every n days
+    int16 daylength;            // 39c a game "day" (maintenance interval) in days
     int16 grantturns;           // 39e turns granted
     int16 protection;           // 3a0 turns of protection
     int16 w3a2;                 // 3a2 (unused)
@@ -203,7 +209,7 @@ struct System {
     char bank[0x50];            // 0d0 name of the bank
     int32 created;              // 120
     int32 inuse;                // 124 since when the game is in use, 0 = not
-    int16 regstate;             // 128 0..5
+    int16 regstate;             // 128 RS_* (0..5 valid)
     Checksum galaxy;            // 12a
 };
 
@@ -265,7 +271,7 @@ CHECK_OFFSET(Empire, treaty, 0xec);
 CHECK_OFFSET(Empire, soldiers, 0x154);
 CHECK_OFFSET(Empire, money, 0x17c);
 CHECK_OFFSET(Empire, taxrate, 0x1aa);
-CHECK_OFFSET(Empire, flags, 0x1b8);
+CHECK_OFFSET(Empire, localplay, 0x1b8);
 CHECK_OFFSET(Empire, neglected, 0x1c7);
 CHECK_OFFSET(Empire, starving, 0x223);
 CHECK_OFFSET(Empire, weapons, 0x227);
@@ -309,6 +315,28 @@ extern int32 g_today;           // DS:bbb9 midnight today
 extern Empire *g_current;       // DS:2b54
 extern int16 g_open;            // DS:3ee6 galaxy open count
 
+// Empire::phase: the steps of a turn, in order (see Phase in play.cpp).
+enum {
+    PH_START, PH_INTEREST, PH_REPORTS, PH_TURNREPORT, PH_ADVISOR, PH_STATUS, PH_UPKEEP, PH_FOOD,
+    PH_TURNOPS, PH_COVERT, PH_BANK, PH_SPENDING, PH_DOUBLEAGENTS, PH_UNUSED13, PH_ACTION,
+    PH_UNUSED15, PH_ENDTURN, PH_POPULATION, PH_SCORE, PH_CIVILWAR, PH_PLANETS, PH_CONTINUE
+};
+// Empire::weapons
+enum { W_NUCLEAR = 1, W_CHEMICAL = 2, W_PSIONIC = 4, W_MOTHERSHIP = 8 };
+// Empire::troubles
+enum {
+    TR_PLAGUE = 0x01, TR_FAMINE = 0x02, TR_SPACESTORMS = 0x04, TR_DUSTCLOUD = 0x08,
+    TR_GASCLOUD = 0x10, TR_BANKFAILURE = 0x20
+};
+// Empire::bonuses
+enum {
+    B_CLOAKING = 0x01, B_SCANNER = 0x02, B_GENEFOOD = 0x04, B_SHIELD = 0x08,
+    B_ACCURA = 0x10, B_SPYING = 0x20
+};
+
+// System::regstate
+enum { RS_UNREGISTERED = 0, RS_REGISTERED = 2, RS_BETA = 4 };
+
 // Player::prefs1 (bits 0 and 1 are never used)
 enum {
     PF1_SHORTMENUS = 0x04,  // don't redisplay the spending and planet menus
@@ -332,6 +360,8 @@ inline void SetPref(uint8 &prefs, uint8 f, int16 on) { prefs = (uint8)((prefs & 
 // Empire::shortfalls
 // (SF_UNUSED is tested but never set.)
 enum { SF_NEGLECT = 1, SF_STARVED = 2, SF_UNUSED = 4, SF_ARMY = 8 };
+
+inline int16 HasWeapon(const Empire *e, uint16 w) { return (e->weapons & w) != 0; }
 
 inline bool Exists(const Empire &e) { return e.name[0] != 0; }
 

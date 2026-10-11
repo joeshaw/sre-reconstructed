@@ -102,8 +102,8 @@ static void GalaxyInfo(Galaxy *g)
 {
     kout << c_normal << "\nThis is " << Color(15) << g->name << c_normal << ".\n";
     kout << "There are " << c_number << g->grantturns << c_normal << " turns per day.\n";
-    if (g->grantdays > 1)
-        kout << "Each \"day\" (maintenance interval) lasts for " << c_number << g->grantdays
+    if (g->daylength > 1)
+        kout << "Each \"day\" (maintenance interval) lasts for " << c_number << g->daylength
              << c_normal << " real days.\n";
     kout << "Each empire receives " << c_number << g->protection << c_normal
          << " turns of protection.\n";
@@ -349,7 +349,7 @@ static void JoinGame(Galaxy *g)
         }
         EmpireSetName(e, String(name));
     }
-    e->flags = g->localonly;
+    e->localplay = g->localonly;
     e->player = p.index;
     kout << "You are:  " << String(p.male ? "Emperor" : "Emperess") << Color(14) << ' '
          << Untr(p.name) << c_normal;

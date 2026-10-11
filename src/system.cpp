@@ -41,7 +41,7 @@ void SystemInit()
         g_system.bbs[i] = 0;
         g_system.sysop[i] = 0;
     }
-    g_system.regstate = 0;
+    g_system.regstate = RS_UNREGISTERED;
 }
 
 // 6c38:0188
@@ -131,7 +131,7 @@ int16 SystemLoadData()
                     g_errlog << TimeStr(g_now) << ": Resetting EMPIRE " << i << "!\n";
                 }
             }
-            g_empires[i].flags |= g_galaxy.localonly;
+            g_empires[i].localplay |= g_galaxy.localonly;
         }
     } else {
         for (int16 i = 0; i < MAXEMPIRES; i++)

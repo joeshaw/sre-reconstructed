@@ -22,12 +22,15 @@ struct Goods {
     int32 food;         // 18
     int32 agents;       // 1c
 };
+// TradeData::state
+enum { FS_DONE, FS_SENT, FS_ACCEPTED, FS_REJECTED, FS_RETURNING };
+
 struct TradeData {
     int32 created;      // 00
     int32 expires;      // 04
     int16 to;           // 08
     int16 from;         // 0a
-    int16 state;        // 0c 0 done, 1 sent, 2 accepted, 3 rejected, 4 returning
+    int16 state;        // 0c FS_*
     Goods offer;        // 0e
     Goods demand;       // 2e
     int32 carriers;     // 4e carriers carrying the fleet
@@ -108,7 +111,7 @@ static void TradeInit(TradeData *t)
     t->carriers = 0;
     t->to = -1;
     t->from = -1;
-    t->state = 0;
+    t->state = FS_DONE;
     t->created = g_now;
     t->expires = t->created + 86400 * r_tradeexpire.Long();
 }
@@ -130,7 +133,7 @@ public:
     const char *ClassName() { return TRADE_CLASS; }         // 6e3f:0058
     int16 Size() { return 0x56; }                           // 6e3f:0066
     uint8 *Data() { return (uint8 *)&d; }
-    int16 Expired() { return d.state == 0; }                // 6e3f:0070
+    int16 Expired() { return d.state == FS_DONE; }                // 6e3f:0070
     void OnEmpireDeleted(int16 id);                         // 6e3f:0088
 };
 
@@ -143,18 +146,18 @@ static struct TradeReg {
 // 6e3f:0088: a fleet to a deleted empire turns back; one from it is lost.
 void TradingFleet::OnEmpireDeleted(int16 id)
 {
-    if (d.to == id && d.state == 1) {
+    if (d.to == id && d.state == FS_SENT) {
         d.to = d.from;
         d.from = id;
-        d.state = 4;
+        d.state = FS_RETURNING;
         if (d.to != -1 && !Exists(g_empires[d.to]))
-            d.state = 0;
+            d.state = FS_DONE;
     }
     if (d.from == id) {
-        if (d.state == 1)
-            d.state = 0;
-        else if (d.state != 0 && d.to != -1 && Exists(g_empires[d.to]))
-            d.state = 4;
+        if (d.state == FS_SENT)
+            d.state = FS_DONE;
+        else if (d.state != FS_DONE && d.to != -1 && Exists(g_empires[d.to]))
+            d.state = FS_RETURNING;
     }
 }
 
@@ -264,7 +267,7 @@ static int16 ChoosePartner(Empire *e)
     int32 allowed = EmpireMask() & ~ProtectedMask();
     for (int16 i = 0; i < 25; i++) {
         // (The original tests the trading empire itself, not empire i.)
-        if (e->treaty[i].type() == 0 || !Exists(*e) || TotalPlanets(e) <= 0 ||
+        if (e->treaty[i].type() == TT_NONE || !Exists(*e) || TotalPlanets(e) <= 0 ||
             e->population <= 0)
             MaskClear(&allowed, i);
     }
@@ -291,7 +294,7 @@ static int16 SendTrade(Empire *e)
     e->tradegoods += GoodsValue(&t.offer);
     t.to = to;
     t.from = e->id;
-    t.state = 1;
+    t.state = FS_SENT;
     TradingFleet fleet;
     fleet.d = t;
     fleet.d.hasmsg = 0;
@@ -332,9 +335,9 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
     if (!r_trading.Bool())
         return 0;
     switch (t->state) {
-    case 0:
+    case FS_DONE:
         return 0;
-    case 1: {
+    case FS_SENT: {
         Empire *o = &g_empires[t->from];
         kout << c_empire << Untr(o->name) << c_normal << " has sent a trading deal:\n";
         kout << "In return for ";
@@ -348,7 +351,7 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
             GoodsList(&t->demand, &l);
             kout << l << ".\n";
         }
-        t->state = 3;
+        t->state = FS_REJECTED;
         char c;
         if (e->year < 0) {
             kout << "However, since you are in protection, you cannot trade with other empires.\n";
@@ -369,10 +372,10 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
                 c = 'N';
             }
             kout << c_normal << '\n';
-        } else if (e->treaty[t->from].type() == 0) {
+        } else if (e->treaty[t->from].type() == TT_NONE) {
             kout << "However, you no longer have any relations with that empire.\n";
             c = 'N';
-            t->state = 4;
+            t->state = FS_RETURNING;
         } else {
             kout << "Accept this deal?  ";
             Key('Y');
@@ -395,7 +398,7 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
             return 1;
         }
         if (c == 'I') {
-            t->state = 1;
+            t->state = FS_SENT;
             t->created += 2;
             return 1;
         }
@@ -409,12 +412,12 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
             e->bank.add(e->money.get());
             e->money.set(0);
         }
-        t->state = 2;
+        t->state = FS_ACCEPTED;
         t->to = t->from;
         t->from = e->id;
         return 1;
     }
-    case 2: {
+    case FS_ACCEPTED: {
         // The fleet returns with what was demanded.
         Empire *o = &g_empires[t->from];
         if (Exists(*o))
@@ -433,11 +436,11 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         o->tradegoods -= GoodsValue(&t->demand);
         return 0;
     }
-    case 3:
-    case 4: {
+    case FS_REJECTED:
+    case FS_RETURNING: {
         // The offer comes back.
         Empire *o = &g_empires[t->from];
-        if (Exists(*o) && t->state == 3)
+        if (Exists(*o) && t->state == FS_REJECTED)
             kout << c_number << Untr(o->name) << c_normal << " rejected your trade agreement.\n";
         else
             kout << "A trading fleet was not able to continue, and has returned.\n";
