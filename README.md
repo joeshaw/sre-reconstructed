@@ -147,6 +147,69 @@ disassembly, a pseudo-C lifter, data file decoding and editing).
 callees, from Ghidra) and the names `tools/disasm.py` and `tools/lift.py`
 give them (`names.txt`; `globals.txt` is for data addresses).
 
+## How it was made
+
+The reconstruction was done by Claude, in Claude Code, directed by Joe
+Shaw.  It began with this prompt, in an empty repository:
+
+> solar realms elite was a bbs door from the 90s. the source code was lost
+> in 1996.
+>
+> i want you to reverse engineer the last release (available at
+> https://www.johndaileysoftware.com/download/?method=2&terms=1) from the
+> binary and produce source code we can compile on a modern mac. it is not
+> necessary to reconstruct the BBS/fossil parts, but the gameplay and text
+> user interface need to be reconstructed perfectly from the original.
+>
+> Additional info from the original author can be found on
+> http://www-cs-students.stanford.edu/~amitp/Articles/SRE-Design.html and
+> other pages on his site.
+>
+> Use this repository to build it
+
+(That download link no longer serves the zip; `tests/fixtures.sh` has
+one that does.)
+
+The approach:
+
+1. **Taking the binary apart.**  `SRE.EXE` is a Borland C++ 3.1
+   large-model program whose code is mostly in VROOMM overlays.
+   `tools/deoverlay.py` turns it into a plain executable with every
+   segment in place, so that it can be disassembled as a whole: Ghidra
+   (headless) for the function list and call graph (`tools/re/`),
+   `tools/disasm.py` (on [Capstone](https://www.capstone-engine.org/))
+   for listings annotated with names, strings and the virtual tables
+   `tools/vtables.py` finds, and `tools/lift.py`, a pseudo-C lifter for
+   Borland's code, for reading them.  The names in `tools/re/names.txt`
+   were given as functions were understood.
+2. **Running the original.**  `tools/dosemu.py` is just enough of DOS,
+   the BIOS and a FOSSIL driver, on
+   [Unicorn](https://www.unicorn-engine.org/), to run `SRE.EXE` with
+   scripted input on its serial line or keyboard, a frozen clock, and its
+   output, screen and files captured.  This made the original the
+   specification: any question about its behaviour could be answered by
+   running it.
+3. **Writing the source.**  The game was reconstructed one part of the
+   original at a time, in C++ with the original's structure: one file
+   per code segment, the original's classes (streams, menus, the
+   streamable objects in the data files), and each function's address in
+   a comment.  The Borland runtime's behaviour that the game depends on
+   is reproduced exactly: its random number generator, its date and time
+   conversions, its `ctype` table and text-mode file reads, and 16-bit
+   integer arithmetic throughout.
+4. **Checking it.**  Every part was compared with the original, byte for
+   byte, by running both on copies of the same game with the same input:
+   the output, the game's files (decrypted), and the random number
+   sequence (through the encryption salts it produces).  The scenarios
+   in `tests/scenarios.txt` go through the menus and features; random play
+   (`tests/fuzz.sh`, and `tests/fuzzchain.sh` for several players over
+   several days) found what they missed.  Thousands of random games play
+   out identically.
+5. **Naming.**  Names first came from the disassembly (fields named by
+   their offsets in the records, such as `d188`); once everything worked,
+   each was renamed from how the game uses it (`pollution`), with the
+   tests confirming nothing changed.
+
 ## Credits
 
 Solar Realms Elite was written by Amit Patel.  His notes on its design
