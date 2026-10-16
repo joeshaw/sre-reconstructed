@@ -120,7 +120,7 @@ pub fn show_file_base(g: &mut Sre, base: &[u8], paged: bool) -> bool {
     display_file(g, &msg, 0) || display_file(g, &txt, 0)
 }
 
-// 43e0:0aa1: look for a screen in the flavour directory, then in dir
+// 43e0:0aa1: look for a screen in the flavor directory, then in dir
 // (default "Screens/").
 pub fn show_screen(g: &mut Sre, dir: Option<&[u8]>, name: &[u8], paged: bool) -> bool {
     let dir = dir.unwrap_or(b"Screens/");
@@ -209,7 +209,7 @@ pub fn yes_no(g: &mut Sre, def: i16, question: &[u8]) -> bool {
     yes
 }
 
-// 43e0:0f44: a line of n box characters in colour c.
+// 43e0:0f44: a line of n box characters in color c.
 pub fn hline(g: &mut Sre, c: Color, n: i16) {
     kout!(g; c);
     let s = vec![0xc4u8; n.max(0) as usize];
@@ -226,7 +226,7 @@ fn hex_digit(c: u8) -> i16 {
     }
 }
 
-// 7389:063a: write a line with "^\BF" colour codes.
+// 7389:063a: write a line with "^\BF" color codes.
 pub fn put_coded(g: &mut Sre, s: &[u8], o: Sid) {
     let mut start: i16 = 0;
     let len = s.len() as i16;

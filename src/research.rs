@@ -171,7 +171,7 @@ impl Development {
         }
     }
 
-    // 6db3:077f: the text, with "^\BF" colour codes.
+    // 6db3:077f: the text, with "^\BF" color codes.
     pub fn show(&self, g: &mut Sre) {
         let hex = |c: u8| -> i16 {
             if (c as i8) > b'@' as i8 {

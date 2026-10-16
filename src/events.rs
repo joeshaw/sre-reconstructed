@@ -28,7 +28,7 @@ pub enum EvKind {
 #[derive(Clone)]
 pub struct Event {
     pub kind: EvKind,
-    pub empire: i16,  // 02 owner, -1 when cancelled
+    pub empire: i16,  // 02 owner, -1 when canceled
     pub created: i32, // 04
     pub expires: i32, // 08
     pub due: i32,     // 0c

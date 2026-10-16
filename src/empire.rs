@@ -510,7 +510,7 @@ pub fn bank_interest(g: &mut Sre, e: usize) {
     }
 }
 
-// 14f6:02a6: move b a step towards a.
+// 14f6:02a6: move b a step toward a.
 pub fn move_toward(p: &mut PlanetSet) {
     let diff = if p.target >= 0 { p.target - p.output } else { 0 };
     if diff >= 30 || diff <= -30 {

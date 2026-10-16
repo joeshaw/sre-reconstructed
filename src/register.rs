@@ -124,7 +124,7 @@ pub fn check_registration(g: &mut Sre) {
     g.system.regstate = RS_REGISTERED;
 }
 
-// 68a3:039f: read a registration line, colouring as it is typed.
+// 68a3:039f: read a registration line, coloring as it is typed.
 fn read_key_line(g: &mut Sre) -> Str {
     let mut buf = Str::new();
     loop {

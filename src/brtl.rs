@@ -1,4 +1,4 @@
-// Borland C++ 3.1 runtime behaviour the game depends on.
+// Borland C++ 3.1 runtime behavior the game depends on.
 
 use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, Ordering};
 use std::sync::OnceLock;
@@ -221,7 +221,7 @@ fn is_dst(year: u16, mut month: u16, mut yday: u16, hour: u8) -> bool {
     if (year.wrapping_add(0x7b2) & 3) != 0 {
         change = change.wrapping_sub(1);
     }
-    // Back to a Sunday: 1 January 1970 was a Thursday.
+    // Back to a Sunday: January 1, 1970 was a Thursday.
     let days = ((year.wrapping_add(1) as i16 >> 2) as u16).wrapping_add(change);
     let epochday = 0x16du16.wrapping_mul(year).wrapping_add(days).wrapping_add(4);
     change = change.wrapping_sub(epochday % 7);

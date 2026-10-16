@@ -302,7 +302,7 @@ fn score_files(g: &mut Sre) {
 fn main() {
     use std::os::unix::ffi::OsStringExt;
     let argv: Vec<Vec<u8>> = std::env::args_os().map(|a| a.into_vec()).collect();
-    // Static initialisation: the door's start time (play.rs) is taken
+    // Static initialization: the door's start time (play.rs) is taken
     // before anything else, from the host's clock.
     let start = b_time();
     if let Some(dir) = std::env::var_os("SRE_DIR") {

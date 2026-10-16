@@ -10,7 +10,7 @@ use crate::stream::*;
 use crate::timeutil::TimeState;
 use crate::translate::TransState;
 
-// Colours that the game keeps in variables.
+// Colors that the game keeps in variables.
 pub struct Colors {
     pub number: Color,  // 677e Output.Number.Color
     pub bracket: Color, // 6786 Output.Bracket.Color
