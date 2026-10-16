@@ -160,7 +160,7 @@ static int16 isDST(uint16 year, uint16 month, uint16 yday, uint8 hour)
         change = YDAYS(month);
     if (((year + 0x7b2) & 3) != 0)
         change--;
-    // Back to a Sunday: 1 January 1970 was a Thursday.
+    // Back to a Sunday: January 1, 1970 was a Thursday.
     uint16 days = (uint16)(((int16)(year + 1) >> 2) + change);
     uint16 epochday = (uint16)(0x16d * year + days + 4);
     change -= epochday % 7;
