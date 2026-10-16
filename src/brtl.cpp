@@ -278,10 +278,11 @@ static void wallclock(struct tm *out)
             t += (time_t)(b_millis() / 1000);
         gmtime_r(&t, out);
     } else {
-        // The original only accepts dates from 1980 to November 1999
-        // (6c38:0261), so the host's date is moved back by
-        // SRE_DATE_SHIFT years: 28 by default, which keeps the calendar
-        // (weekdays and leap years) the same and works through 2027.
+        // The original only accepts dates from December 25, 1979 to
+        // December 11, 1999 (SystemValid), so the host's date is moved
+        // back by SRE_DATE_SHIFT years: 28 by default, which keeps the
+        // calendar (weekdays and leap years) the same and works until
+        // December 11, 2027.
         static int shift = -1;
         if (shift == -1) {
             const char *e = getenv("SRE_DATE_SHIFT");

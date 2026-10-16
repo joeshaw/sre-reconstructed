@@ -20,8 +20,9 @@ mkdir -p DATA NEWS BACKUP
 ROWS=$(tput lines 2> /dev/null || echo 25)
 printf '%s\r\n1\r\n1\r\n%s\r\n38400\r\n1\r\n60\r\n%s\r\n' "$NAME" "$ROWS" "$NAME" > DOORFILE.SR
 
+SRE=$HERE/sre
 cat <<MSG
 Game set up in $DIR for $NAME.
-First reset the game (as the sysop):   cd $DIR && sre reset
-Then play:                             cd $DIR && sre
+First reset the game (as the sysop):   SRE_DIR=$DIR $SRE reset
+Then play:                             SRE_DIR=$DIR $SRE
 MSG

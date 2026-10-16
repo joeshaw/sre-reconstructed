@@ -3,3 +3,4 @@ build/
 /sre
 __pycache__/
 server/sre-server
+.venv/
