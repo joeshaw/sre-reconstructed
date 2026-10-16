@@ -209,8 +209,10 @@ The approach:
    `tools/disasm.py` (on [Capstone](https://www.capstone-engine.org/))
    for listings annotated with names, strings and the virtual tables
    `tools/vtables.py` finds, and `tools/lift.py`, a pseudo-C lifter for
-   Borland's code, for reading them.  The names in `tools/re/names.txt`
-   were given as functions were understood.
+   Borland's code, for reading them.  `tools/re/names.txt` names about
+   120 of the original's functions, the ones identified first (the
+   Borland runtime, streams, files, resources and strings), so that the
+   listings show calls to them by name rather than by address.
 2. **Running the original.**  `tools/dosemu.py` is just enough of DOS,
    the BIOS and a FOSSIL driver, on
    [Unicorn](https://www.unicorn-engine.org/), to run `SRE.EXE` with
