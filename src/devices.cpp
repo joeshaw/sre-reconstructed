@@ -9,6 +9,7 @@
 #include <termios.h>
 #include <poll.h>
 #include <errno.h>
+#include <signal.h>
 
 int16 g_timeout = 60;
 int16 g_lastremote = 0;
@@ -54,9 +55,22 @@ void TermRestore()
     }
 }
 
+// A hangup (SIGHUP, as when a server closes the terminal) is the end of
+// the input, as a dropped carrier was: the game saves and exits.
+static volatile sig_atomic_t g_hangup = 0;
+
+static void OnHangup(int)
+{
+    g_hangup = 1;
+}
+
 void TermInit()
 {
     atexit(TermFlush);
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = OnHangup;      // no SA_RESTART: a waiting read returns
+    sigaction(SIGHUP, &sa, 0);
     if (isatty(0) && tcgetattr(0, &g_saved) == 0) {
         struct termios t = g_saved;
         t.c_iflag &= ~(ICRNL | INLCR | IXON | ISTRIP);
@@ -174,7 +188,7 @@ void TermWriteGlyphs(const char *s, int n)
 // 1 if a character (or end of input) is waiting.
 int TermReady()
 {
-    if (g_peek != -2)
+    if (g_peek != -2 || g_hangup)
         return 1;
     TermFlush();
     struct pollfd p;
@@ -196,6 +210,8 @@ int TermGetc()
     TermFlush();
     unsigned char c;
     for (;;) {
+        if (g_hangup)
+            return -1;
         ssize_t r = read(0, &c, 1);
         if (r == 1)
             return c;

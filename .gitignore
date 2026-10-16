@@ -2,3 +2,4 @@ build/
 *.o
 /sre
 __pycache__/
+server/sre-server

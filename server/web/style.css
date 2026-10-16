@@ -1,0 +1,80 @@
+/* SRE on the web: a BBS's ANSI screen, made to be read.  The colours are
+   the PC's sixteen, with the darkest two lifted for contrast. */
+:root {
+  --black: #000;
+  --blue: #3a4fd8;        /* VGA #0000aa, lifted */
+  --green: #00aa00;
+  --cyan: #00aaaa;
+  --red: #aa0000;
+  --brown: #aa5500;
+  --gray: #aaaaaa;
+  --dark-gray: #6e6e6e;   /* VGA #555555, lifted */
+  --light-blue: #5f7bff;
+  --light-cyan: #55ffff;
+  --light-red: #ff5555;
+  --yellow: #ffff55;
+  --white: #fff;
+  --mono: "Cascadia Mono", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--black); color: var(--gray); }
+body { font: 16px/1.4 var(--mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.screen { max-width: 960px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+header { text-align: center; }
+
+pre { margin: 0; font-family: var(--mono); }
+.stars { font-size: clamp(6px, 1.45vw, 13px); line-height: 1.2; color: var(--dark-gray); overflow: hidden; }
+.stars .s1 { color: var(--dark-gray); }
+.stars .s2 { color: var(--gray); }
+.stars .s3 { color: var(--white); }
+.stars .s4 { color: var(--yellow); }
+
+.logo { margin: 4px 0; font-size: inherit; }
+.logo pre {
+  display: inline-block; text-align: left;
+  font-size: clamp(6px, 1.45vw, 13px); line-height: 1.05;
+  text-shadow: 0.12em 0.12em 0 var(--red);
+}
+.logo .l1 { color: var(--yellow); }
+.logo .l2 { color: #ffcc44; }
+.logo .l3 { color: #ff9a3c; }
+
+.tagline {
+  margin: 10px 0 2px; color: var(--light-cyan); font-weight: bold; letter-spacing: 0.08em;
+  text-transform: uppercase; white-space: nowrap; font-size: clamp(11px, 3.4vw, 16px);
+}
+.tagline .rule { color: var(--blue); font-weight: normal; letter-spacing: 0; }
+.byline { margin: 0; color: var(--gray); font-size: 14px; }
+.credit { color: #8a8a8a; }
+@media (max-width: 600px) {
+  .tagline .rule { display: none; }
+  .menu { gap: 4px 12px; }
+}
+
+/* The menu: as the game draws its own. */
+.menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
+.menu button {
+  font: inherit; font-size: 17px; color: var(--light-cyan); background: none;
+  border: 1px solid transparent; padding: 6px 10px; cursor: pointer;
+}
+.menu button:hover, .menu button:focus-visible { background: #001a66; border-color: var(--light-blue); outline: none; }
+.menu button:disabled { color: var(--dark-gray); cursor: default; background: none; border-color: transparent; }
+.menu .br { color: var(--light-blue); }
+.menu .k { color: var(--white); font-weight: bold; }
+.menu button:disabled .k, .menu button:disabled .br { color: var(--dark-gray); }
+
+/* The terminal, in a double-line frame. */
+.frame { border: 4px double var(--cyan); padding: 10px; }
+.term-wrap { overflow-x: auto; }
+#term { width: max-content; margin: 0 auto; }  /* centred, but scrollable from its left edge */
+.rotate { display: none; margin: 0 0 8px; text-align: center; color: var(--yellow); font-size: 14px; }
+@media (max-width: 600px) and (orientation: portrait) {
+  .rotate { display: block; }
+}
+
+/* The status bar, after the game's own. */
+.statusbar { display: flex; flex-wrap: wrap; background: var(--green); color: var(--black); font-weight: bold; }
+.seg { padding: 3px 12px; }
+.seg-name { background: #005500; color: var(--yellow); }
