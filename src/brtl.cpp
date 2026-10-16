@@ -270,8 +270,23 @@ void b_setclock(int32 base, int32 rate)
     b_millis();
 }
 
+// SRE_CLOCK freezes the clock for the tests.  It is read on the first
+// clock read rather than in main, because the door's start time
+// (play.cpp) is taken by a static initializer, before main.
+static void clockinit()
+{
+    static int done;
+    if (done)
+        return;
+    done = 1;
+    const char *clk = getenv("SRE_CLOCK");
+    if (clk && !g_fixed)
+        b_setclock((int32)atol(clk), 0);
+}
+
 static void wallclock(struct tm *out)
 {
+    clockinit();
     if (g_fixed) {
         time_t t = (time_t)g_fixedbase;
         if (g_rate)
@@ -280,13 +295,13 @@ static void wallclock(struct tm *out)
     } else {
         // The original only accepts dates from December 25, 1979 to
         // December 11, 1999 (SystemValid), so the host's date is moved
-        // back by SRE_DATE_SHIFT years: 28 by default, which keeps the
-        // calendar (weekdays and leap years) the same and works until
-        // December 11, 2027.
+        // back by SRE_DATE_SHIFT years: 44 by default, a multiple of 4 so
+        // that leap years line up, which works from 2024 until December
+        // 11, 2043.
         static int shift = -1;
         if (shift == -1) {
             const char *e = getenv("SRE_DATE_SHIFT");
-            shift = e && *e ? atoi(e) : 28;
+            shift = e && *e ? atoi(e) : 44;
         }
         time_t t = time(0);
         localtime_r(&t, out);
@@ -328,6 +343,7 @@ int32 b_time(int32 *t)
 
 void b_delay(uint16 ms)
 {
+    clockinit();
     if (g_fixed && g_rate == 0)
         return;
     usleep((useconds_t)ms * 1000);

@@ -75,7 +75,7 @@ one, without checking its key.  Otherwise the game is registered to the
 sysop.
 
 The original only accepts dates up to December 11, 1999, so the
-reconstruction moves the clock back 28 years (see `SRE_DATE_SHIFT`
+reconstruction moves the clock back 44 years (see `SRE_DATE_SHIFT`
 below).
 
 ## Playing
@@ -122,13 +122,14 @@ Environment variables:
   character set.  When this is unset, the game converts it to UTF-8 if
   its output is a terminal and the locale is UTF-8 (the default on
   macOS).
-- `SRE_DATE_SHIFT`: years to move the clock back (default 28).  The
+- `SRE_DATE_SHIFT`: years to move the clock back (default 44).  The
   original only accepts dates from December 25, 1979 to December 11,
-  1999.  A shift of 28 years keeps the weekdays and leap years the same,
-  and works until December 11, 2027.  After that, set it to another
-  multiple of 4 that brings the date back into that range, such as 32
-  (which works through 2031), and don't change it during a game.  Past
-  the limit, `sre` exits without printing anything.
+  1999.  A shift of 44 years works from 2024 until December 11, 2043,
+  and keeps leap years lined up because it is a multiple of 4.  (The
+  weekdays don't line up, but the game never shows them.)  Use another
+  multiple of 4 after that, and don't change it during a game: a game's
+  dates are stored shifted.  Past the limit, `sre` exits without
+  printing anything.
 
 ## Running it on the web
 

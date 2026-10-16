@@ -233,9 +233,6 @@ int main(int argc, char **argv)
         fprintf(stderr, "sre: cannot change to %s\n", dir);
         return 1;
     }
-    const char *clk = getenv("SRE_CLOCK");
-    if (clk)
-        b_setclock((int32)atol(clk), 0);
     TermInit();
     InitTime();
     g_empires = new Empire[MAXEMPIRES];
