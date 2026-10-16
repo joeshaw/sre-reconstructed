@@ -86,6 +86,24 @@ Settings from the original's `RESOURCE.DAT` and command line options
   unregistered without a valid `STATUS.SRE` (the tests use this to
   compare with the original).
 
+## Playing on the web
+
+`server/` is `sre-server`, which runs the game the way a BBS ran a door:
+one shared game, one player at a time, each in a terminal in their
+browser, on a page made to look like a BBS.  Players are known by keys
+their browsers make (no passwords), and pick a name the first time.
+Someone arriving while another plays waits for the line.  Closing the
+tab hangs up, as a dropped modem connection did, and the game saves
+and exits.  It needs Go to build:
+
+    make sre server
+    tools/newgame.sh /srv/sre/game
+    server/sre-server -listen :8000 -game /srv/sre/game -sre ./sre \
+        -keys /srv/sre/keys.json -sysops YourName
+
+[`server/README.md`](server/README.md) has the details, and how to run
+it on a small VM.
+
 ## What is reconstructed
 
 All of the game: joining, turns, the economy, food, population, the
@@ -148,6 +166,15 @@ disassembly, a pseudo-C lifter, data file decoding and editing).
 `tools/re/` has the original's functions (address, size, callers and
 callees, from Ghidra) and the names `tools/disasm.py` and `tools/lift.py`
 give them (`names.txt`; `globals.txt` is for data addresses).
+
+## The Rust port
+
+The `rust` branch has the same game ported to Rust, module for module
+from the C++.  It is held to the same standard: its output and files
+are byte for byte the same as the C++ build's (and so the original's)
+in all of the scenarios and in thousands of random games.  It builds
+with Cargo (`make` runs `cargo build --release` and copies the binary
+to `./sre`), and it has no dependencies beyond `libc`.
 
 ## How it was made
 

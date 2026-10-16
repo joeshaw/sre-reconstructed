@@ -17,3 +17,9 @@ jobs:
         run: make -j4
       - name: Smoke test
         run: tests/smoke.sh
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: Build the server
+        run: make server

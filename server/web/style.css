@@ -1,4 +1,4 @@
-/* SRE on the web: a BBS's ANSI screen, made to be read.  The colours are
+/* SRE on the web: a BBS's ANSI screen, made to be read.  The colors are
    the PC's sixteen, with the darkest two lifted for contrast. */
 :root {
   --black: #000;
@@ -68,7 +68,7 @@ pre { margin: 0; font-family: var(--mono); }
 /* The terminal, in a double-line frame. */
 .frame { border: 4px double var(--cyan); padding: 10px; }
 .term-wrap { overflow-x: auto; }
-#term { width: max-content; margin: 0 auto; }  /* centred, but scrollable from its left edge */
+#term { width: max-content; margin: 0 auto; }  /* centered, but scrollable from its left edge */
 .rotate { display: none; margin: 0 0 8px; text-align: center; color: var(--yellow); font-size: 14px; }
 @media (max-width: 600px) and (orientation: portrait) {
   .rotate { display: block; }

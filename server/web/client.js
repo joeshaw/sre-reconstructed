@@ -2,7 +2,7 @@
 // in this browser, and a terminal connected to a session of the game.
 'use strict';
 
-// The PC's sixteen colours, the darkest two lifted to be readable on black.
+// The PC's sixteen colors, the darkest two lifted to be readable on black.
 const VGA = {
   black: '#000000', red: '#aa0000', green: '#00aa00', yellow: '#aa5500',
   blue: '#3a4fd8', magenta: '#aa00aa', cyan: '#00aaaa', white: '#aaaaaa',
