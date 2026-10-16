@@ -1,5 +1,5 @@
 // Output translation (segment 155b): "Output.TranslationFile" lets a sysop
-// replace words in all game text, and a few colour/bracket resources.
+// replace words in all game text, and a few color/bracket resources.
 
 use crate::files::FileIn;
 use crate::resource::{as_atom, node_length, node_nth, parse_list, Resource};

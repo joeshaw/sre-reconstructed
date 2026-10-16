@@ -108,7 +108,7 @@ impl Report {
         kout!(g; cn, b'\n');
     }
 
-    // 69d7:0454: the text, with "^\BF" colour codes.
+    // 69d7:0454: the text, with "^\BF" color codes.
     pub fn show(&self, g: &mut Sre) {
         let cn = g.dev.c_normal;
         kout!(g; cn);

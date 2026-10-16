@@ -11,7 +11,7 @@ use crate::types::*;
 use crate::out;
 
 // The news stream (vtable 683f, DS:d138): each line written becomes a
-// news item in NEWS/NEWS0.MSG, with colours as "^\BF" codes.
+// news item in NEWS/NEWS0.MSG, with colors as "^\BF" codes.
 pub fn new_news_stream() -> OStream {
     OStream::new(0, Kind::News(Str::new()))
 }
@@ -24,7 +24,7 @@ pub fn new_sysop_log() -> OStream {
     o
 }
 
-// 5b6a:04d6: length without colour codes.
+// 5b6a:04d6: length without color codes.
 fn visible_len(s: &[u8]) -> i16 {
     let mut n: i16 = 0;
     let mut i: i16 = 0;

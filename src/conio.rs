@@ -2,7 +2,7 @@
 // functions, and the window streams of segment 1fd3 built on them).
 //
 // The host terminal stands in for the PC's screen: positioning, clearing
-// and colours become ANSI sequences, and the terminal's cursor and
+// and colors become ANSI sequences, and the terminal's cursor and
 // editing keys become the PC's extended key codes.  The local screen is
 // taken to be 80x25, all of it the initial window (the original kept
 // its top and bottom lines for the sysop's status bars).
@@ -260,7 +260,7 @@ pub fn full_window(g: &mut Sre) {
     set_window(g, 1, 1, t.screenwidth as i16, t.screenheight as i16);
 }
 
-// 1fd3:0342: colours take effect at once.
+// 1fd3:0342: colors take effect at once.
 pub fn window_set_color(g: &mut Sre, mut bg: i16, fg: i16) {
     if bg == -1 {
         bg = g.ost(KWIN).curbg as i16;

@@ -1,9 +1,9 @@
 // Stream classes of the SRCOMM door library (resident segment 229f).
 //
 // The original game writes all text through C++ streams ("kout << ...")
-// with colour manipulators.  The base output stream keeps the current
+// with color manipulators.  The base output stream keeps the current
 // line in an attributed buffer so that it can word-wrap at the stream's
-// width, and it emits ANSI colour sequences lazily, just before text.
+// width, and it emits ANSI color sequences lazily, just before text.
 //
 // The streams live in the game's state (Sre::os, Sre::is) and are named
 // by index, because writing to one may write to others and wait for
@@ -32,7 +32,7 @@ pub const KIN: Iid = 0; // DS:d3a6
 pub const KWININ: Iid = 1; // DS:d316
 pub const NFIXED_IS: usize = 2;
 
-// A colour manipulator: kout << Color(fg, bg).  bg == -1 keeps the
+// A color manipulator: kout << Color(fg, bg).  bg == -1 keeps the
 // current background.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Color {
@@ -46,12 +46,12 @@ pub const fn col(fg: i16) -> Color {
 pub const fn col2(fg: i16, bg: i16) -> Color {
     Color { fg, bg }
 }
-// Colour byte (bg << 4 | fg) as a manipulator.
+// Color byte (bg << 4 | fg) as a manipulator.
 pub fn byte_color(c: u8) -> Color {
     Color { fg: (c % 16) as i16, bg: (c / 16) as i16 }
 }
 
-// Line buffer with per-character colours (229f:0bea).
+// Line buffer with per-character colors (229f:0bea).
 pub struct AttrString {
     pub buf: Option<Vec<u8>>,
     pub fg: Vec<i16>,
@@ -186,11 +186,11 @@ pub struct OStream {
     pub f14: i16,
     pub width: i16, // field width for the next string/number
     pub raw: i16,   // nonzero: no buffering / word-wrap
-    pub curfg: i8,  // colours already sent
+    pub curfg: i8,  // colors already sent
     pub curbg: i8,
-    pub newfg: i8, // colours requested
+    pub newfg: i8, // colors requested
     pub newbg: i8,
-    pub noansi: i16, // nonzero: never emit colour sequences
+    pub noansi: i16, // nonzero: never emit color sequences
     pub kind: Kind,
 }
 
@@ -250,7 +250,7 @@ pub fn emit_color(g: &mut Sre, s: Sid) {
         Tag::Multi => crate::devices::multi_emit_color(g),
         Tag::Window => {}
         Tag::News | Tag::Report => {
-            // 5b6a:0b22, 69d7:0acd: colours as "^\BF" codes.
+            // 5b6a:0b22, 69d7:0acd: colors as "^\BF" codes.
             const HEX: &[u8] = b"0123456789ABCDEF";
             let o = g.ost(s);
             let (bg, fg) = (o.newbg, o.newfg);

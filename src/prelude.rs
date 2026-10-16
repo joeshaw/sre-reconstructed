@@ -27,7 +27,7 @@ pub use crate::galaxymenu::*;
 pub use crate::itemlist::*;
 pub use crate::system::*;
 
-// The colours the game keeps in variables.
+// The colors the game keeps in variables.
 pub fn cn(g: &Sre) -> Color {
     g.dev.c_normal
 }

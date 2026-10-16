@@ -1,7 +1,7 @@
 // Menus of the SRCOMM library (segment 1922).
 //
 // A menu has a name (used to look up "Menu.<name>.*" resources), a title,
-// ten colour bytes (high nibble background, low nibble foreground) and up
+// ten color bytes (high nibble background, low nibble foreground) and up
 // to 128 items.  Items may carry up to five extra columns (strings or
 // numbers), used for tables like the rankings.
 
