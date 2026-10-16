@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/banner.png" alt="Solar Realms Elite: Interstellar Imperialists. A BBS door game by Amit Patel, version 0.994b, 1995. Reconstructed by Claude, 2026." width="715"></p>
+<p align="center"><img src="docs/banner.png" alt="Solar Realms Elite: Interstellar Imperialists. A BBS door game by Amit Patel, version 0.994b, 1995. Reconstructed by Claude Opus 5.5, 2026." width="715"></p>
 
 # Solar Realms Elite, reconstructed
 
