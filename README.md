@@ -4,12 +4,22 @@ Solar Realms Elite (SRE) is a BBS door game by Amit Patel.  Its source
 code was lost in 1996.  This repository is a reconstruction of the last
 release, **0.994b (7 March 1995)**, in C++, made by reverse engineering
 `SRE.EXE`.  It builds on a modern Mac (or Linux) and plays in a terminal.
+It is published with Amit Patel's permission.
+
+![The empire status screen](docs/screenshot.png)
 
 The aim is the original's exact behaviour: the same screens, prompts,
 colours and numbers, the same random events, and game files the original
 can read.  That is checked by running the original under an emulator next
 to the reconstruction with the same input and comparing everything (see
 [Testing](#testing)).
+
+## Quick start
+
+    make
+    tools/newgame.sh ~/sre "Your Name"
+    cd ~/sre && /path/to/sre reset      # as the sysop: choose 2, Reset the Game
+    /path/to/sre                        # play
 
 ## Building
 
@@ -99,7 +109,15 @@ is not checked); otherwise the game is registered to the sysop.
 
 ## Testing
 
-`tools/dosemu.py` is a small DOS emulator (on
+`tests/smoke.sh` needs nothing but the build: it sets up a game from
+`game/`, resets it, joins two players, plays turns and runs the next
+day's maintenance, and compares the output and the game's data with
+`tests/smoke/`, recorded from runs that are byte for byte the same as
+the original's.  It is what CI runs.
+
+    make && tests/smoke.sh
+
+The full tests compare with the original itself.  `tools/dosemu.py` is a small DOS emulator (on
 [Unicorn](https://www.unicorn-engine.org/)) that runs the original
 `SRE.EXE` with scripted input on its serial line or keyboard and a
 frozen clock.  The tests run the original and the reconstruction on
@@ -112,6 +130,12 @@ files, and the random number sequence.
     tests/fuzz.sh /tmp/srefix army 1 20 # random play, seeds 1 to 20
     tests/fuzzchain.sh /tmp/srefix two 1 # two players taking turns over days
 
+`tests/fixtures.sh` downloads the original release, `sre0994b.zip`, from
+[John Dailey Software](https://www.johndaileysoftware.com/), checks it
+against its SHA-256, and runs its `SRE.EXE` to make the games the
+scenarios start from.  (Or give it the zip: `tests/fixtures.sh DIR
+path/to/sre0994b.zip`.)
+
 The original is unregistered without a registration file; with
 `SRE_STATUS=path/to/STATUS.SRE`, `tests/fixtures.sh` also makes
 registered games, for the scenarios of the bank, bonds and lottery.
@@ -119,6 +143,9 @@ registered games, for the scenarios of the bank, bonds and lottery.
 `tools/difftest.sh` and `tools/localtest.sh` compare one run; the other
 tools are the reverse engineering kit (de-overlaying the executable,
 disassembly, a pseudo-C lifter, data file decoding and editing).
+`tools/re/` has the original's functions (address, size, callers and
+callees, from Ghidra) and the names `tools/disasm.py` and `tools/lift.py`
+give them (`names.txt`; `globals.txt` is for data addresses).
 
 ## Credits
 

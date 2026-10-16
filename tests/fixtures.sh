@@ -16,7 +16,14 @@ OUT=$(cd "$OUT" && pwd)
 
 if [ -z "$ZIP" ]; then
     ZIP=$OUT/sre0994b.zip
-    [ -f "$ZIP" ] || curl -fsSL -o "$ZIP" 'https://www.johndaileysoftware.com/download/?method=2&terms=1'
+    [ -f "$ZIP" ] || curl -fsSL -o "$ZIP" 'https://www.johndaileysoftware.com/download/?id=300SRE&fileName=sre0994b.zip'
+fi
+# The 0.994b release as John Dailey Software distributes it.
+SHA256=c9d3c38c1f7d87a4caaee08014e1eed7d9bdcf58ef839a47f95d95b9d31af3e8
+if command -v sha256sum > /dev/null; then sum=$(sha256sum "$ZIP"); else sum=$(shasum -a 256 "$ZIP"); fi
+if [ "${sum%% *}" != "$SHA256" ]; then
+    echo "$ZIP is not the 0.994b release (sha256 ${sum%% *})" >&2
+    exit 1
 fi
 
 orig() {        # orig DIR [dosemu args...]: run the original in DIR

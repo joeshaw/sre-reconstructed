@@ -1,0 +1,71 @@
+[0m[0m[2J[32mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+                      [1mSolar Realms Elite for DOS
+                       [33mInterstellar Imperialists
+                                  [0;32mBy
+                              [1mAmit Patel
+                          [0;32mat The Solar Realm
+           [36mVersion 0.994b: released on Mar 07 1995ú17:40:37
+[32mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+
+[1;30mÄÄÄÄÄÄ[[33mSystem[30m]ÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1m2[0m]  [1mÛ[D Visit the Galaxy[0m
+Running hourly maintenance...                             
+[31mÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[0mWhich one?  [Enter=[1m8[0m]  [1mÛ[D Join this Game[0m
+Are you sure you would like to join this game?  [1;34m[[36my/N[34m][0m   [1mÛ[D Yes[0m
+
+You can play either an Emperor or Emperess who will be able to rule for centuri       
+centuries.  Once you create a ruler, the same ruler will be used after the rese    
+reset.  (You will be able to create a new empire each time.)  
+Enter the name of your ruler:
+> [1mÛ[D AÛ[D nÛ[D nÛ[D 
+[0mAre you [1;34m[[36mF[34m][0memale or [1;34m[[36mM[34m][0male?  [1mÛ[D Female[0m
+You will be:  Emperess[1m Ann[0m
+Is this correct?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Welcome to [1mSRE:II[0m!
+
+These are keys that are not usually listed on menus/prompts but may
+be useful:
+
+   [1;33mQ[0m  Press Q or 0 at a menu to quit the menu.  You can
+        also press ESC.
+
+   [1;33mK[0m  K will enter three 0s for you, so if you want to
+        enter 5000, you can just type [1m5K[0m.
+   [1;33mM[0m  M will enter six 0s for you (M for million)
+
+   [1;33m>[0m  Enter the "max" number; when you are paying money,
+        it is all of your money; when you are feeding, it is all
+        of your food; when you are buying, it is as much as you
+        can afford; etc.
+
+   [1;33mEnter[0m  Pressing Enter will input the default value at
+        any prompt or menu.  At most menus, the default is to
+        Quit the menu, so you don't have to press Q; just press
+        Enter.
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                
+   [1;33mZ[0m  When you can choose more than one empire (messages
+        and treaties), pressing Z will toggle all empires.  If
+        you wish to send to all, just press Z; if you wish to
+        send to all but a few, press Z and then enter the empires
+        you wish to remove from the list.
+
+I hope you enjoy the game!
+
+
+Welcome, [1;33mEmperess Ann[0m!
+
+Do you wish to view the instructions?  [1;34m[[36mY/n[34m][0m   [1mÛ[D No[0m
+There are [1;36m24[0m open slots for new players:
+    [1mB C D E F G H I J K L M N O P Q R S T U V W X Y [0m
+Which one would you like?  [ENTER to pick the first slot]  [1mÛ[D [first slot][0m
+Choose a name for your new empire:
+> [1mÛ[D BÛ[D eÛ[D tÛ[D aÛ[D  Û[D RÛ[D eÛ[D aÛ[D lÛ[D mÛ[D 
+[0mName your empire [1mBeta Realm[0m?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+You are:  Emperess[1;33m Ann[0m, and you now rule [1mBeta Realm[0m.
+
+[31mÄÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[0mWhich one?  [Enter=[1m4[0m]  [1mÛ[D Quit[0m
+
+[1;30mÄÄÄÄÄÄÄÄ[[33mSystem[30m]ÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1mQ[0m]  [1mÛ[D Quit[0m

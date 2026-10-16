@@ -1,0 +1,403 @@
+[0m[0m[2J[32mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+                      [1mSolar Realms Elite for DOS
+                       [33mInterstellar Imperialists
+                                  [0;32mBy
+                              [1mAmit Patel
+                          [0;32mat The Solar Realm
+           [36mVersion 0.994b: released on Mar 07 1995ú17:40:37
+[32mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+
+[1;30mÄÄÄÄÄÄÄÄ[[33mSystem[30m]ÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1m2[0m]  [1mÛ[D Visit the Galaxy[0m
+Running hourly maintenance...                             
+[31mÄÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[0mWhich one?  [Enter=[1m4[0m]  [1mÛ[D Play SRE![0m
+
+[32mÄÄÄÄÄÄÄÄ[[1;33mDiplomacy[0;32m]ÄÄÄÄÄÄÄÄ
+[0mWhat would you like to do?  [1mÛ[D Quit[0m
+You receive [1;36m33[0m credits from the Galactic Coordinator!
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m53[0m megatons of food grown.
+[1;36m1[0m light cruisers were produced by your research planets.
+[1;36m22,920[0m credits worth of ore has been mined.
+[1;36m20,763[0m credits have been earned from tourist attractions.
+[1;36m630[0m credits were collected as trade taxes on urban planets.
+
+You collect [1;36m2760[0m credits in taxes.
+[1;33m
+Empire Status
+[0;34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m-[1m*[37mlpha Empire[32m*[0;32m-[0m
+Score:      [1;36m0[0m
+Turns Left: [1;36m4[0m
+Money:      [1;36m90,073[0m
+Pop:        [1;36m40[0m Million   [1;30m([0mTax Rate=23%[1;30m)
+[0mFood:       [1;36m53[0m Megatons
+Covert:     [1;36m0[0m Agents
+Insurgency: [1;36mPeaceful[0m
+Cmd. Ship:  [1;36m0[0m% completed
+Military:   [1;30m[[0mLight Cruiser=[1;36m1[30m] [[0mEffectiveness=[1;36m100[0m%[1;30m] ([0mNet Worth=[1m274[30m)
+[0mPlanets:    [1;30m[[0mEducation=[1;36m3[30m] [[0mTourism=[1;36m9[30m] [[0mFood=[1;36m1[30m] [[0mResearch=[1;36m1[30m] [[0mOre=[1;36m9[30m] [0m
+            [1;30m[[0mGovernment=[1;36m1[30m] [[0mUrban=[1;36m3[30m] ([0mTotal=[1m27[30m)
+[0mYou have [1;36m20[0m turns of protection left.  You have [1;36m4[0m turns left today.
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Your empire requires [1;36m27,130[0m credits this year.  You have [1;36m90,073[0m credits.
+Pay everything automatically?  [1;34m[[36mY/n[34m][0m   [1mÛ[D [0m [1mÛ[D Yes[0m
+
+Welcome to [1;33mthe Solar Food Market
+[0mCurrent quantity available is [1;36m70,000[0m.  Food is in medium demand.
+You currently have [1;36m53[0m megatons of food.
+Would you like to [1;34m[[36mB[34m][0muy, [1;34m[[36mS[34m][0mell, or [1;34m[[36mC[34m][0montinue?  [1mÛ[D Continue[0m
+
+Your people require [1;36m15[0m megatons of food.
+How much will you give? [1m15Û[D [0m
+
+[1;34mÄÄÄÄÄÄÄÄ[[36mGovernment Spending[34m]ÄÄÄÄÄÄÄÄ
+   [0m Item                 Price  Owned
+[32m[[1;33m1[0;32m][1m Soldiers           [36m    140[37m      0
+[0;32m[[1;33m2[0;32m][1m Fighters           [36m    190[37m      0
+[0;32m[[1;33m3[0;32m][1m Defense Stations   [36m    260[37m      0
+[0;32m[[1;33m4[0;32m][1m Generals           [36m    392[37m      0
+[0;32m[[1;33m5[0;32m][1m Command Ship       [36m   5000[37m     0%
+[0;32m[[1;33m6[0;32m][1m Colonize Planets   [36m   1841[37m     27
+[0;32m[[1;33m7[0;32m][1m Covert Agents      [36m   2047[37m      0
+[0;32m[[1;33m8[0;32m][1m Heavy Cruisers     [36m    966[37m      0
+[0;32m[[1;33m9[0;32m][1m Carriers           [36m    714[37m      0
+[0;32m[[1;33mS[0;32m][1m Sell
+[0;32m[[1;33m*[0;32m][1m Operations
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mYou have [1;36m62,943[0m credits, and [1;36m4[0m turns.
+Which one?  [1mÛ[D [0m
+
+Do you wish to [1;34m[[36mA[34m][0mttack, send a [1;34m[[36mM[34m][0message, or [1;34m[[36mN[34m][0mone? Û[D [1mNone[0m
+
+Donate to the Galactic Coordinator?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Donate how much?  [1m440Û[D [0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m15[0m million people were born in your empire.
+[1;36m50[0m million people immigrate to your empire.
+A net population change of [1;36m+65[0m million people.
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Continue?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m52[0m megatons of food grown.
+[1;36m1[0m light cruisers were produced by your research planets.
+[1;36m22,835[0m credits worth of ore has been mined.
+[1;36m31,491[0m credits have been earned from tourist attractions.
+[1;36m627[0m credits were collected as trade taxes on urban planets.
+
+You collect [1;36m7245[0m credits in taxes.
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                [1;33m
+Empire Status
+[0;34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m-[1m*[37mlpha Empire[32m*[0;32m-[0m
+Score:      [1;36m7[0m
+Turns Left: [1;36m3[0m
+Money:      [1;36m124,701[0m
+Pop:        [1;36m105[0m Million   [1;30m([0mTax Rate=23%[1;30m)
+[0mFood:       [1;36m90[0m Megatons
+Covert:     [1;36m0[0m Agents
+Insurgency: [1;36mPeaceful[0m
+Cmd. Ship:  [1;36m0[0m% completed
+Military:   [1;30m[[0mLight Cruisers=[1;36m2[30m] [[0mEffectiveness=[1;36m100[0m%[1;30m] ([0mNet Worth=[1m280[30m)
+[0mPlanets:    [1;30m[[0mEducation=[1;36m3[30m] [[0mTourism=[1;36m9[30m] [[0mFood=[1;36m1[30m] [[0mResearch=[1;36m1[30m] [[0mOre=[1;36m9[30m] [0m
+            [1;30m[[0mGovernment=[1;36m1[30m] [[0mUrban=[1;36m3[30m] ([0mTotal=[1m27[30m)
+[0mYou have [1;36m19[0m turns of protection left.  You have [1;36m3[0m turns left today.
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Your empire requires [1;36m27,407[0m credits this year.  You have [1;36m124,701[0m credits.
+Pay everything automatically?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+Welcome to [1;33mthe Solar Food Market
+[0mCurrent quantity available is [1;36m70,000[0m.  Food is in medium demand.
+You currently have [1;36m90[0m megatons of food.
+Would you like to [1;34m[[36mB[34m][0muy, [1;34m[[36mS[34m][0mell, or [1;34m[[36mC[34m][0montinue?  [1mÛ[D Continue[0m
+
+Your people require [1;36m39[0m megatons of food.
+How much will you give? [1m39Û[D [0m
+
+[1;34mÄÄÄÄÄÄÄÄ[[36mGovernment Spending[34m]ÄÄÄÄÄÄÄÄ
+   [0m Item                 Price  Owned
+[32m[[1;33m1[0;32m][1m Soldiers           [36m    142[37m      0
+[0;32m[[1;33m2[0;32m][1m Fighters           [36m    193[37m      0
+[0;32m[[1;33m3[0;32m][1m Defense Stations   [36m    263[37m      0
+[0;32m[[1;33m4[0;32m][1m Generals           [36m    406[37m      0
+[0;32m[[1;33m5[0;32m][1m Command Ship       [36m   5000[37m     0%
+[0;32m[[1;33m6[0;32m][1m Colonize Planets   [36m   1850[37m     27
+[0;32m[[1;33m7[0;32m][1m Covert Agents      [36m   2065[37m      0
+[0;32m[[1;33m8[0;32m][1m Heavy Cruisers     [36m    973[37m      0
+[0;32m[[1;33m9[0;32m][1m Carriers           [36m    721[37m      0
+[0;32m[[1;33mS[0;32m][1m Sell
+[0;32m[[1;33m*[0;32m][1m Operations
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mYou have [1;36m97,294[0m credits, and [1;36m3[0m turns.
+Which one?  [1mÛ[D [0m
+
+Do you wish to [1;34m[[36mA[34m][0mttack, send a [1;34m[[36mM[34m][0message, or [1;34m[[36mN[34m][0mone? Û[D [1mNone[0m
+
+Donate to the Galactic Coordinator?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Donate how much?  [1m600Û[D [0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m17[0m million people were born in your empire.
+[1;36m1[0m million citizens die.
+[1;36m49[0m million people immigrate to your empire.
+[1;36m3[0m million citizens emigrate from your empire.
+A net population change of [1;36m+62[0m million people.
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Continue?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m51[0m megatons of food grown.
+[1;36m1[0m light cruisers were produced by your research planets.
+[1;36m22,778[0m credits worth of ore has been mined.
+[1;36m24,111[0m credits have been earned from tourist attractions.
+[1;36m624[0m credits were collected as trade taxes on urban planets.
+
+You collect [1;36m11,523[0m credits in taxes.
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                [1;33m
+Empire Status
+[0;34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m-[1m*[37mlpha Empire[32m*[0;32m-[0m
+Score:      [1;36m16[0m
+Turns Left: [1;36m2[0m
+Money:      [1;36m155,730[0m
+Pop:        [1;36m167[0m Million   [1;30m([0mTax Rate=23%[1;30m)
+[0mFood:       [1;36m102[0m Megatons
+Covert:     [1;36m0[0m Agents
+Insurgency: [1;36mPeaceful[0m
+Cmd. Ship:  [1;36m0[0m% completed
+Military:   [1;30m[[0mLight Cruisers=[1;36m3[30m] [[0mEffectiveness=[1;36m100[0m%[1;30m] ([0mNet Worth=[1m285[30m)
+[0mPlanets:    [1;30m[[0mEducation=[1;36m3[30m] [[0mTourism=[1;36m9[30m] [[0mFood=[1;36m1[30m] [[0mResearch=[1;36m1[30m] [[0mOre=[1;36m9[30m] [0m
+            [1;30m[[0mGovernment=[1;36m1[30m] [[0mUrban=[1;36m3[30m] ([0mTotal=[1m27[30m)
+[0mYou have [1;36m18[0m turns of protection left.  You have [1;36m2[0m turns left today.
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Your empire requires [1;36m27,399[0m credits this year.  You have [1;36m155,730[0m credits.
+Pay everything automatically?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+Welcome to [1;33mthe Solar Food Market
+[0;36mYour advisors inform you that your food planets do not produce enough food for 
+you to be self-sufficient.
+[0mCurrent quantity available is [1;36m70,000[0m.  Food is in medium demand.
+You currently have [1;36m102[0m megatons of food.
+Would you like to [1;34m[[36mB[34m][0muy, [1;34m[[36mS[34m][0mell, or [1;34m[[36mC[34m][0montinue?  [1mÛ[D Continue[0m
+
+Your people require [1;36m63[0m megatons of food.
+How much will you give? [1m63Û[D [0m
+
+[1;34mÄÄÄÄÄÄÄÄ[[36mGovernment Spending[34m]ÄÄÄÄÄÄÄÄ
+   [0m Item                 Price  Owned
+[32m[[1;33m1[0;32m][1m Soldiers           [36m    144[37m      0
+[0;32m[[1;33m2[0;32m][1m Fighters           [36m    195[37m      0
+[0;32m[[1;33m3[0;32m][1m Defense Stations   [36m    266[37m      0
+[0;32m[[1;33m4[0;32m][1m Generals           [36m    420[37m      0
+[0;32m[[1;33m5[0;32m][1m Command Ship       [36m   5000[37m     0%
+[0;32m[[1;33m6[0;32m][1m Colonize Planets   [36m   1870[37m     27
+[0;32m[[1;33m7[0;32m][1m Covert Agents      [36m   2084[37m      0
+[0;32m[[1;33m8[0;32m][1m Heavy Cruisers     [36m    980[37m      0
+[0;32m[[1;33m9[0;32m][1m Carriers           [36m    728[37m      0
+[0;32m[[1;33mS[0;32m][1m Sell
+[0;32m[[1;33m*[0;32m][1m Operations
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mYou have [1;36m128,331[0m credits, and [1;36m2[0m turns.
+Which one?  [1mÛ[D [0m
+
+Do you wish to [1;34m[[36mA[34m][0mttack, send a [1;34m[[36mM[34m][0message, or [1;34m[[36mN[34m][0mone? Û[D [1mNone[0m
+
+Donate to the Galactic Coordinator?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Donate how much?  [1m570Û[D [0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Your people love thee and hope you rule forever!
+
+[1;36m18[0m million people were born in your empire.
+[1;36m5[0m million citizens die.
+[1;36m49[0m million people immigrate to your empire.
+[1;36m7[0m million citizens emigrate from your empire.
+A net population change of [1;36m+55[0m million people.
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Continue?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m50[0m megatons of food grown.
+[1;36m1[0m light cruisers were produced by your research planets.
+[1;36m22,768[0m credits worth of ore has been mined.
+[1;36m26,955[0m credits have been earned from tourist attractions.
+[1;36m621[0m credits were collected as trade taxes on urban planets.
+
+You collect [1;36m15,318[0m credits in taxes.
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                [1;33m
+Empire Status
+[0;34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m-[1m*[37mlpha Empire[32m*[0;32m-[0m
+Score:      [1;36m26[0m
+Turns Left: [1;36m1[0m
+Money:      [1;36m193,423[0m
+Pop:        [1;36m222[0m Million   [1;30m([0mTax Rate=23%[1;30m)
+[0mFood:       [1;36m89[0m Megatons
+Covert:     [1;36m0[0m Agents
+Insurgency: [1;36mPeaceful[0m
+Cmd. Ship:  [1;36m0[0m% completed
+Military:   [1;30m[[0mLight Cruisers=[1;36m4[30m] [[0mEffectiveness=[1;36m100[0m%[1;30m] ([0mNet Worth=[1m289[30m)
+[0mPlanets:    [1;30m[[0mEducation=[1;36m3[30m] [[0mTourism=[1;36m9[30m] [[0mFood=[1;36m1[30m] [[0mResearch=[1;36m1[30m] [[0mOre=[1;36m9[30m] [0m
+            [1;30m[[0mGovernment=[1;36m1[30m] [[0mUrban=[1;36m3[30m] ([0mTotal=[1m27[30m)
+[0mYou have [1;36m17[0m turns of protection left.  You have [1;36m1[0m turns left today.
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Your empire requires [1;36m27,526[0m credits this year.  You have [1;36m193,423[0m credits.
+Pay everything automatically?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+Welcome to [1;33mthe Solar Food Market
+[0;36mYour advisors inform you that your food planets do not produce enough food for 
+you to be self-sufficient.
+[0mCurrent quantity available is [1;36m70,000[0m.  Food is in medium demand.
+You currently have [1;36m89[0m megatons of food.
+Would you like to [1;34m[[36mB[34m][0muy, [1;34m[[36mS[34m][0mell, or [1;34m[[36mC[34m][0montinue?  [1mÛ[D Continue[0m
+
+Your people require [1;36m84[0m megatons of food.
+How much will you give? [1m84Û[D [0m
+
+[1;34mÄÄÄÄÄÄÄÄ[[36mGovernment Spending[34m]ÄÄÄÄÄÄÄÄ
+   [0m Item                 Price  Owned
+[32m[[1;33m1[0;32m][1m Soldiers           [36m    146[37m      0
+[0;32m[[1;33m2[0;32m][1m Fighters           [36m    198[37m      0
+[0;32m[[1;33m3[0;32m][1m Defense Stations   [36m    269[37m      0
+[0;32m[[1;33m4[0;32m][1m Generals           [36m    434[37m      0
+[0;32m[[1;33m5[0;32m][1m Command Ship       [36m   5000[37m     0%
+[0;32m[[1;33m6[0;32m][1m Colonize Planets   [36m   1886[37m     27
+[0;32m[[1;33m7[0;32m][1m Covert Agents      [36m   2103[37m      0
+[0;32m[[1;33m8[0;32m][1m Heavy Cruisers     [36m    987[37m      0
+[0;32m[[1;33m9[0;32m][1m Carriers           [36m    735[37m      0
+[0;32m[[1;33mS[0;32m][1m Sell
+[0;32m[[1;33m*[0;32m][1m Operations
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mYou have [1;36m165,897[0m credits, and [1;36m1[0m turns.
+Which one?  [1mÛ[D [0m
+
+Do you wish to [1;34m[[36mA[34m][0mttack, send a [1;34m[[36mM[34m][0message, or [1;34m[[36mN[34m][0mone? Û[D [1mNone[0m
+
+Donate to the Galactic Coordinator?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Donate how much?  [1m630Û[D [0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m20[0m million people were born in your empire.
+[1;36m7[0m million citizens die.
+[1;36m48[0m million people immigrate to your empire.
+[1;36m7[0m million citizens emigrate from your empire.
+A net population change of [1;36m+54[0m million people.
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Continue?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m49[0m megatons of food grown.
+[1;36m1[0m light cruisers were produced by your research planets.
+[1;36m22,714[0m credits worth of ore has been mined.
+[1;36m26,793[0m credits have been earned from tourist attractions.
+[1;36m618[0m credits were collected as trade taxes on urban planets.
+
+You collect [1;36m19,044[0m credits in taxes.
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                [1;33m
+Empire Status
+[0;34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m-[1m*[37mlpha Empire[32m*[0;32m-[0m
+Score:      [1;36m37[0m
+Turns Left: [1;36m0[0m
+Money:      [1;36m234,436[0m
+Pop:        [1;36m276[0m Million   [1;30m([0mTax Rate=23%[1;30m)
+[0mFood:       [1;36m54[0m Megatons
+Covert:     [1;36m0[0m Agents
+Insurgency: [1;36mPeaceful[0m
+Cmd. Ship:  [1;36m0[0m% completed
+Military:   [1;30m[[0mLight Cruisers=[1;36m5[30m] [[0mEffectiveness=[1;36m100[0m%[1;30m] ([0mNet Worth=[1m295[30m)
+[0mPlanets:    [1;30m[[0mEducation=[1;36m3[30m] [[0mTourism=[1;36m9[30m] [[0mFood=[1;36m1[30m] [[0mResearch=[1;36m1[30m] [[0mOre=[1;36m9[30m] [0m
+            [1;30m[[0mGovernment=[1;36m1[30m] [[0mUrban=[1;36m3[30m] ([0mTotal=[1m27[30m)
+[0mYou have [1;36m16[0m turns of protection left.  You have [1;36m0[0m turns left today.
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Your empire requires [1;36m27,623[0m credits this year.  You have [1;36m234,436[0m credits.
+Pay everything automatically?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+Welcome to [1;33mthe Solar Food Market
+[0;36mYour advisors inform you that your food planets do not produce enough food for 
+you to be self-sufficient.
+[0mCurrent quantity available is [1;36m70,000[0m.  Food is in medium demand.
+You currently have [1;36m54[0m megatons of food.
+Would you like to [1;34m[[36mB[34m][0muy, [1;34m[[36mS[34m][0mell, or [1;34m[[36mC[34m][0montinue?  [1mÛ[D Continue[0m
+
+Your people require [1;36m104[0m megatons of food.
+How much will you give? [1m54Û[D [0m
+
+Failure to feed your people/army will lead to civil war and/or loss of forces.
+Do you wish to reconsider your actions?  [1;34m[[36mY/n[34m][0m   [1mÛ[D No[0m
+
+[1;34mÄÄÄÄÄÄÄÄ[[36mGovernment Spending[34m]ÄÄÄÄÄÄÄÄ
+   [0m Item                 Price  Owned
+[32m[[1;33m1[0;32m][1m Soldiers           [36m    148[37m      0
+[0;32m[[1;33m2[0;32m][1m Fighters           [36m    200[37m      0
+[0;32m[[1;33m3[0;32m][1m Defense Stations   [36m    272[37m      0
+[0;32m[[1;33m4[0;32m][1m Generals           [36m    448[37m      0
+[0;32m[[1;33m5[0;32m][1m Command Ship       [36m   5000[37m     0%
+[0;32m[[1;33m6[0;32m][1m Colonize Planets   [36m   1905[37m     27
+[0;32m[[1;33m7[0;32m][1m Covert Agents      [36m   2122[37m      0
+[0;32m[[1;33m8[0;32m][1m Heavy Cruisers     [36m    994[37m      0
+[0;32m[[1;33m9[0;32m][1m Carriers           [36m    742[37m      0
+[0;32m[[1;33mS[0;32m][1m Sell
+[0;32m[[1;33m*[0;32m][1m Operations
+[34mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mYou have [1;36m206,813[0m credits, and [1;36m0[0m turns.
+Which one?  [1mÛ[D [0m
+
+Do you wish to [1;34m[[36mA[34m][0mttack, send a [1;34m[[36mM[34m][0message, or [1;34m[[36mN[34m][0mone? Û[D [1mNone[0m
+
+This is your last turn today.
+Donate to the Galactic Coordinator?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Donate how much?  [1m670Û[D [0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[1;36m25[0m million people were born in your empire.
+[1;36m14[0m million citizens die.
+[1;36m48[0m million people immigrate to your empire.
+[1;36m10[0m million citizens emigrate from your empire.
+A net population change of [1;36m+49[0m million people.
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Without food, your empire plunges into a major[1;35m CIVIL WAR[0m!
+You lose [1;36m2 [0mTourism and [1;36m2 [0mOre planets (total [1;33m4[0m) and [1;36m97[0m million people.
+You also lose [1;36m1 [0mlight cruiser.
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+Display hints to avoid civil wars?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+Civil Wars are caused when you can't feed your people or pay to maintain your p 
+planets.  This civil war indicates either that you ran out of money or you had 
+insufficient food.
+
+Many times one civil war leads to another because you are unable to stabilize t 
+the society.  You can sell your military and non-profitable planets (government           
+(government, research, education, and urban) to reduce costs of operating your 
+empire.  That way, you may have enough money to survive the next turn.
+
+
+
+Hope this helps!
+
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                
+[1;33mList of Players/Scores:
+ID  [37mEmpire                          [36m    Planets[33m      Score[35m    Net Worth
+[30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0;32m<[1;33mA[0;32m> [1;37mlpha Empire                     [36m         23[33m         49[35m          227[0m
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[32m°±²Û[1;37;42mPAUSED[0;32mÛ²±°[1;35m   [0m                
+[31mÄÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[1m[[37m1[31m][0m Status
+[1;31m[[37m2[31m][0m New News
+[1;31m[[37m3[31m][0m Daily News
+[1;31m[[37m4[31m][0m Play SRE!
+[1;31m[[37m5[31m][0m See Your Status
+[1;31m[[37m6[31m][0m Read Messages
+[1;31m[[37m7[31m][0m Send Messages
+[1;31m[[37m8[31m][0m Scores
+[1;31m[[37m9[31m][0m Diplomacy
+[31mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [1mÛ[D [0m
+
+[1;30mÄÄÄÄÄÄÄÄ[[33mSystem[30m]ÄÄÄÄÄÄÄÄ
+[0m[[1m1[0m] Status
+[[1m2[0m] Visit the Galaxy
+[[1m3[0m] Who am I?
+[[1m4[0m] Bulletins
+[[1m8[0m] Rankings
+[[1mP[0m] Change your settings
+[[1mH[0m] More Help
+[[1mQ[0m] Quit
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1mQ[0m]  [1mÛ[D Quit[0m

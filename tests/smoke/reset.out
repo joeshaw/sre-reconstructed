@@ -1,0 +1,40 @@
+[1;36m285,520[0m bytes free; [1;36m86,016[0m bytes (conventional) used for swap space.
+Disk swapping
+[1;32m
+Sysop: [37mÛ[D JÛ[D oÛ[D eÛ[D 
+[32mBBS:   [37mÛ[D MÛ[D yÛ[D BÛ[D BÛ[D SÛ[D 
+[32m
+[30mÄÄÄÄÄÄÄÄÄÄÄÄÄ[[33mSysop[30m]ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [1mÛ[D Reset the Game[0m
+Enter the name of your galaxy:
+> [1mÛ[D AÛ[D nÛ[D dÛ[D rÛ[D oÛ[D mÛ[D eÛ[D dÛ[D aÛ[D 
+[0mName your galaxy [1mAndromeda[0m?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+Are you sure you want to reset the game?  [1;34m[[36my/N[34m][0m   [1mÛ[D Yes[0m
+
+There are two sets of game rules in SRE:II.  You can have Inflation (similar to  
+to the older versions of SRE), where prices increase as the empire gets larger,       
+larger, or Non-Inflation, where prices remain relatively constant.  The Non-Inf       
+Non-Inflation rules include bureaucracy costs, and are more challenging.  You m 
+may want to run the Inflationary version for a while until your players are use   
+used to the new version; you may want to set up another game for `advanced' pla   
+players (non-inflationary).  
+Do you want Inflation?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+You can allow more time for users to play their turns by assigning more than on  
+one real day for each game `day'.  (The system will run maintenance less often.      
+often.)  This may be useful if your games are full and users are unable to call    
+call daily.  
+How many days before maintenance runs?  [1;34m[MAX=[0;36m14[1;34m][0m [1m1Û[D [0m
+
+You can set a limit on the number of planets a player can buy in one turn.  If 
+you wish to do this, enter the limit; otherwise, press Enter.  
+How many planets per turn can be bought?  [1;34m[MAX=[0;36m25,000[1;34m][0m [1mÛ[D [0m
+
+You can specify how much food to put in the food market.  Warning:  putting no 
+food in the market may destroy players who accidentally forget to buy food plan    
+planets.  
+How many thousands of megatons of food?  [1;34m[MAX=[0;36m1000[1;34m][0m [1m70Û[D [0m
+Would you like new pirate names?  [1;34m[[36mY/n[34m][0m   [1mÛ[D Yes[0m
+
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄ[[33mSysop[30m]ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [1mÛ[D [0m

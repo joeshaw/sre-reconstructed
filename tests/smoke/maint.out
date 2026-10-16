@@ -1,0 +1,71 @@
+[0m[0m[2J[32mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+                      [1mSolar Realms Elite for DOS
+                       [33mInterstellar Imperialists
+                                  [0;32mBy
+                              [1mAmit Patel
+                          [0;32mat The Solar Realm
+           [36mVersion 0.994b: released on Mar 07 1995ú17:40:37
+[32mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+
+[1;30mÄÄÄÄÄÄÄÄ[[33mSystem[30m]ÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1m2[0m]  [1mÛ[D Visit the Galaxy[0m
+Running hourly maintenance...                             Running daily maintenance...
+Making backups...                 Updating news files...                      Searching for illegal nuclear bomb traders...                                             Checking top scores and lottery...                                  
+[31mÄÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[1m[[37m1[31m][0m Status
+[1;31m[[37m2[31m][0m New News
+[1;31m[[37m3[31m][0m Daily News
+[1;31m[[37m4[31m][0m Play SRE!
+[1;31m[[37m5[31m][0m See Your Status
+[1;31m[[37m6[31m][0m Read Messages
+[1;31m[[37m7[31m][0m Send Messages
+[1;31m[[37m8[31m][0m Scores
+[1;31m[[37m9[31m][0m Diplomacy
+[31mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1m4[0m]  [1mÛ[D Status[0m
+
+This is [1mAndromeda[0m.
+There are [1;36m5[0m turns per day.
+Each empire receives [1;36m20[0m turns of protection.
+[1;36m21,704[0m planets are available.
+[1;36m70,000[0m megatons of food are available.
+This game is set up with traditional inflationary economics.
+
+[31mÄÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[1m[[37m1[31m][0m Status
+[1;31m[[37m2[31m][0m New News
+[1;31m[[37m3[31m][0m Daily News
+[1;31m[[37m4[31m][0m Play SRE!
+[1;31m[[37m5[31m][0m See Your Status
+[1;31m[[37m6[31m][0m Read Messages
+[1;31m[[37m7[31m][0m Send Messages
+[1;31m[[37m8[31m][0m Scores
+[1;31m[[37m9[31m][0m Diplomacy
+[31mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1m4[0m]  [1mÛ[D Daily News[0m
+See news from how many days ago?  [1;34m[[36m0=Today, or 1-9[34m][0m  Û[D Quit
+
+[31mÄÄÄ[[1;33mGalaxy Menu[0;31m]ÄÄÄ
+[1m[[37m1[31m][0m Status
+[1;31m[[37m2[31m][0m New News
+[1;31m[[37m3[31m][0m Daily News
+[1;31m[[37m4[31m][0m Play SRE!
+[1;31m[[37m5[31m][0m See Your Status
+[1;31m[[37m6[31m][0m Read Messages
+[1;31m[[37m7[31m][0m Send Messages
+[1;31m[[37m8[31m][0m Scores
+[1;31m[[37m9[31m][0m Diplomacy
+[31mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1m4[0m]  [1mÛ[D Quit[0m
+
+[1;30mÄÄÄÄÄÄÄÄ[[33mSystem[30m]ÄÄÄÄÄÄÄÄ
+[0m[[1m1[0m] Status
+[[1m2[0m] Visit the Galaxy
+[[1m3[0m] Who am I?
+[[1m4[0m] Bulletins
+[[1m8[0m] Rankings
+[[1mP[0m] Change your settings
+[[1mH[0m] More Help
+[[1mQ[0m] Quit
+[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+[0mWhich one?  [Enter=[1mQ[0m]  [1mÛ[D Quit[0m
