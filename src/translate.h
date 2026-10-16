@@ -1,5 +1,5 @@
 // Output translation (segment 155b): "Output.TranslationFile" lets a sysop
-// replace words in all game text, and a few colour/bracket resources.
+// replace words in all game text, and a few color/bracket resources.
 #ifndef SRE_TRANSLATE_H
 #define SRE_TRANSLATE_H
 

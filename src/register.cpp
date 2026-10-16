@@ -102,7 +102,7 @@ void CheckRegistration()
     s->regstate = RS_REGISTERED;
 }
 
-// 68a3:039f: read a registration line, colouring as it is typed.
+// 68a3:039f: read a registration line, coloring as it is typed.
 static void ReadKeyLine(char *buf)
 {
     int16 n = 0;

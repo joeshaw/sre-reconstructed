@@ -12,7 +12,7 @@ extern int32 g_nextevent;           // DS:c95e
 
 #pragma pack(push, 1)
 struct EventData {
-    int16 empire;       // 02 owner, -1 when cancelled
+    int16 empire;       // 02 owner, -1 when canceled
     int32 created;      // 04
     int32 expires;      // 08
     int32 due;          // 0c

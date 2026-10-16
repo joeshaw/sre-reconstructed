@@ -119,7 +119,7 @@ static int16 HexDigit(char c, int16 def)
     return def;
 }
 
-// 69d7:0454: the text, with "^\BF" colour codes.
+// 69d7:0454: the text, with "^\BF" color codes.
 void Report::Show()
 {
     kout << c_normal;

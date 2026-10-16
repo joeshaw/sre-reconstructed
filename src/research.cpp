@@ -135,7 +135,7 @@ static int16 Hex(char c)
     return c > '@' ? (int16)(c - 55) : (int16)(c - 48);
 }
 
-// 6db3:077f: the text, with "^\BF" colour codes.
+// 6db3:077f: the text, with "^\BF" color codes.
 void Development::Show() const
 {
     int16 len = (int16)strlen(text);

@@ -1,15 +1,15 @@
 // Stream classes of the SRCOMM door library (resident segment 229f).
 //
 // The original game writes all text through C++ streams ("kout << ...")
-// with colour manipulators.  The base output stream keeps the current
+// with color manipulators.  The base output stream keeps the current
 // line in an attributed buffer so that it can word-wrap at the stream's
-// width, and it emits ANSI colour sequences lazily, just before text.
+// width, and it emits ANSI color sequences lazily, just before text.
 #ifndef SRE_STREAM_H
 #define SRE_STREAM_H
 
 #include "types.h"
 
-// A colour manipulator: kout << Color(fg, bg).  bg == -1 keeps the
+// A color manipulator: kout << Color(fg, bg).  bg == -1 keeps the
 // current background.
 struct Color {
     int16 fg;
@@ -17,7 +17,7 @@ struct Color {
     Color(int16 f = 7, int16 b = -1) : fg(f), bg(b) {}
 };
 
-// Line buffer with per-character colours (229f:0bea).
+// Line buffer with per-character colors (229f:0bea).
 struct AttrString {
     char *buf;
     int16 *fg;
@@ -45,9 +45,9 @@ public:
     int16 f14;
     int16 width;        // field width for the next string/number
     int16 raw;          // nonzero: no buffering / word-wrap
-    int8 curfg, curbg;  // colours already sent
-    int8 newfg, newbg;  // colours requested
-    int16 noansi;       // nonzero: never emit colour sequences
+    int8 curfg, curbg;  // colors already sent
+    int8 newfg, newbg;  // colors requested
+    int16 noansi;       // nonzero: never emit color sequences
 
     explicit OStream(int16 wrapwidth);
     virtual ~OStream();

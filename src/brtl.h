@@ -1,4 +1,4 @@
-// Borland C++ 3.1 runtime behaviour the game depends on.
+// Borland C++ 3.1 runtime behavior the game depends on.
 #ifndef SRE_BRTL_H
 #define SRE_BRTL_H
 

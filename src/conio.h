@@ -2,7 +2,7 @@
 // functions, and the window streams of segment 1fd3 built on them).
 //
 // The host terminal stands in for the PC's screen: positioning, clearing
-// and colours become ANSI sequences, and the terminal's cursor and
+// and colors become ANSI sequences, and the terminal's cursor and
 // editing keys become the PC's extended key codes.  The local screen is
 // taken to be 80x25, all of it the initial window (the original kept
 // its top and bottom lines for the sysop's status bars).
@@ -35,7 +35,7 @@ void SetWindow(int16 left, int16 top, int16 right, int16 bottom);
 // 1fd3:04a2: the whole screen as the window.
 void FullWindow();
 
-// The local screen's window stream (vtable bb65, DS:d2f6): colours take
+// The local screen's window stream (vtable bb65, DS:d2f6): colors take
 // effect at once.
 class WindowOut : public OStream {
 public:

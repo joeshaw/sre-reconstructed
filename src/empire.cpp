@@ -501,7 +501,7 @@ void BankInterest(Empire *e)
     }
 }
 
-// 14f6:02a6: move b a step towards a.
+// 14f6:02a6: move b a step toward a.
 void MoveToward(PlanetSet *p)
 {
     int32 diff = (p->target >= 0) ? p->target - p->output : 0;

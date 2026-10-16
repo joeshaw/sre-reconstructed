@@ -1,15 +1,17 @@
+<p align="center"><img src="docs/banner.png" alt="Solar Realms Elite: Interstellar Imperialists. A BBS door game by Amit Patel, version 0.994b, 1995. Reconstructed by Claude, 2026." width="715"></p>
+
 # Solar Realms Elite, reconstructed
 
 Solar Realms Elite (SRE) is a BBS door game by Amit Patel.  Its source
 code was lost in 1996.  This repository is a reconstruction of the last
-release, **0.994b (7 March 1995)**, in C++, made by reverse engineering
+release, **0.994b (March 7, 1995)**, in C++, made by reverse engineering
 `SRE.EXE`.  It builds on a modern Mac (or Linux) and plays in a terminal.
 It is published with Amit Patel's permission.
 
 ![The empire status screen](docs/screenshot.png)
 
-The aim is the original's exact behaviour: the same screens, prompts,
-colours and numbers, the same random events, and game files the original
+The aim is the original's exact behavior: the same screens, prompts,
+colors and numbers, the same random events, and game files the original
 can read.  That is checked by running the original under an emulator next
 to the reconstruction with the same input and comparing everything (see
 [Testing](#testing)).
@@ -57,7 +59,7 @@ Other players can share the directory: give each their own copy of
 lines:
 
     Your Name       the user's name on the BBS
-    1               ANSI colour (1/0)
+    1               ANSI color (1/0)
     1               IBM (PC) characters (1/0)
     24              lines on the screen
     38400           baud rate
@@ -187,13 +189,13 @@ The approach:
    [Unicorn](https://www.unicorn-engine.org/), to run `SRE.EXE` with
    scripted input on its serial line or keyboard, a frozen clock, and its
    output, screen and files captured.  This made the original the
-   specification: any question about its behaviour could be answered by
+   specification: any question about its behavior could be answered by
    running it.
 3. **Writing the source.**  The game was reconstructed one part of the
    original at a time, in C++ with the original's structure: one file
    per code segment, the original's classes (streams, menus, the
    streamable objects in the data files), and each function's address in
-   a comment.  The Borland runtime's behaviour that the game depends on
+   a comment.  The Borland runtime's behavior that the game depends on
    is reproduced exactly: its random number generator, its date and time
    conversions, its `ctype` table and text-mode file reads, and 16-bit
    integer arithmetic throughout.

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Compare the original's local screen log (dosemu --local-out, colour
+"""Compare the original's local screen log (dosemu --local-out, color
 changes as ESC [ fg ; bg C) with the reconstruction's terminal output
-(ANSI SGR colours).  Both are reduced to characters with their colours."""
+(ANSI SGR colors).  Both are reduced to characters with their colors."""
 import re, sys
 
-ANSI = [0, 4, 2, 6, 1, 5, 3, 7]   # SGR colour number -> PC colour
+ANSI = [0, 4, 2, 6, 1, 5, 3, 7]   # SGR color number -> PC color
 
 
 def chars(data, sgr):
@@ -64,9 +64,9 @@ def main():
         print(' port: %r' % show(b[max(0, i - 60):i + 60]))
         return 1
     for i in range(len(a)):
-        # Colours of spaces and line ends are invisible.
+        # Colors of spaces and line ends are invisible.
         if a[i][0] > 32 and a[i][1:] != b[i][1:]:
-            print('local colour differs at char %d %r: orig %s, port %s' % (
+            print('local color differs at char %d %r: orig %s, port %s' % (
                 i, show(a[max(0, i - 30):i + 1]), a[i][1:], b[i][1:]))
             return 1
     print('local: same (%d chars)' % len(a))

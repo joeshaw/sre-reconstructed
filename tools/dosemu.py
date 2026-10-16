@@ -87,7 +87,7 @@ class Dos:
             uc.hook_add(UC_HOOK_BLOCK, lambda uc, a, sz, ud: self.ring.append(a))
         # Text written to the local (sysop) screen, from the entries of the
         # local stream's RawWrite (247e:0fda) and EmitColor (247e:0f8a).
-        # Colour changes are logged as ESC [ fg ; bg C.
+        # Color changes are logged as ESC [ fg ; bg C.
         self.local_out = bytearray()
         uc.hook_add(UC_HOOK_CODE, self._hook_local, begin=0x247e0 + 0x0f8a, end=0x247e0 + 0x0f8a)
         uc.hook_add(UC_HOOK_CODE, self._hook_local, begin=0x247e0 + 0x0fda, end=0x247e0 + 0x0fda)
@@ -144,11 +144,11 @@ class Dos:
             self.ww(0, n * 4 + 2, STUB_SEG)
             self.wb(STUB_SEG, n * 4, b'\xcf\x90\x90\x90')   # iret (never reached)
         # BIOS data area
-        self.ww(0x40, 0x10, 0x0021)      # equipment: colour 80x25
+        self.ww(0x40, 0x10, 0x0021)      # equipment: color 80x25
         self.ww(0x40, 0x13, 640)         # memory size
         self.wb(0x40, 0x49, b'\x03')     # video mode 3
         self.ww(0x40, 0x4a, 80)          # columns
-        self.ww(0x40, 0x63, 0x3d4)       # CRTC port (colour)
+        self.ww(0x40, 0x63, 0x3d4)       # CRTC port (color)
         self.wb(0x40, 0x84, b'\x18')     # rows-1
         self.ww(0x40, 0x85, 16)          # char height
         self.ww(0x40, 0x1a, 0x1e)        # kbd buffer head

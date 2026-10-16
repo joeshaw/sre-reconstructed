@@ -22,7 +22,7 @@ def main(exe, out):
     ovbase = imgsize + 16
     segs = [struct.unpack('<4H', d[segtab + i * 8:segtab + i * 8 + 8]) for i in range(nseg)]
     # bss/stack extend beyond the file image; reserve them so appended
-    # overlay segments don't collide with uninitialised data.
+    # overlay segments don't collide with uninitialized data.
     top = 0
     for seg, maxoff, flags, minoff in segs:
         end = seg + (((maxoff if maxoff != 0xffff else 0) + 16) >> 4)

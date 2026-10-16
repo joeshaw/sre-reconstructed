@@ -5,7 +5,7 @@ Color c_white(15);              // 6782
 Color c_6792(4), c_6796(4), c_679a(1), c_679e(4), c_67a2(8);
 
 // The news stream (vtable 683f, DS:d138): each line written becomes a
-// news item in NEWS/NEWS0.MSG, with colours as "^\BF" codes.
+// news item in NEWS/NEWS0.MSG, with colors as "^\BF" codes.
 class NewsStream : public OStream {
 public:
     String line;        // +20
@@ -43,7 +43,7 @@ void NewsStream::EmitColor()
     PutRaw(HEX[(int)newfg]);
 }
 
-// 5b6a:04d6: length without colour codes.
+// 5b6a:04d6: length without color codes.
 static int16 VisibleLen(const String &s)
 {
     int16 n = 0;

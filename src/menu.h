@@ -1,7 +1,7 @@
 // Menus of the SRCOMM library (segment 1922).
 //
 // A menu has a name (used to look up "Menu.<name>.*" resources), a title,
-// ten colour bytes (high nibble background, low nibble foreground) and up
+// ten color bytes (high nibble background, low nibble foreground) and up
 // to 128 items.  Items may carry up to five extra columns (strings or
 // numbers), used for tables like the rankings.
 #ifndef SRE_MENU_H
@@ -66,7 +66,7 @@ struct Untr {
     explicit Untr(const char *p) : s(p) {}
 };
 inline OStream &operator<<(OStream &o, const Untr &u) { return PutUntranslated(o, String(u.s)); }
-// Colour byte (bg << 4 | fg) as a manipulator.
+// Color byte (bg << 4 | fg) as a manipulator.
 inline Color ByteColor(uint8 c) { return Color(c % 16, c / 16); }
 
 extern char g_itemopen, g_itemclose;     // DS:61e0 '<' '>'
