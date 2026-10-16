@@ -339,7 +339,7 @@ fn date_shift() -> i32 {
     static SHIFT: OnceLock<i32> = OnceLock::new();
     *SHIFT.get_or_init(|| match std::env::var("SRE_DATE_SHIFT") {
         Ok(s) if !s.is_empty() => b_atol(s.as_bytes()),
-        _ => 28,
+        _ => 44,
     })
 }
 
@@ -355,9 +355,9 @@ fn wallclock() -> libc::tm {
     } else {
         // The original only accepts dates from December 25, 1979 to
         // December 11, 1999 (system_valid), so the host's date is moved
-        // back by SRE_DATE_SHIFT years: 28 by default, which keeps the
-        // calendar (weekdays and leap years) the same and works until
-        // December 11, 2027.
+        // back by SRE_DATE_SHIFT years: 44 by default, a multiple of 4 so
+        // that leap years line up, which works from 2024 until December
+        // 11, 2043.
         let t = unsafe { libc::time(std::ptr::null_mut()) };
         unsafe { libc::localtime_r(&t, &mut out) };
         out.tm_year -= date_shift();

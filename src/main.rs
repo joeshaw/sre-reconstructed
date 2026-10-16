@@ -302,17 +302,18 @@ fn score_files(g: &mut Sre) {
 fn main() {
     use std::os::unix::ffi::OsStringExt;
     let argv: Vec<Vec<u8>> = std::env::args_os().map(|a| a.into_vec()).collect();
+    // SRE_CLOCK freezes the clock for the tests, before anything reads it.
+    if let Some(clk) = std::env::var_os("SRE_CLOCK") {
+        b_setclock(b_atol(&clk.into_vec()), 0);
+    }
     // Static initialization: the door's start time (play.rs) is taken
-    // before anything else, from the host's clock.
+    // before anything else.
     let start = b_time();
     if let Some(dir) = std::env::var_os("SRE_DIR") {
         if std::env::set_current_dir(&dir).is_err() {
             eprintln!("sre: cannot change to {}", dir.to_string_lossy());
             std::process::exit(1);
         }
-    }
-    if let Some(clk) = std::env::var_os("SRE_CLOCK") {
-        b_setclock(b_atol(&clk.into_vec()), 0);
     }
     let mut sre = Sre::new(argv);
     let g = &mut sre;
