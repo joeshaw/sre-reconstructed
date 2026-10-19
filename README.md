@@ -49,8 +49,10 @@ to leave.  If `sre` exits without printing anything, the game hasn't
 been set up yet, so run `sre reset` first.
 
 The game's own help explains how to play.  The original's
-documentation is in [`game/DOCS/`](game/DOCS), and Amit Patel's notes on
-the game's design are on [his old site](http://www-cs-students.stanford.edu/~amitp/Articles/SRE-Design.html).
+documentation is in [`game/DOCS/`](game/DOCS), and Amit Patel has
+also posted [documentation](http://www-cs-students.stanford.edu/~amitp/Articles/SRE-Documentation.html)
+and [notes on the game's design](http://www-cs-students.stanford.edu/~amitp/Articles/SRE-Design.html)
+on his web site.
 
 ## What is reconstructed
 
