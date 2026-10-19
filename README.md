@@ -2,16 +2,18 @@
 
 # Solar Realms Elite, reconstructed
 
-Solar Realms Elite (SRE) is a [BBS door game](https://en.wikipedia.org/wiki/BBS_door)
-by Amit Patel.  In the early 1990s people dialed into bulletin board
-systems by modem, and a BBS ran games like this one, called doors, for
-its callers.  In SRE, the callers each build an empire in one shared
+[Solar Realms Elite](http://www-cs-students.stanford.edu/~amitp/Articles/SRE-Documentation.html) (SRE) is a 1990s [BBS door game](https://en.wikipedia.org/wiki/BBS_door)
+by Amit Patel.  In SRE, players each build an empire in one shared
 galaxy, a few turns a day.
 
 The game's source code was lost in 1996.  This repository is a C++
-reconstruction of the last release, **0.994b (March 7, 1995)**, made by
+reconstruction of the last release, 0.994b (March 7, 1995), made by
 reverse engineering `SRE.EXE`.  It builds on macOS and Linux and plays
-in a terminal.  It is published with Amit Patel's permission.
+in a terminal.  There is also a Rust port in the [`rust` branch](https://github.com/joeshaw/sre-reconstructed/tree/rust).
+The reverse engineering and implementation was done using Claude Code
+and the Opus 5.5 model over the course of about a day.
+
+[You can play it online here.](https://solar-realms.exe.xyz/)
 
 ![The empire status screen](docs/screenshot.png)
 
@@ -60,8 +62,7 @@ research, maintenance, scores, the sysop menu and its editors,
 resources, translations, and flavors.
 
 Some parts belong to the BBS and DOS rather than the game, and are left
-out: the serial port and FOSSIL drivers (FOSSIL was the standard DOS
-interface between doors and the modem), the sysop's status bars and hot
+out: the serial port and FOSSIL drivers, the sysop's status bars and hot
 keys on the local screen, sysop chat, EMS and XMS memory swapping, and
 the VGA palette.  The terminal stands in for the caller's modem.  In a
 local session (`sre sysop`, `sre reset`, or local play), it also stands
@@ -150,12 +151,11 @@ including how to run it on exe.dev.
 
 ## Testing
 
-`tests/smoke.sh` needs the build and Python 3.7 or later, with no extra
-packages.  It sets up a game from `game/`, resets it, joins two players,
-plays turns, and runs the next day's maintenance.  Then it compares the
-output and the game's data with the recordings in `tests/smoke/`, which
-match the original's byte for byte.  CI runs this test on macOS and
-Linux.
+`tests/smoke.sh` requires Python 3.7 or later.  It sets up a game from 
+`game/`, resets it, joins two players, plays turns, and runs the next 
+day's maintenance.  Then it compares the output and the game's data 
+with the recordings in `tests/smoke/`, which match the original's byte 
+for byte.  CI runs this test on macOS and Linux.
 
     make && tests/smoke.sh
 
@@ -191,8 +191,8 @@ not shifted, so it must be a date the original accepts.
 
 ## How it was made
 
-Claude reconstructed the game in Claude Code, directed by Joe Shaw.  It
-started in an empty repository with this prompt:
+Claude Opus 5.5 running inside Claude Code reconstructed the game.
+Here is my original prompt in an empty repository:
 
 > solar realms elite was a bbs door from the 90s. the source code was lost
 > in 1996.
@@ -208,9 +208,6 @@ started in an empty repository with this prompt:
 > other pages on his site.
 >
 > Use this repository to build it
-
-(That download link no longer works.  `tests/fixtures.sh` uses one that
-does.)
 
 The work went in five steps.
 
@@ -275,7 +272,7 @@ The work went in five steps.
   show calls to them by name.  `globals.txt` is for names of data
   addresses, and is empty.
 
-## The Rust port
+## Rust port
 
 The `rust` branch has the same game ported to Rust, module by module
 from the C++.  Its output and files are byte for byte the same as the
@@ -283,14 +280,67 @@ C++ build's, and so the original's, in every scenario and in thousands
 of random games.  It needs only Rust and Cargo (`git checkout rust`,
 then `make`), and has no dependencies beyond `libc`.
 
+## License
+
+Well, this is a bit complicated.
+
+The original game (in `game/`) is Copyright 1992-1995 by Amit J Patel.
+The game was distributed on BBSes as shareware.  From the documentation:
+
+```
+Registration is NOT required to run SRE.  SRE might be classified as one of
+these types of programs:
+
+Shareware - Yes!  SRE is shareware.  You are required to register this game
+            after 99 years of trial use!
+Freeware - Yes!  SRE could be considered freeware.  (However, freeware is
+            a trademarked term.)  You are not required to pay any fee for
+            this program.  However, we do give benefits to those who donate
+            $15 or more.
+Crippleware - Yes!  SRE is slightly crippled!  You can't access the bank in
+            the unregistered version.  (But you don't need the bank to play
+            the game.)
+Bogusware - Yes!  SRE is bogusware!  It will destroy itself after 99 years!
+            (If you don't register!)  (just kidding!)
+Deadware - Yes!  You must've found the bugs!
+Bonusware - Yes!  If you register, you get bonuses (like the bank)!
+
+(I prefer to think of it as Bonusware.)
+```
+
+The reconstructed source code (in `src/`) is clearly a derivative work of
+the original game.  It is being distributed with Amit Patel's permission.
+
+To the extent that human-prompted agent-developed software is copyrightable,
+the reconstructed source, tools, server and tests are Copyright 2026 
+Joe Shaw and licensed under the MIT license:
+
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in all
+> copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+> FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+> COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+> AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+> WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The server includes xterm.js which is licensed under the xterm license.
+See `server/web/vendor/XTERM-LICENSE`.
+
 ## Credits
 
 Solar Realms Elite was written by Amit Patel, now of
-[Red Blob Games](https://www.redblobgames.com/).  The game is
-distributed by [John Dailey Software](https://www.johndaileysoftware.com/).
+[Red Blob Games](https://www.redblobgames.com/).
 
 The reconstruction relies on [Ghidra](https://ghidra-sre.org/),
 [Capstone](https://www.capstone-engine.org/), and
 [Unicorn](https://www.unicorn-engine.org/), and the web front end
-includes [xterm.js](https://xtermjs.org/) (see
-`server/web/vendor/XTERM-LICENSE`).
+includes [xterm.js](https://xtermjs.org/).
