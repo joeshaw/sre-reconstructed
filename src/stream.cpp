@@ -1,4 +1,5 @@
 // Stream classes of the SRCOMM door library (segment 229f).
+#include <algorithm>
 #include "stream.h"
 #include "brtl.h"
 #include <string.h>
@@ -372,6 +373,7 @@ void OStream::PutNumber(int32 v)
     char digits[0x52];
     int8 n = 0;
     int16 neg = 0;
+    std::fill(digits, digits + sizeof(digits[0]), 0);
     if (v < 0) {
         neg = -1;
         v = -v;
@@ -387,6 +389,7 @@ void OStream::PutNumber(int32 v)
             if (n % 4 == 3 && g_comma)
                 digits[n++] = ',';
         }
+        if (n < 1) { n = 1;}
         if (digits[n - 1] == ',' && g_comma) {
             n--;
             digits[n] = 0;
