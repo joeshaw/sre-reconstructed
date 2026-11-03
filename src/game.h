@@ -7,6 +7,7 @@
 #include "types.h"
 #include "sstring.h"
 #include "stream.h"
+#include "timeutil.h"
 #include <stddef.h>
 
 #pragma pack(push, 1)
@@ -72,14 +73,18 @@ enum PlanetType {
     P_ORE, P_GOVERNMENT, P_URBAN, P_SUPPLY, P_ANTIPOLLUTION
 };
 
+// Every Money in the original's records (and some locals) is followed by
+// a second Money that is constructed with it and never used again, as if
+// declared through a type holding two: these are money2, bank2, income2
+// and BankData::amount2.
+
 struct Empire {
     int16 id;                   // 000
     char name[0x20];            // 002
     int16 player;               // 022
-    int32 created;              // 024
-    int32 lastplay;             // 028
-    PlanetSet planets[10];      // 02c
-    uint8 u_0a4[0x48];          // 0a4
+    Time created;               // 024
+    Time lastplay;              // 028
+    PlanetSet planets[16];      // 02c by type (P_*); 10..15 are never used
     Treaty treaty[26];          // 0ec
     int32 soldiers;             // 154
     int32 fighters;             // 158
@@ -94,7 +99,7 @@ struct Empire {
     int32 score;                // 174
     int32 points;               // 178 tournament points (Solar/Planet/Weapons Master)
     Money money;                // 17c
-    Money m180;                 // 180 (unused)
+    Money money2;               // 180 see below
     int32 population;           // 184 millions
     int32 pollution;            // 188 exatons
     int32 food;                 // 18c megatons
@@ -105,7 +110,7 @@ struct Empire {
     int16 turnsperday;          // 198
     int16 bonusyear;            // 19a year of the next protection bonus
     Money bank;                 // 19c savings (< 0: loan)
-    Money m1a0;                 // 1a0 (unused)
+    Money bank2;                // 1a0 see money2
     int32 loanpayment;          // 1a4 owed on the loan each turn
     int16 w1a8;                 // 1a8 (unused)
     int8 taxrate;               // 1aa
@@ -117,7 +122,7 @@ struct Empire {
     int16 localplay;            // 1b8 unlimited turns (Galaxy::localonly)
     int16 phase;                // 1ba of the turn in progress, PH_*
     Money income;               // 1bc last turn's, in thousands
-    Money m1c0;                 // 1c0 (unused)
+    Money income2;              // 1c0 see money2
     uint8 shortfalls;           // 1c4 SF_* this turn
     int8 effchange;             // 1c5 change of effectiveness from the army's upkeep
     int8 effnext;               // 1c6 effectiveness after it; < 0: desertion
@@ -153,7 +158,7 @@ struct Empire {
     int16 bondhours;            // 2cf
     int16 bondturns;            // 2d1
     int8 intercepts[25];        // 2d3 our messages each empire's spies will intercept
-    int32 lastnews;             // 2ec when the news was last read
+    Time lastnews;              // 2ec when the news was last read
     int32 lightcruisers;        // 2f0
     int32 troubles;             // 2f4 TR_* (shown, but never set)
     int32 bonuses;              // 2f8 B_* (shown, but never set)
@@ -171,11 +176,11 @@ struct Checksum {
 // Galaxy.II (DS:cd6a, 0x3c6 bytes).
 struct Galaxy {
     char name[0x40];            // 000 (name[0] == 0: no game)
-    int32 created;              // 040
-    int32 startdate;            // 044 play starts
-    int32 lastregen;            // 048 planets last came back onto the market
-    int32 joindeadline;         // 04c no joining from this date
-    int32 enddate;              // 050
+    Time created;               // 040
+    Time startdate;             // 044 play starts
+    Time lastregen;             // 048 planets last came back onto the market
+    Time joindeadline;          // 04c no joining from this date
+    Time enddate;               // 050
     Checksum empire[25];        // 054
     Checksum pirate[9];         // 2ac
     int16 inflation;            // 384 prices grow with the empire
@@ -199,7 +204,7 @@ struct Galaxy {
     int16 nukelimit;            // 3b2 most planets a nuclear bomb destroys
     int16 nukepercent;          // 3b4 of the planets a nuclear bomb destroys
     int32 oilprice;             // 3b6
-    int32 lasthourly;           // 3ba hourly maintenance last ran
+    Time lasthourly;            // 3ba hourly maintenance last ran
     int16 interest;             // 3be
     int16 newspaper;            // 3c0 that prints the news, 0..3
     int32 psionicprice;         // 3c2 the smuggler's price of a psionic bomb
@@ -211,8 +216,8 @@ struct System {
     char bbs[0x40];             // 040
     char regto[0x50];           // 080 registered to
     char bank[0x50];            // 0d0 name of the bank
-    int32 created;              // 120
-    int32 inuse;                // 124 since when the game is in use, 0 = not
+    Time created;               // 120
+    Time inuse;                 // 124 since when the game is in use, 0 = not
     int16 regstate;             // 128 RS_* (0..5 valid)
     Checksum galaxy;            // 12a
 };
@@ -223,8 +228,8 @@ struct Player {
     char user[0x20];            // 02 BBS user name
     char name[0x20];            // 22 name in the game
     char b42[0x20];             // 42 (cleared, never used)
-    int32 created;              // 62
-    int32 lastplay;             // 66
+    Time created;               // 62
+    Time lastplay;              // 66
     int16 male;                 // 6a
     uint8 prefs1;               // 6c PF1_*
     uint8 prefs2;               // 6d PF2_*
@@ -236,7 +241,7 @@ struct Player {
 struct Pirate {
     char name[0x20];            // 00
     int16 level;                // 20 1..9
-    int32 lasthour;             // 22
+    Time lasthour;              // 22
     uint8 u_026[0x69];          // 26 (cleared, never used)
     uint8 color;                // 8f
     int32 money;                // 90
@@ -314,8 +319,6 @@ extern Pirate *g_pirates;  // DS:c932
 extern Galaxy g_galaxy;         // DS:cd6a
 extern System g_system;         // DS:d196
 extern DoorInfo g_door;         // DS:d360
-extern int32 g_now;             // DS:d35c time at start-up
-extern int32 g_today;           // DS:bbb9 midnight today
 extern Empire *g_current;       // DS:2b54
 extern int16 g_open;            // DS:3ee6 galaxy open count
 

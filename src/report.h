@@ -11,8 +11,8 @@ extern int16 g_newreports;          // DS:91d2
 
 #pragma pack(push, 1)
 struct ReportData {
-    int32 created;      // 02
-    int32 expires;      // 06
+    Time created;       // 02
+    Time expires;       // 06
     int16 count;        // 0a
     int16 to[25];       // 0c recipients
     uint16 len;         // 3e

@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 
-int32 g_now;            // DS:d35c
-int32 g_today;          // DS:bbb9
+Time g_now;             // DS:d35c
+Time g_today;           // DS:bbb9
 char g_timesep = ':';   // DS:bb82 Output.Time.Separator
 int16 g_time24 = 0;     // DS:bb83 Output.Time.24Hour
 
@@ -23,15 +23,15 @@ static void Split(int32 t, b_date *d, b_dostime *tm)
     b_unixtodos(t, d, tm);
 }
 
-int16 TimeSecond(int32 t) { b_date d; b_dostime m; Split(t, &d, &m); return m.ti_sec; }    // 206a:008c
-int16 TimeMinute(int32 t) { b_date d; b_dostime m; Split(t, &d, &m); return m.ti_min; }    // 206a:00a8
-int16 TimeHour(int32 t) { b_date d; b_dostime m; Split(t, &d, &m); return m.ti_hour; }     // 206a:00c2
-int16 TimeDay(int32 t) { b_date d; b_dostime m; Split(t, &d, &m); return d.da_day; }       // 206a:00de
-int16 TimeMonth(int32 t) { b_date d; b_dostime m; Split(t, &d, &m); return d.da_mon; }     // 206a:00f9
-int16 TimeYear(int32 t) { b_date d; b_dostime m; Split(t, &d, &m); return d.da_year; }     // 206a:0114
+int16 Time::second() const { b_date d; b_dostime m; Split(v, &d, &m); return m.ti_sec; }   // 206a:008c
+int16 Time::minute() const { b_date d; b_dostime m; Split(v, &d, &m); return m.ti_min; }   // 206a:00a8
+int16 Time::hour() const { b_date d; b_dostime m; Split(v, &d, &m); return m.ti_hour; }    // 206a:00c2
+int16 Time::day() const { b_date d; b_dostime m; Split(v, &d, &m); return d.da_day; }      // 206a:00de
+int16 Time::month() const { b_date d; b_dostime m; Split(v, &d, &m); return d.da_mon; }    // 206a:00f9
+int16 Time::year() const { b_date d; b_dostime m; Split(v, &d, &m); return d.da_year; }    // 206a:0114
 
 // 206a:01b1
-int32 Midnight(int32 t)
+Time Midnight(int32 t)
 {
     b_date d;
     b_dostime m;
@@ -40,11 +40,13 @@ int32 Midnight(int32 t)
     m.ti_hour = 0;
     m.ti_min = 0;
     m.ti_sec = 0;
-    return b_dostounix(&d, &m);
+    Time r;
+    r = b_dostounix(&d, &m);
+    return r;
 }
 
 // 206a:0251
-int32 MakeDate(int16 year, int16 month, int16 day)
+Time MakeDate(int16 year, int16 month, int16 day)
 {
     b_date d;
     b_dostime m;
@@ -55,7 +57,9 @@ int32 MakeDate(int16 year, int16 month, int16 day)
     d.da_year = year;
     d.da_mon = (int8)month;
     d.da_day = (int8)day;
-    return b_dostounix(&d, &m);
+    Time r;
+    r = b_dostounix(&d, &m);
+    return r;
 }
 
 static const char *const MONTHS[13] = { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -109,7 +113,7 @@ OStream &PutTime(OStream &o, int32 t)
 
 // 206a:0498: enter a date as mm/dd/yyyy (or mm/dd/yy); Enter on an empty
 // field gives 0.
-void InputDate(int32 *t)
+void InputDate(Time *t)
 {
     static const char *const TEMPLATE = "mm/dd/yyyy";     // DS:bc03
     IStream &in = kin;
@@ -132,8 +136,8 @@ void InputDate(int32 *t)
             }
             int16 month = (int16)((buf[0] - '0') * 10 + buf[1] - '0');
             int16 day = (int16)((buf[2] - '0') * 10 + buf[3] - '0');
-            int32 d = MakeDate(year, month, day);
-            if (TimeYear(d) == year && TimeMonth(d) == month && TimeDay(d) == day) {
+            Time d = MakeDate(year, month, day);
+            if (d.year() == year && d.month() == month && d.day() == day) {
                 in.Echo('\n');
                 *t = d;
                 break;

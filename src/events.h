@@ -13,9 +13,9 @@ extern int32 g_nextevent;           // DS:c95e
 #pragma pack(push, 1)
 struct EventData {
     int16 empire;       // 02 owner, -1 when canceled
-    int32 created;      // 04
-    int32 expires;      // 08
-    int32 due;          // 0c
+    Time created;       // 04
+    Time expires;       // 08
+    Time due;           // 0c
 };
 struct CovertData : EventData {
     int16 target;       // 10
@@ -26,7 +26,7 @@ struct SetupData : CovertData {
 };
 struct BankData : EventData {
     Money amount;       // 10
-    Money m14;          // 14
+    Money amount2;      // 14 never used (see Empire::money2)
     char name[0x4e];    // 18
     int16 year;         // 66 matures in this year of the empire
     int16 issuer;       // 68 empire that issued the bonds, -1 = bank

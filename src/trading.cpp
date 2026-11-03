@@ -26,8 +26,8 @@ struct Goods {
 enum { FS_DONE, FS_SENT, FS_ACCEPTED, FS_REJECTED, FS_RETURNING };
 
 struct TradeData {
-    int32 created;      // 00
-    int32 expires;      // 04
+    Time created;       // 00
+    Time expires;       // 04
     int16 to;           // 08
     int16 from;         // 0a
     int16 state;        // 0c FS_*
@@ -399,7 +399,7 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         }
         if (c == 'I') {
             t->state = FS_SENT;
-            t->created += 2;
+            t->created = t->created + 2;
             return 1;
         }
         for (int16 i = 1; i <= 9; i++)

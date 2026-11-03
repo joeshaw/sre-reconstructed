@@ -14,8 +14,8 @@ struct MessageData {
     int16 w0;               // 00
     int16 w2;               // 02
     int16 from;             // 04 sending empire, -1 = sysop/non-player
-    int32 created;          // 06
-    int32 expires;          // 0a
+    Time created;           // 06
+    Time expires;           // 0a
     char name[0x20];        // 0e sender as shown
     char to[0x20];          // 2e recipient letters
     int16 list[25];         // 4e recipients (public: those who read it)

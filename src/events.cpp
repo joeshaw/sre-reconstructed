@@ -317,7 +317,7 @@ EventBank::EventBank(int16 id, const char *name, int32 amount, int16 year, int16
 {
     Init(id);
     d.amount.v = 0;
-    d.m14.v = 0;
+    d.amount2.v = 0;
     d.amount = 0;
     memset(d.name, 0, sizeof d.name);
     strcpy(d.name, name);
