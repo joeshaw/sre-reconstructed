@@ -47,7 +47,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
             r.ore = 0;
         }
         total += r.ore / 1000;
-        g.emp[e].money.add(r.ore);
+        g.emp[e].money += r.ore;
     }
     if p(g, P_SUPPLY).count != 0 {
         let x = &mut g.emp[e];
@@ -73,7 +73,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         r.carriers = carriers;
         x.carriers += carriers;
         r.credits = credits;
-        x.money.add(credits);
+        x.money += credits;
         total += credits / 1000;
     }
     if p(g, P_TOURISM).count != 0 {
@@ -85,7 +85,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         if r.tourism < 0 {
             r.tourism = 0;
         }
-        x.money.add(r.tourism);
+        x.money += r.tourism;
         total += r.tourism / 1000;
     }
     if p(g, P_URBAN).count != 0 {
@@ -95,7 +95,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         if r.urban < 0 {
             r.urban = 0;
         }
-        x.money.add(r.urban);
+        x.money += r.urban;
         total += r.urban / 1000;
     }
     if p(g, P_PETROLEUM).count != 0 {
@@ -104,7 +104,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         if r.petroleum < 0 {
             r.petroleum = 0;
         }
-        g.emp[e].money.add(r.petroleum);
+        g.emp[e].money += r.petroleum;
         total += r.petroleum / 1000;
         if oil_price(g) > 10000 {
             total += r.petroleum / 3000;
@@ -159,7 +159,7 @@ fn produce(g: &mut Sre, e: usize, r: &mut Income) {
         if r.taxes < 0 {
             r.taxes = 0;
         }
-        g.emp[e].money.add(r.taxes);
+        g.emp[e].money += r.taxes;
         total += r.taxes / 1000;
     }
     g.emp[e].income.set(total);

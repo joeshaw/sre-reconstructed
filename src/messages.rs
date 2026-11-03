@@ -32,8 +32,8 @@ pub struct Message {
     pub w0: i16,           // 00
     pub w2: i16,           // 02
     pub from: i16,         // 04 sending empire, -1 = sysop/non-player
-    pub created: i32,      // 06
-    pub expires: i32,      // 0a
+    pub created: Time,     // 06
+    pub expires: Time,     // 0a
     pub name: [u8; 0x20],  // 0e sender as shown
     pub to: [u8; 0x20],    // 2e recipient letters
     pub list: [i16; 25],   // 4e recipients (public: those who read it)
@@ -63,8 +63,8 @@ impl Message {
             w0: 0,
             w2: 0,
             from: 0,
-            created: 0,
-            expires: 0,
+            created: Time::default(),
+            expires: Time::default(),
             name: [0; 0x20],
             to: [0; 0x20],
             list: [0; 25],
@@ -83,8 +83,8 @@ impl Message {
         self.w2 = -1;
         self.from = -1;
         self.count = 0;
-        self.created = 0;
-        self.expires = 0;
+        self.created.set(0);
+        self.expires.set(0);
         self.name = [0; 0x20];
         self.to = [0; 0x20];
         self.list = [-1; 25];
@@ -209,7 +209,7 @@ impl Message {
         if self.from != -1 {
             kout!(g; col(c), b"\xb3  ", cn(g), "Real sender:  ", cemp(g), (self.from as u8).wrapping_add(b'A'), b'\n');
         }
-        let t = time_str(g, self.created);
+        let t = time_str(g, self.created.get());
         kout!(g; col(c), b"\xb3  ", cn(g), "Date:         ", t, b'\n');
     }
 
@@ -559,8 +559,8 @@ impl Message {
             set_name(&mut self.name, sender);
             self.flags &= !MF_ANON;
         }
-        self.expires = g.time.now.wrapping_add(604800);
-        self.created = g.time.now;
+        self.expires.set(g.time.now.get().wrapping_add(604800));
+        self.created.set(g.time.now.get());
         if self.flags & MF_PUBLIC != 0 {
             kout!(g; cn(g), "How many days would you like to leave this public message up? [1-30] ");
             set_defval(g, KIN, 7);
@@ -572,7 +572,7 @@ impl Message {
             if days > 30 {
                 days = 30;
             }
-            self.expires = g.time.now.wrapping_add(86400 * days as i32);
+            self.expires.set(g.time.now.get().wrapping_add(86400 * days as i32));
             kout!(g; cn(g));
         }
         true
@@ -595,7 +595,7 @@ impl Streamable for Message {
         if self.flags & MF_PUBLIC == 0 && self.count == 0 {
             return true;
         }
-        g.time.now > self.expires
+        g.time.now.get() > self.expires.get()
     }
 
     // 58b6:011c
@@ -636,8 +636,8 @@ impl Streamable for Message {
         self.w0 = i16::rd(&b[0x00..]);
         self.w2 = i16::rd(&b[0x02..]);
         self.from = i16::rd(&b[0x04..]);
-        self.created = i32::rd(&b[0x06..]);
-        self.expires = i32::rd(&b[0x0a..]);
+        self.created = Time::rd(&b[0x06..]);
+        self.expires = Time::rd(&b[0x0a..]);
         self.name.copy_from_slice(&b[0x0e..0x2e]);
         self.to.copy_from_slice(&b[0x2e..0x4e]);
         self.list = <[i16; 25]>::rd(&b[0x4e..]);

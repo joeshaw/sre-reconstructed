@@ -4,17 +4,17 @@ use crate::prelude::*;
 
 // 5222:0112
 pub fn galaxy_init(g: &mut Sre) {
-    let today = g.time.today;
-    let now = g.time.now;
+    let today = g.time.today.get();
+    let now = g.time.now.get();
     let never = never_date();
     let x = &mut g.galaxy;
     x.name[0] = 0;
-    x.created = today;
-    x.lasthourly = today;
-    x.startdate = today;
-    x.lastregen = now;
-    x.joindeadline = never;
-    x.enddate = never;
+    x.created.set(today);
+    x.lasthourly.set(today);
+    x.startdate.set(today);
+    x.lastregen.set(now);
+    x.joindeadline.set(never);
+    x.enddate.set(never);
     x.inflation = 0;
     x.localonly = 0;
     x.interest = 3;
@@ -205,7 +205,7 @@ pub fn score_list(g: &mut Sre, mask: i32, o: Option<Sid>) {
         c4 = r4.long(db) as i16;
     }
     let o = o.unwrap_or(KOUT);
-    let tourney = |g: &Sre| g.galaxy.enddate < never_date();
+    let tourney = |g: &Sre| g.galaxy.enddate.get() < never_date();
     out!(g, o; col(ctitle), "List of Players/Scores:\n");
     out!(g, o; setw(4), col(ckey), "ID");
     out!(g, o; setw(0x20), col(c0), "Empire");
@@ -272,14 +272,14 @@ pub fn score_list(g: &mut Sre, mask: i32, o: Option<Sid>) {
 
 // 5222:13bb
 pub fn galaxy_playable(g: &mut Sre) -> bool {
-    if g.time.today < g.galaxy.startdate {
+    if g.time.today.get() < g.galaxy.startdate.get() {
         kout!(g; "This game cannot be played until ", cnum(g));
-        let t = g.galaxy.startdate;
+        let t = g.galaxy.startdate.get();
         put_time(g, KOUT, t);
         kout!(g; cn(g), b'\n');
         return false;
     }
-    if g.time.today > g.galaxy.enddate {
+    if g.time.today.get() > g.galaxy.enddate.get() {
         kout!(g; "This game has ended.\n");
         return false;
     }

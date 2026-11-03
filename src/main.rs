@@ -62,7 +62,7 @@ use prelude::*;
 
 // 1848:0067: file error handler (logs to SYSOP.LOG).
 fn file_error_log(g: &mut Sre, msg: &[u8]) {
-    let now = g.time.now;
+    let now = g.time.now.get();
     out!(g, ERRLOG; time_str(g, now), ":  ", msg.to_vec());
 }
 

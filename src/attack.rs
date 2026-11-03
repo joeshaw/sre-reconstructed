@@ -389,10 +389,10 @@ fn conventional(g: &mut Sre, me: usize, t: usize) -> bool {
             g.emp[me].planets[i].count += take[i] as i32;
             g.emp[t].planets[i].count -= take[i] as i32;
         }
-        g.emp[me].money.add(credits);
+        g.emp[me].money += credits;
         let tscore = g.emp[t].score;
         g.emp[me].score = g.emp[me].score.wrapping_add(17 * total + tscore.wrapping_mul(score as i32) / 10);
-        g.emp[t].money.sub(credits);
+        g.emp[t].money -= credits;
         let tscore = g.emp[t].score;
         g.emp[t].score = tscore.wrapping_sub(7 * total + tscore.wrapping_mul(score as i32) / 20);
         if g.emp[t].score < 0 {

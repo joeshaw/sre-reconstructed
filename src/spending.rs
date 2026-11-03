@@ -145,7 +145,7 @@ fn buy(g: &mut Sre, e: usize, price: i32, field: usize, name: &str, mut max: i32
     let n = in_i32(g, KIN);
     let v = field_get(&g.emp[e], field).wrapping_add(n);
     field_set(&mut g.emp[e], field, v);
-    g.emp[e].money.sub(n.wrapping_mul(price));
+    g.emp[e].money -= n.wrapping_mul(price);
 }
 
 // 61a7:0384
@@ -175,7 +175,7 @@ fn cmd_ship(g: &mut Sre, e: usize, price: i32) {
     if x.cmdship > 100 {
         x.cmdship = 100;
     }
-    x.money.sub(price);
+    x.money -= price;
 }
 
 // 61a7:04d2
@@ -199,7 +199,7 @@ fn sell(g: &mut Sre, e: usize, mut price: i32, field: usize, name: &str) {
     }
     let v = field_get(&g.emp[e], field).wrapping_sub(n);
     field_set(&mut g.emp[e], field, v);
-    g.emp[e].money.add(n.wrapping_mul(price));
+    g.emp[e].money += n.wrapping_mul(price);
 }
 
 // 61a7:0000: a menu of the planet types with the empire's counts.
@@ -263,7 +263,7 @@ fn buy_planets(g: &mut Sre, e: usize, price: i32, max: &mut i32) -> i32 {
     let n = in_i32(g, KIN);
     *max -= n;
     g.emp[e].score = g.emp[e].score.wrapping_add(3i32.wrapping_mul(n));
-    g.emp[e].money.sub(n.wrapping_mul(price));
+    g.emp[e].money -= n.wrapping_mul(price);
     n
 }
 

@@ -363,8 +363,8 @@ pub fn play_game(g: &mut Sre, p: &mut Player) {
     if g.emp[e].phase == PH_START && g.emp[e].turnsused == 0 {
         first_turn(g, p, e);
     }
-    g.emp[e].lastplay = g.time.now;
-    p.lastplay = g.time.now;
+    g.emp[e].lastplay.set(g.time.now.get());
+    p.lastplay.set(g.time.now.get());
     g.emp[e].inactivedays = g.grl(&R_INACTIVETIMEOUT) as i16;
     if g.grb(&crate::messages::R_MESSAGES) {
         crate::messages::read_messages(g, p, e);

@@ -2,71 +2,74 @@
 // 1970 as returned by Borland's time().
 
 use crate::brtl::{b_dostounix, b_ltoa, b_time, b_unixtodos, BDate, BTime};
+use crate::game::Time;
 use crate::sre::Sre;
 use crate::sstring::Str;
 use crate::stream::*;
 
 pub struct TimeState {
-    pub now: i32,     // DS:d35c time at start-up
-    pub today: i32,   // DS:bbb9 midnight today
+    pub now: Time,    // DS:d35c time at start-up
+    pub today: Time,  // DS:bbb9 midnight today
     pub timesep: u8,  // DS:bb82 Output.Time.Separator
     pub time24: i16,  // DS:bb83 Output.Time.24Hour
 }
 
 impl Default for TimeState {
     fn default() -> Self {
-        TimeState { now: 0, today: 0, timesep: b':', time24: 0 }
+        TimeState { now: Time::default(), today: Time::default(), timesep: b':', time24: 0 }
     }
 }
 
 // 206a:0bce (static constructors)
 pub fn init_time(g: &mut Sre) {
-    g.time.now = b_time();
-    g.time.today = midnight(g.time.now);
+    g.time.now.set(b_time());
+    g.time.today = midnight(g.time.now.get());
 }
 
-#[allow(dead_code)] // unused, as in the original
-pub fn time_second(t: i32) -> i16 {
-    b_unixtodos(t).1.ti_sec as i16 // 206a:008c
-}
-#[allow(dead_code)] // unused, as in the original
-pub fn time_minute(t: i32) -> i16 {
-    b_unixtodos(t).1.ti_min as i16 // 206a:00a8
-}
-#[allow(dead_code)] // unused, as in the original
-pub fn time_hour(t: i32) -> i16 {
-    b_unixtodos(t).1.ti_hour as i16 // 206a:00c2
-}
-pub fn time_day(t: i32) -> i16 {
-    b_unixtodos(t).0.da_day as i16 // 206a:00de
-}
-pub fn time_month(t: i32) -> i16 {
-    b_unixtodos(t).0.da_mon as i16 // 206a:00f9
-}
-pub fn time_year(t: i32) -> i16 {
-    b_unixtodos(t).0.da_year // 206a:0114
+impl Time {
+    #[allow(dead_code)] // unused, as in the original
+    pub fn second(&self) -> i16 {
+        b_unixtodos(self.v).1.ti_sec as i16 // 206a:008c
+    }
+    #[allow(dead_code)] // unused, as in the original
+    pub fn minute(&self) -> i16 {
+        b_unixtodos(self.v).1.ti_min as i16 // 206a:00a8
+    }
+    #[allow(dead_code)] // unused, as in the original
+    pub fn hour(&self) -> i16 {
+        b_unixtodos(self.v).1.ti_hour as i16 // 206a:00c2
+    }
+    pub fn day(&self) -> i16 {
+        b_unixtodos(self.v).0.da_day as i16 // 206a:00de
+    }
+    pub fn month(&self) -> i16 {
+        b_unixtodos(self.v).0.da_mon as i16 // 206a:00f9
+    }
+    pub fn year(&self) -> i16 {
+        b_unixtodos(self.v).0.da_year // 206a:0114
+    }
 }
 
 // 206a:01b1
-pub fn midnight(t: i32) -> i32 {
+pub fn midnight(t: i32) -> Time {
     let (d, mut m) = b_unixtodos(t);
     m.ti_hund = 0;
     m.ti_hour = 0;
     m.ti_min = 0;
     m.ti_sec = 0;
-    b_dostounix(&d, &m)
+    Time::of(b_dostounix(&d, &m))
 }
 
 // 206a:0251
-pub fn make_date(year: i16, month: i16, day: i16) -> i32 {
+pub fn make_date(year: i16, month: i16, day: i16) -> Time {
     let m = BTime::default();
     let d = BDate { da_year: year, da_mon: month as i8, da_day: day as i8 };
-    b_dostounix(&d, &m)
+    Time::of(b_dostounix(&d, &m))
 }
 
 // Midnight of the latest representable date: "no end date".
 pub fn never_date() -> i32 {
-    midnight(0x7fffffff)
+    midnight(0x7fffffff).get()
 }
 
 const MONTHS: [&[u8]; 13] = [b"", b"Jan", b"Feb", b"Mar", b"Apr", b"May", b"Jun", b"Jul", b"Aug", b"Sep", b"Oct", b"Nov", b"Dec"];
@@ -112,7 +115,7 @@ pub fn put_time(g: &mut Sre, s: Sid, t: i32) {
 
 // 206a:0498: enter a date as mm/dd/yyyy (or mm/dd/yy); Enter on an empty
 // field gives 0.
-pub fn input_date(g: &mut Sre) -> i32 {
+pub fn input_date(g: &mut Sre) -> Time {
     const TEMPLATE: &[u8] = b"mm/dd/yyyy"; // DS:bc03
     let i = KIN;
     let mut buf = [0u8; 0xf];
@@ -129,7 +132,7 @@ pub fn input_date(g: &mut Sre) -> i32 {
     };
     crate::devices::kin_begin_input(g);
     echo_s(g, TEMPLATE);
-    let t: i32;
+    let t: Time;
     loop {
         let c = get_key(g, i);
         let digit = |k: usize| buf[k] as i16 - b'0' as i16;
@@ -144,7 +147,7 @@ pub fn input_date(g: &mut Sre) -> i32 {
             let month = digit(0) * 10 + digit(1);
             let day = digit(2) * 10 + digit(3);
             let d = make_date(year, month, day);
-            if time_year(d) == year && time_month(d) == month && time_day(d) == day {
+            if d.year() == year && d.month() == month && d.day() == day {
                 echo(g, i, b'\n');
                 t = d;
                 break;
@@ -158,7 +161,7 @@ pub fn input_date(g: &mut Sre) -> i32 {
         }
         if c == 0 {
             echo(g, i, b'\n');
-            t = 0;
+            t = Time::default();
             break;
         }
         if c == b'/' {

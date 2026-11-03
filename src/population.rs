@@ -131,7 +131,7 @@ pub fn end_of_turn(g: &mut Sre, p: &mut Player, e: usize) {
         }
         if deposit {
             let old = g.emp[e].bank.get();
-            g.emp[e].bank.add(money);
+            g.emp[e].bank += money;
             money = money.wrapping_sub(g.emp[e].bank.get().wrapping_sub(old));
         }
     }

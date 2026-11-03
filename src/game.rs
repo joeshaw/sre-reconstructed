@@ -31,7 +31,8 @@ impl Money {
         self.v
     }
 
-    // 28ec:003d: above the maximum clamps; below the minimum becomes 0.
+    // 28ec:0094, through the clamp at 28ec:003d: above the maximum
+    // clamps; below the minimum becomes 0.  (The original's operator=.)
     pub fn set(&mut self, x: i32) {
         self.v = if x > MONEY_MAX {
             MONEY_MAX
@@ -41,11 +42,13 @@ impl Money {
             x
         };
     }
+}
 
-    // 28ec:00b3: saturating add, done in decreasing power-of-two steps.
-    pub fn add(&mut self, mut x: i32) {
+// 28ec:00b3: saturating add, done in decreasing power-of-two steps.
+impl std::ops::AddAssign<i32> for Money {
+    fn add_assign(&mut self, mut x: i32) {
         if x < 0 {
-            self.sub(x.wrapping_neg());
+            *self -= x.wrapping_neg();
             return;
         }
         let mut cur = self.v;
@@ -59,11 +62,13 @@ impl Money {
         }
         self.set(cur);
     }
+}
 
-    // 28ec:0199
-    pub fn sub(&mut self, mut x: i32) {
+// 28ec:0199
+impl std::ops::SubAssign<i32> for Money {
+    fn sub_assign(&mut self, mut x: i32) {
         if x < 0 {
-            self.add(x.wrapping_neg());
+            *self += x.wrapping_neg();
             return;
         }
         let mut cur = self.v;
@@ -76,6 +81,39 @@ impl Money {
             step /= 2;
         }
         self.set(cur);
+    }
+}
+
+// 206a: a time, as DOS-local seconds since 1970 (Borland's time()).  The
+// original also has a constructor that sets it to the current time
+// (206a:0056), operator- for the seconds between two times (206a:012c),
+// operator+ for a time plus seconds (206a:013f) and operator<< for
+// streams (206a:02bd); here times are set explicitly and the arithmetic
+// is done on i32s.  The accessors are in timeutil.rs.
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+pub struct Time {
+    pub v: i32,
+}
+
+impl Le for Time {
+    const SIZE: usize = 4;
+    fn rd(b: &[u8]) -> Self {
+        Time { v: i32::rd(b) }
+    }
+    fn wr(&self, b: &mut [u8]) {
+        self.v.wr(b)
+    }
+}
+
+impl Time {
+    pub fn of(t: i32) -> Time {
+        Time { v: t }
+    }
+    pub fn get(&self) -> i32 {
+        self.v
+    }
+    pub fn set(&mut self, t: i32) {
+        self.v = t;
     }
 }
 
@@ -179,15 +217,19 @@ pub const P_URBAN: usize = 7;
 pub const P_SUPPLY: usize = 8;
 pub const P_ANTIPOLLUTION: usize = 9;
 
+// Every Money in the original's records (and some locals) is followed by
+// a second Money that is constructed with it and never used again, as if
+// declared through a type holding two: these are money2, bank2, income2
+// and BankData::amount2.
+
 record! {
     pub struct Empire {
         pub id: i16,                    // 000
         pub name: [u8; 0x20],           // 002
         pub player: i16,                // 022
-        pub created: i32,               // 024
-        pub lastplay: i32,              // 028
-        pub planets: [PlanetSet; 10],   // 02c
-        pub u_0a4: [u8; 0x48],          // 0a4
+        pub created: Time,              // 024
+        pub lastplay: Time,             // 028
+        pub planets: [PlanetSet; 16],   // 02c by type (P_*); 10..15 are never used
         pub treaty: [Treaty; 26],       // 0ec
         pub soldiers: i32,              // 154
         pub fighters: i32,              // 158
@@ -202,7 +244,7 @@ record! {
         pub score: i32,                 // 174
         pub points: i32,                // 178 tournament points (Solar/Planet/Weapons Master)
         pub money: Money,               // 17c
-        pub m180: Money,                // 180 (unused)
+        pub money2: Money,              // 180 see below
         pub population: i32,            // 184 millions
         pub pollution: i32,             // 188 exatons
         pub food: i32,                  // 18c megatons
@@ -213,7 +255,7 @@ record! {
         pub turnsperday: i16,           // 198
         pub bonusyear: i16,             // 19a year of the next protection bonus
         pub bank: Money,                // 19c savings (< 0: loan)
-        pub m1a0: Money,                // 1a0 (unused)
+        pub bank2: Money,               // 1a0 see money2
         pub loanpayment: i32,           // 1a4 owed on the loan each turn
         pub w1a8: i16,                  // 1a8 (unused)
         pub taxrate: i8,                // 1aa
@@ -225,7 +267,7 @@ record! {
         pub localplay: i16,             // 1b8 unlimited turns (Galaxy::localonly)
         pub phase: i16,                 // 1ba of the turn in progress, PH_*
         pub income: Money,              // 1bc last turn's, in thousands
-        pub m1c0: Money,                // 1c0 (unused)
+        pub income2: Money,             // 1c0 see money2
         pub shortfalls: u8,             // 1c4 SF_* this turn
         pub effchange: i8,              // 1c5 change of effectiveness from the army's upkeep
         pub effnext: i8,                // 1c6 effectiveness after it; < 0: desertion
@@ -236,7 +278,7 @@ record! {
         pub weapons: u16,               // 227 W_*
         pub attacks: i16,               // 229 made today
         pub agents: i32,                // 22b covert agents
-        // 22f: the empires each covert operation was done to (masks); see op_mask
+        // 22f: the empires each covert operation was done to (masks); see OpMask
         pub aidmask: i32,               // 22f insurgent aid, this turn
         pub dissensionmask: i32,        // 233 this turn
         pub demoralizemask: i32,        // 237 this turn
@@ -261,7 +303,7 @@ record! {
         pub bondhours: i16,             // 2cf
         pub bondturns: i16,             // 2d1
         pub intercepts: [i8; 25],       // 2d3 our messages each empire's spies will intercept
-        pub lastnews: i32,              // 2ec when the news was last read
+        pub lastnews: Time,             // 2ec when the news was last read
         pub lightcruisers: i32,         // 2f0
         pub troubles: i32,              // 2f4 TR_* (shown, but never set)
         pub bonuses: i32,               // 2f8 B_* (shown, but never set)
@@ -289,11 +331,11 @@ record! {
     // Galaxy.II (DS:cd6a, 0x3c6 bytes).
     pub struct Galaxy {
         pub name: [u8; 0x40],           // 000 (name[0] == 0: no game)
-        pub created: i32,               // 040
-        pub startdate: i32,             // 044 play starts
-        pub lastregen: i32,             // 048 planets last came back onto the market
-        pub joindeadline: i32,          // 04c no joining from this date
-        pub enddate: i32,               // 050
+        pub created: Time,              // 040
+        pub startdate: Time,            // 044 play starts
+        pub lastregen: Time,            // 048 planets last came back onto the market
+        pub joindeadline: Time,         // 04c no joining from this date
+        pub enddate: Time,              // 050
         pub empire: [Checksum; 25],     // 054
         pub pirate: [Checksum; 9],      // 2ac
         pub inflation: i16,             // 384 prices grow with the empire
@@ -317,7 +359,7 @@ record! {
         pub nukelimit: i16,             // 3b2 most planets a nuclear bomb destroys
         pub nukepercent: i16,           // 3b4 of the planets a nuclear bomb destroys
         pub oilprice: i32,              // 3b6
-        pub lasthourly: i32,            // 3ba hourly maintenance last ran
+        pub lasthourly: Time,           // 3ba hourly maintenance last ran
         pub interest: i16,              // 3be
         pub newspaper: i16,             // 3c0 that prints the news, 0..3
         pub psionicprice: i32,          // 3c2 the smuggler's price of a psionic bomb
@@ -331,8 +373,8 @@ record! {
         pub bbs: [u8; 0x40],            // 040
         pub regto: [u8; 0x50],          // 080 registered to
         pub bank: [u8; 0x50],           // 0d0 name of the bank
-        pub created: i32,               // 120
-        pub inuse: i32,                 // 124 since when the game is in use, 0 = not
+        pub created: Time,              // 120
+        pub inuse: Time,                // 124 since when the game is in use, 0 = not
         pub regstate: i16,              // 128 RS_* (0..5 valid)
         pub galaxy: Checksum,           // 12a
     }
@@ -345,8 +387,8 @@ record! {
         pub user: [u8; 0x20],           // 02 BBS user name
         pub name: [u8; 0x20],           // 22 name in the game
         pub b42: [u8; 0x20],            // 42 (cleared, never used)
-        pub created: i32,               // 62
-        pub lastplay: i32,              // 66
+        pub created: Time,              // 62
+        pub lastplay: Time,             // 66
         pub male: i16,                  // 6a
         pub prefs1: u8,                 // 6c PF1_*
         pub prefs2: u8,                 // 6d PF2_*
@@ -360,7 +402,7 @@ record! {
     pub struct Pirate {
         pub name: [u8; 0x20],           // 00
         pub level: i16,                 // 20 1..9
-        pub lasthour: i32,              // 22
+        pub lasthour: Time,             // 22
         pub u_026: [u8; 0x69],          // 26 (cleared, never used)
         pub color: u8,                  // 8f
         pub money: i32,                 // 90

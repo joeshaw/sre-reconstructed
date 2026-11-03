@@ -148,15 +148,15 @@ fn set_planets(x: &mut Empire, typ: usize, count: i32, target: i32, output: i32)
 
 // 48cc:0254
 pub fn empire_init(g: &mut Sre, e: usize) {
-    let now = g.time.now;
+    let now = g.time.now.get();
     let open = g.open != 0;
     let (protection, grantturns) = (g.galaxy.protection, g.galaxy.grantturns);
     let x = &mut g.emp[e];
     x.id = -1;
     x.name[0] = 0;
     x.player = -1;
-    x.lastplay = now;
-    x.created = now;
+    x.lastplay.set(now);
+    x.created.set(now);
     x.inactivedays = 4;
     set_planets(x, P_PETROLEUM, 0, 1900, 1900);
     set_planets(x, P_EDUCATION, 3, 17, 39);
@@ -252,7 +252,7 @@ pub fn empire_init(g: &mut Sre, e: usize) {
     x.w26f = [0; 9];
     x.researchpoints = 0;
     x.planetsbought = 0;
-    x.lastnews = 0;
+    x.lastnews.set(0);
 }
 
 // 48cc:112c
@@ -437,7 +437,7 @@ pub fn protection_bonus(g: &mut Sre, e: usize) -> i32 {
     if v < 0 {
         v = 0;
     }
-    g.emp[e].money.add(1000i32.wrapping_mul(v));
+    g.emp[e].money += 1000i32.wrapping_mul(v);
     g.galaxy.coordfund -= v;
     let gt = g.galaxy.grantturns;
     g.emp[e].bonusyear = (g.emp[e].year as i32 + gt as i32) as i16;
@@ -501,12 +501,12 @@ pub fn bank_interest(g: &mut Sre, e: usize) {
     let mut b = x.bank.get();
     if b < 0 && b >= -500000000 {
         let v = interest.wrapping_mul(b / 100);
-        x.bank.add(v);
+        x.bank += v;
     }
     b = x.bank.get();
     if b > 0 && b <= 1000000000 {
         let v = interest.wrapping_mul(b / 500);
-        x.bank.add(v);
+        x.bank += v;
     }
 }
 

@@ -34,8 +34,8 @@ pub const FS_RETURNING: i16 = 4;
 
 record! {
     pub struct TradeData {
-        pub created: i32,   // 00
-        pub expires: i32,   // 04
+        pub created: Time,   // 00
+        pub expires: Time,   // 04
         pub to: i16,        // 08
         pub from: i16,      // 0a
         pub state: i16,     // 0c FS_*
@@ -117,8 +117,8 @@ fn trade_init(g: &mut Sre, t: &mut TradeData) {
     t.to = -1;
     t.from = -1;
     t.state = FS_DONE;
-    t.created = g.time.now;
-    t.expires = t.created.wrapping_add(86400i32.wrapping_mul(g.grl(&R_TRADEEXPIRE)));
+    t.created.set(g.time.now.get());
+    t.expires.set(t.created.get().wrapping_add(86400i32.wrapping_mul(g.grl(&R_TRADEEXPIRE))));
 }
 
 // 6e3f:05fe
@@ -324,7 +324,7 @@ fn send_trade(g: &mut Sre, e: usize) -> bool {
         }
     }
     g.emp[e].carriers -= t.carriers;
-    g.emp[e].money.sub(t.offer.credits);
+    g.emp[e].money -= t.offer.credits;
     g.emp[e].tradegoods += goods_value(&t.offer);
     t.to = to;
     t.from = g.emp[e].id;
@@ -359,7 +359,7 @@ fn can_meet(g: &mut Sre, t: &TradeData, e: usize) -> bool {
         }
     }
     let mut m = g.emp[e].money;
-    m.add(g.emp[e].bank.get());
+    m += g.emp[e].bank.get();
     t.demand.credits.wrapping_sub(t.offer.credits) <= m.get()
 }
 
@@ -439,7 +439,7 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
             }
             if c == b'I' {
                 t.state = FS_SENT;
-                t.created = t.created.wrapping_add(2);
+                t.created.set(t.created.get().wrapping_add(2));
                 return true;
             }
             for i in 1..=9i16 {
@@ -450,10 +450,10 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
             }
             g.emp[o].tradegoods -= goods_value(&t.offer);
             g.emp[e].tradegoods += goods_value(&t.demand);
-            g.emp[e].money.sub(t.demand.credits.wrapping_sub(t.offer.credits));
+            g.emp[e].money -= t.demand.credits.wrapping_sub(t.offer.credits);
             if g.emp[e].money.get().wrapping_sub(t.demand.credits).wrapping_add(t.offer.credits) < 0 {
                 let m = g.emp[e].money.get();
-                g.emp[e].bank.add(m);
+                g.emp[e].bank += m;
                 g.emp[e].money.set(0);
             }
             t.state = FS_ACCEPTED;
@@ -476,10 +476,10 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
                 }
             }
             while money_overflow(g.emp[e].money.get(), t.demand.credits) {
-                g.emp[e].bank.add(1000000);
+                g.emp[e].bank += 1000000;
                 t.demand.credits -= 1000000;
             }
-            g.emp[e].money.add(t.demand.credits);
+            g.emp[e].money += t.demand.credits;
             g.emp[e].carriers += t.carriers;
             g.emp[o].tradegoods -= goods_value(&t.demand);
             false
@@ -499,10 +499,10 @@ fn arrive_trade(g: &mut Sre, e: usize, t: &mut TradeData) -> bool {
                 }
             }
             while money_overflow(g.emp[e].money.get(), t.offer.credits) {
-                g.emp[e].bank.add(1000000);
+                g.emp[e].bank += 1000000;
                 t.offer.credits -= 1000000;
             }
-            g.emp[e].money.add(t.offer.credits);
+            g.emp[e].money += t.offer.credits;
             g.emp[e].carriers += t.carriers;
             g.emp[e].tradegoods -= goods_value(&t.offer);
             false
@@ -533,7 +533,7 @@ pub fn trade_arrivals(g: &mut Sre, _p: &mut Player, e: usize) -> i16 {
                     None => break,
                 };
                 if !is_class(o.as_ref(), TRADE_CLASS) {
-                    let gn = g.time.now;
+                    let gn = g.time.now.get();
                     put_time(g, ERRLOG, gn);
                     out!(g, ERRLOG; " Error@1: read a ", o.class_name(), " from the trading file.\n");
                     break;
@@ -552,7 +552,7 @@ pub fn trade_arrivals(g: &mut Sre, _p: &mut Player, e: usize) -> i16 {
                     msg = m;
                 }
                 let t = o.as_any().downcast_mut::<TradingFleet>().unwrap();
-                if !done && last < idx && t.d.to == g.emp[e].id && now > t.d.created {
+                if !done && last < idx && t.d.to == g.emp[e].id && now > t.d.created.get() {
                     n += 1;
                     done = true;
                     last = idx;
@@ -614,7 +614,7 @@ pub fn trades_empire_deleted(g: &mut Sre, id: i16) -> i16 {
             None => break,
         };
         if !is_class(o.as_ref(), TRADE_CLASS) {
-            let gn = g.time.now;
+            let gn = g.time.now.get();
             put_time(g, ERRLOG, gn);
             out!(g, ERRLOG; " Error@2: read a ", o.class_name(), " from the trading file.\n");
             break;
@@ -625,7 +625,7 @@ pub fn trades_empire_deleted(g: &mut Sre, id: i16) -> i16 {
             msg = f.read(g);
             if let Some(m) = &msg {
                 if !is_class(m.as_ref(), MESSAGE_CLASS) {
-                    let gn = g.time.now;
+                    let gn = g.time.now.get();
                     put_time(g, ERRLOG, gn);
                     out!(g, ERRLOG; " Error@2: read a ", m.class_name(), " from the trading file (expecting a Message).\n");
                     continue; // (both objects are lost)

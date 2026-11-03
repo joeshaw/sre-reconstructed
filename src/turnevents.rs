@@ -113,7 +113,7 @@ fn fate(g: &mut Sre, e: usize, p: usize) {
         let n = (g.emp[e].money.get() / 10000).wrapping_mul(random(100) as i32);
         if n > 0 {
             add_clamp(&mut g.pir[p].money, n);
-            g.emp[e].money.sub(n);
+            g.emp[e].money -= n;
             maybe_screen(g, 15, b"Thieves");
             bad(g);
             kout!(g; cnum(g), n, cn(g), " credits were stolen by ");
@@ -394,17 +394,17 @@ fn offer(g: &mut Sre, e: usize, price: i32, buyprompt: &[u8], bought: &str, cann
             return;
         }
         if g.emp[e].bank.get() >= price && yes_no(g, 1, b"Withdraw funds from the bank for this purchase") {
-            g.emp[e].money.add(price);
-            g.emp[e].bank.sub(price);
+            g.emp[e].money += price;
+            g.emp[e].bank -= price;
         }
         kout!(g; bought);
         let x = &mut g.emp[e];
         x.weapons |= weapon;
         if x.money.get() >= price {
-            x.money.sub(price);
+            x.money -= price;
         } else {
             let m = x.money.get();
-            x.bank.sub(price.wrapping_sub(m));
+            x.bank -= price.wrapping_sub(m);
             x.money.set(0);
         }
     } else {
@@ -516,17 +516,17 @@ pub fn advisor(g: &mut Sre, _p: &mut Player, e: usize) {
                 kout!(g; "Buy a psionic bomb for ", price, " credits");
                 if yes_no(g, 2, b"") {
                     if g.emp[e].bank.get() >= price && yes_no(g, 1, b"Withdraw funds from the bank for this purchase") {
-                        g.emp[e].money.add(price);
-                        g.emp[e].bank.sub(price);
+                        g.emp[e].money += price;
+                        g.emp[e].bank -= price;
                     }
                     kout!(g; "You have bought a psionic bomb from the smuggler.\n");
                     let x = &mut g.emp[e];
                     x.weapons |= W_PSIONIC;
                     if x.money.get() >= price {
-                        x.money.sub(price);
+                        x.money -= price;
                     } else {
                         let m = x.money.get();
-                        x.bank.sub(price.wrapping_sub(m));
+                        x.bank -= price.wrapping_sub(m);
                         x.money.set(0);
                     }
                     g.galaxy.psionicprice = g.galaxy.psionicprice.wrapping_add(2i32.wrapping_mul(g.galaxy.psionicprice).wrapping_add(1000000));

@@ -60,7 +60,7 @@ pub fn create_object(g: &mut Sre, name: &[u8]) -> Option<Box<dyn Streamable>> {
             return Some(f());
         }
     }
-    let now = g.time.now;
+    let now = g.time.now.get();
     put_time(g, ERRLOG, now);
     out!(g, ERRLOG; " Tried to create object of type ", name.to_vec(), ".\n");
     None
@@ -130,7 +130,7 @@ impl RawFile {
             Err(e) => {
                 self.fd = None;
                 self.err = dos_errno(&e);
-                let now = g.time.now;
+                let now = g.time.now.get();
                 if self.err == 2 {
                     put_time(g, ERRLOG, now);
                     out!(g, ERRLOG; " File '", n.to_vec(), "' not openable.\n");
@@ -195,7 +195,7 @@ impl RawFile {
                 false
             }
             Ok(n) if n < buf.len() => {
-                let now = g.time.now;
+                let now = g.time.now.get();
                 put_time(g, ERRLOG, now);
                 let name = self.name.clone();
                 out!(g, ERRLOG; " Error writing to file ' ", name, "', disk full?\n");
@@ -254,7 +254,7 @@ impl RecordHeader {
 }
 
 fn log_file(g: &mut Sre, f: &RawFile, pre: &str, post: &str) {
-    let now = g.time.now;
+    let now = g.time.now.get();
     put_time(g, ERRLOG, now);
     let name = f.name.clone();
     out!(g, ERRLOG; pre, name, post);
@@ -378,7 +378,7 @@ impl StreamFile {
             self.inp.close();
             self.outp.close();
             host_remove(&self.temp);
-            let now = g.time.now;
+            let now = g.time.now.get();
             put_time(g, ERRLOG, now);
             let p = self.path.clone();
             out!(g, ERRLOG; " Error writing to ", p, ".\n");

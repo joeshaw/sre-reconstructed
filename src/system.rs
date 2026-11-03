@@ -9,8 +9,8 @@ const PIRATE_FILE: &[u8] = b"Data/Pirate.II"; // DS:a1b4
 
 // 6c38:0000
 pub fn system_load(g: &mut Sre) {
-    g.system.created = b_time();
-    g.system.inuse = b_time();
+    g.system.created.set(b_time());
+    g.system.inuse.set(b_time());
     g.system.galaxy.clear();
     let mut f = DataFile::new(g, SYSTEM_FILE, 0x142, 0, 1);
     let mut b = g.system.to_bytes();
@@ -24,13 +24,13 @@ pub fn system_load(g: &mut Sre) {
 
 // 6c38:00f6
 pub fn system_clear_in_use(g: &mut Sre) {
-    g.system.inuse = 0;
+    g.system.inuse.set(0);
 }
 
 // 6c38:011d
 pub fn system_init(g: &mut Sre) {
-    g.system.created = g.time.now;
-    g.system.inuse = g.time.now;
+    g.system.created.set(g.time.now.get());
+    g.system.inuse.set(g.time.now.get());
     g.system.galaxy.clear();
     for i in 0..0x40 {
         g.system.bbs[i] = 0;
@@ -64,10 +64,10 @@ pub fn system_maintenance(g: &mut Sre) {
 // 6c38:02c9
 pub fn system_valid(g: &Sre) -> bool {
     let s = &g.system;
-    if !(s.inuse > 0x12c684c0 && s.inuse < 0x38538e40) {
+    if !(s.inuse.get() > 0x12c684c0 && s.inuse.get() < 0x38538e40) {
         return false;
     }
-    if !(s.created > 0x12c684c0 && s.created < 0x38538e40) {
+    if !(s.created.get() > 0x12c684c0 && s.created.get() < 0x38538e40) {
         return false;
     }
     if s.regstate < 0 || s.regstate > 5 {
@@ -102,7 +102,7 @@ pub fn system_load_data(g: &mut Sre) -> i16 {
     g.galaxy = Galaxy::from_bytes(&b);
     drop(gf);
     if ok && !check && g.galaxy.name[0] != 0 {
-        let now = g.time.now;
+        let now = g.time.now.get();
         out!(g, NEWS; time_str(g, now), ": It appears that the data files for this game have been tampered with.\n");
         galaxy_init(g);
         out!(g, ERRLOG; time_str(g, now), ":  Game data files corrupt!\n");
@@ -113,13 +113,13 @@ pub fn system_load_data(g: &mut Sre) -> i16 {
     };
     if n > 0x2fc {
         g.open = 0;
-        let now = g.time.now;
+        let now = g.time.now.get();
         out!(g, ERRLOG; time_str(g, now),
              ":  FATAL ERROR!  Empire file format has changed!  This version of SRE cannot handle files created by newer versions!\n");
         g.exit(5);
     }
     if n > 0 && n < 0x2fc {
-        let now = g.time.now;
+        let now = g.time.now.get();
         out!(g, ERRLOG; time_str(g, now),
              ":  NOTICE!  Empire file format has changed.  SRE is assuming you have recently installed a newer version.\n");
     }
@@ -134,7 +134,7 @@ pub fn system_load_data(g: &mut Sre) -> i16 {
             if !good && g.galaxy.name[0] != 0 {
                 empire_init(g, i);
                 if g.emp[i].exists() && g.galaxy.name[0] != 0 {
-                    let now = g.time.now;
+                    let now = g.time.now.get();
                     out!(g, NEWS; time_str(g, now), ":  It appears that the data files for ");
                     put_untranslated(g, NEWS, &ename(g, i));
                     out!(g, NEWS; " have been tampered with.\n");
@@ -344,7 +344,7 @@ pub fn rankings(g: &mut Sre) {
         kout!(g; col(14), "\nEmpires Sorted by Score");
         rank_menu(g, &idx, &emp, &score, n);
         pause_prompt(g);
-        if g.galaxy.enddate < never_date() {
+        if g.galaxy.enddate.get() < never_date() {
             sort_ranks(&mut idx, &points, n);
             kout!(g; col(14), "\nEmpires Sorted by Tournament Points");
             rank_menu(g, &idx, &emp, &points, n);

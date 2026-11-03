@@ -17,8 +17,8 @@ pub fn player_reset(g: &Sre, p: &mut Player) {
     p.prefs2 &= !(PF2_BATTLEMSG | PF2_REPORTDATES | PF2_ENTERSTAYS);
     p.prefs2 &= 0x1f;
     p.w6e = 0;
-    p.lastplay = g.time.now;
-    p.created = g.time.now;
+    p.lastplay.set(g.time.now.get());
+    p.created.set(g.time.now.get());
     p.seenplanets = 0;
 }
 
@@ -31,8 +31,8 @@ fn read_into(f: &mut DataFile, rec: i32, p: &mut Player) -> bool {
 
 // 64d2:0000
 pub fn player_load(g: &mut Sre, p: &mut Player, index: i16) {
-    p.created = b_time();
-    p.lastplay = b_time();
+    p.created.set(b_time());
+    p.lastplay.set(b_time());
     player_reset(g, p);
     if index == -1 {
         return;

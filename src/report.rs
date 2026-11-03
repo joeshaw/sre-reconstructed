@@ -1,6 +1,6 @@
 // Reports: messages to empires, kept in stream files (segment 69d7).
 
-use crate::game::{has_pref, Player, MAXEMPIRES, PF2_REPORTDATES};
+use crate::game::{has_pref, Player, Time, MAXEMPIRES, PF2_REPORTDATES};
 use crate::layout::{record, Le};
 use crate::sre::Sre;
 use crate::streamfile::{append_object, StreamFile, Streamable};
@@ -15,8 +15,8 @@ pub const REPORT_CLASS: &[u8] = b"Report"; // DS:91ce
 
 record! {
     pub struct ReportData {
-        pub created: i32,        // 02
-        pub expires: i32,        // 06
+        pub created: Time,        // 02
+        pub expires: Time,        // 06
         pub count: i16,          // 0a
         pub to: [i16; 25],       // 0c recipients
         pub len: u16,            // 3e
@@ -36,8 +36,8 @@ pub fn new_report() -> Box<dyn Streamable> {
 impl Report {
     fn new_raw(now: i32) -> Report {
         let mut d = ReportData::default();
-        d.created = now;
-        d.expires = now.wrapping_add(0x93a80);
+        d.created.set(now);
+        d.expires.set(now.wrapping_add(0x93a80));
         d.count = 0;
         d.len = 0;
         d.to = [-1; 25];
@@ -46,7 +46,7 @@ impl Report {
 
     // 69d7:022f
     pub fn new(g: &Sre) -> Report {
-        Report::new_raw(g.time.now)
+        Report::new_raw(g.time.now.get())
     }
 
     // 69d7:018d
@@ -102,7 +102,7 @@ impl Report {
         kout!(g; col(c1), b"\xc4\xc4[", col(c2), n, col(c1), b"]\xc4\xc4");
         if showtime {
             kout!(g; "      ", col(8));
-            put_time(g, KOUT, self.d.created);
+            put_time(g, KOUT, self.d.created.get());
         }
         let cn = g.dev.c_normal;
         kout!(g; cn, b'\n');
@@ -164,7 +164,7 @@ impl Streamable for Report {
         if self.d.count == 0 {
             return true;
         }
-        g.time.now > self.d.expires
+        g.time.now.get() > self.d.expires.get()
     }
     // 69d7:01c9
     fn on_empire_deleted(&mut self, _g: &mut Sre, id: i16) {
@@ -216,7 +216,7 @@ pub fn rep_of(g: &mut Sre, s: Sid) -> &mut ReportOut {
 
 // The report's date.
 pub fn report_set_time(g: &mut Sre, s: Sid, t: i32) {
-    rep_of(g, s).rep.d.created = t;
+    rep_of(g, s).rep.d.created.set(t);
 }
 
 // 69d7:09eb: the end of the ReportOut's scope: file the report.

@@ -29,16 +29,16 @@ pub enum EvKind {
 pub struct Event {
     pub kind: EvKind,
     pub empire: i16,  // 02 owner, -1 when canceled
-    pub created: i32, // 04
-    pub expires: i32, // 08
-    pub due: i32,     // 0c
+    pub created: Time, // 04
+    pub expires: Time, // 08
+    pub due: Time,     // 0c
     // covert operations
     pub target: i16,  // 10
     pub success: i16, // 12
     pub victim: i16,  // 14 the empire made to believe it was attacked
     // bank investments
     pub amount: Money,      // 10
-    pub m14: Money,         // 14
+    pub amount2: Money,     // 14 never used (see Empire::money2)
     pub name: [u8; 0x4e],   // 18
     pub year: i16,          // 66 matures in this year of the empire
     pub issuer: i16,        // 68 empire that issued the bonds, -1 = bank
@@ -49,14 +49,14 @@ impl Event {
         Event {
             kind,
             empire: 0,
-            created: 0,
-            expires: 0,
-            due: 0,
+            created: Time::default(),
+            expires: Time::default(),
+            due: Time::default(),
             target: 0,
             success: 0,
             victim: 0,
             amount: Money::default(),
-            m14: Money::default(),
+            amount2: Money::default(),
             name: [0; 0x4e],
             year: 0,
             issuer: 0,
@@ -66,9 +66,9 @@ impl Event {
     // 4c48:0000: expires after two weeks; due now.
     fn init(&mut self, g: &Sre, id: i16) {
         self.empire = id;
-        self.created = g.time.now;
-        self.expires = g.time.now.wrapping_add(0x127500);
-        self.due = g.time.now;
+        self.created.set(g.time.now.get());
+        self.expires.set(g.time.now.get().wrapping_add(0x127500));
+        self.due.set(g.time.now.get());
     }
 
     // 4c48:0392
@@ -92,7 +92,7 @@ impl Event {
         let mut e = Event::blank(EvKind::Bank);
         e.init(g, id);
         e.amount.v = 0;
-        e.m14.v = 0;
+        e.amount2.v = 0;
         e.amount.set(0);
         e.name = [0; 0x4e];
         strcpy(&mut e.name, name);
@@ -104,17 +104,19 @@ impl Event {
 
     // 4c48:011d
     pub fn set_due(&mut self, g: &Sre, days: i16, hours: i16, minutes: i16) {
-        self.due = g
+        self.due.set(
+            g
             .time
-            .now
+            .now.get()
             .wrapping_add(86400 * days as i32)
             .wrapping_add(3600 * hours as i32)
-            .wrapping_add(60 * minutes as i32);
+            .wrapping_add(60 * minutes as i32),
+        );
     }
 
     // 4c48:0218
     fn base_due(&self) -> bool {
-        b_time() >= self.due
+        b_time() >= self.due.get()
     }
 
     // [14]
@@ -166,10 +168,10 @@ impl Event {
             let rt = report_out_to(g, g.emp[t].id, None);
             let n = g.emp[t].soldiers / (((7 * b_rand() as i32) / 0x8000) + 9);
             out!(g, rt; cnum(g), n, cn(g), " soldiers dissented from your army due to propaganda.");
-            report_set_time(g, rt, self.due);
+            report_set_time(g, rt, self.due.get());
             out!(g, ra; "You successfully supported dissension of ", cnum(g), n, cn(g), " soldiers of the army of ",
                  cemp(g), uname(g, t), cn(g), b'.');
-            report_set_time(g, ra, self.due);
+            report_set_time(g, ra, self.due.get());
             g.emp[t].soldiers -= n;
             g.emp[a].agents += 1;
             report_done(g, rt);
@@ -178,10 +180,10 @@ impl Event {
             let ra = report_out_to(g, g.emp[a].id, None);
             let rt = report_out_to(g, g.emp[t].id, None);
             out!(g, ra; "You failed to cause dissension in ", cemp(g), uname(g, t), cn(g), b'.');
-            report_set_time(g, ra, self.due);
+            report_set_time(g, ra, self.due.get());
             out!(g, rt; "A covert agent from ", cemp(g), uname(g, a), cn(g),
                  " was caught trying to support dissension and was executed!");
-            report_set_time(g, rt, self.due);
+            report_set_time(g, rt, self.due.get());
             if g.grb(&R_FAILEDCOVERT) {
                 out!(g, NEWS; cemp(g), uname(g, a), cn(g), " was caught trying to support dissension in ", col(13),
                      uname(g, t), cn(g), ".\n");
@@ -199,9 +201,9 @@ impl Event {
             let ra = report_out_to(g, g.emp[a].id, None);
             let rt = report_out_to(g, g.emp[t].id, None);
             out!(g, ra; "You succeeded in demoralizing troops of ", cemp(g), uname(g, t), cn(g), b'.');
-            report_set_time(g, ra, self.due);
+            report_set_time(g, ra, self.due.get());
             out!(g, rt; "Mysterious shipments of alcohol demoralized your troops.");
-            report_set_time(g, rt, self.due);
+            report_set_time(g, rt, self.due.get());
             let drop = (g.emp[t].effectiveness as i32 / (((7 * b_rand() as i32) / 0x8000) + 7)) as i8;
             let x = &mut g.emp[t];
             x.effectiveness = (x.effectiveness as i32 - drop as i32) as i8;
@@ -218,10 +220,10 @@ impl Event {
             let ra = report_out_to(g, g.emp[a].id, None);
             let rt = report_out_to(g, g.emp[t].id, None);
             out!(g, ra; "You failed to demoralize troops in ", cemp(g), uname(g, t), cn(g), b'.');
-            report_set_time(g, ra, self.due);
+            report_set_time(g, ra, self.due.get());
             out!(g, rt; "A covert agent from ", cemp(g), uname(g, a), cn(g),
                  " was caught trying to demoralize troops and was executed!");
-            report_set_time(g, rt, self.due);
+            report_set_time(g, rt, self.due.get());
             if g.grb(&R_FAILEDCOVERT) {
                 out!(g, NEWS; cemp(g), uname(g, a), cn(g), " was caught trying to demoralize troops of ", col(13),
                      uname(g, t), cn(g), ".\n");
@@ -245,21 +247,21 @@ impl Event {
             }
             out!(g, rt; "Terrorists took hostages and you had to pay ", cnum(g), m.wrapping_add(b), cn(g),
                  " credits as ransom.");
-            report_set_time(g, rt, self.due);
+            report_set_time(g, rt, self.due.get());
             out!(g, ra; "Your covert agent succeeded in taking ", cnum(g), m.wrapping_add(b), cn(g), " credits from ",
                  cemp(g), uname(g, t), cn(g), " as ransom for hostages.");
-            report_set_time(g, ra, self.due);
-            g.emp[t].money.sub(m);
-            g.emp[t].bank.sub(b);
+            report_set_time(g, ra, self.due.get());
+            g.emp[t].money -= m;
+            g.emp[t].bank -= b;
             if g.emp[a].money.get().wrapping_add(b).wrapping_add(m) > 0 {
-                g.emp[a].money.add(b.wrapping_add(m));
+                g.emp[a].money += b.wrapping_add(m);
             } else {
                 // Fill the treasury, then the bank, in steps.
                 while m.wrapping_add(b) > 10000 {
                     if g.emp[a].money.get() < 2000000000 {
-                        g.emp[a].money.add(10000);
+                        g.emp[a].money += 10000;
                     } else {
-                        g.emp[a].bank.add(10000);
+                        g.emp[a].bank += 10000;
                     }
                     if m > 10000 {
                         m -= 10000;
@@ -270,7 +272,7 @@ impl Event {
                         b = 0;
                     }
                 }
-                g.emp[a].money.add(m.wrapping_add(b));
+                g.emp[a].money += m.wrapping_add(b);
             }
             g.emp[a].agents += 1;
             report_done(g, rt);
@@ -279,11 +281,11 @@ impl Event {
             let ra = report_out_to(g, g.emp[a].id, None);
             let rt = report_out_to(g, g.emp[t].id, None);
             out!(g, ra; "You failed to take hostages in ", cemp(g), uname(g, t), cn(g), ".\n");
-            report_set_time(g, ra, self.due);
+            report_set_time(g, ra, self.due.get());
             out!(g, rt; "A covert agent from ", cemp(g), uname(g, a), cn(g), " was caught trying to take hostages and ");
             let pr = random_pronoun(g, 0);
             out!(g, rt; pr, " was executed!");
-            report_set_time(g, rt, self.due);
+            report_set_time(g, rt, self.due.get());
             if g.grb(&R_FAILEDCOVERT) {
                 out!(g, NEWS; cemp(g), uname(g, a), cn(g), " was caught trying to take hostages from ", col(13),
                      uname(g, t), cn(g), ".\n");
@@ -348,7 +350,7 @@ impl Event {
             hline(g, col(3), 0x4b);
         }
         kout!(g; col(10), setw(3), n, setw(0), cnum(g), setw(14), self.amount.get(), setw(0), col(15), setw(7), self.year);
-        let mut hours = (self.due.wrapping_sub(b_time()).wrapping_add(1800) / 3600) as i16;
+        let mut hours = (self.due.get().wrapping_sub(b_time()).wrapping_add(1800) / 3600) as i16;
         if hours < 0 {
             hours = 0;
         }
@@ -362,22 +364,22 @@ impl Event {
         let original = self.amount.get();
         let mut paid: i32 = 0;
         if g.emp[e].bank.get() < 2000000000 && g.emp[e].bank.get().wrapping_add(self.amount.get()) > 0 {
-            g.emp[e].bank.add(self.amount.get());
+            g.emp[e].bank += self.amount.get();
             paid = self.amount.get();
             self.amount.set(0);
         } else {
             while g.emp[e].bank.get() < 2000000000 && self.amount.get() > 10000000 {
-                g.emp[e].bank.add(10000000);
-                self.amount.sub(10000000);
+                g.emp[e].bank += 10000000;
+                self.amount -= 10000000;
                 paid += 10000000;
             }
             while g.emp[e].bank.get() < 2000000000 && self.amount.get() > 10000 {
-                g.emp[e].bank.add(10000);
-                self.amount.sub(10000);
+                g.emp[e].bank += 10000;
+                self.amount -= 10000;
                 paid += 10000;
             }
             if g.emp[e].money.get() < 2000000000 && g.emp[e].money.get().wrapping_add(self.amount.get()) > 0 {
-                g.emp[e].money.add(self.amount.get());
+                g.emp[e].money += self.amount.get();
                 paid = paid.wrapping_add(self.amount.get());
                 self.amount.set(0);
             }
@@ -391,9 +393,9 @@ impl Event {
         } else if actual < paid {
             out!(g, r; " have crashed, giving you only ", cnum(g), actual, cn(g), " credits in the bank.");
             if g.emp[e].bank.get() >= paid {
-                g.emp[e].bank.sub(paid.wrapping_sub(actual));
+                g.emp[e].bank -= paid.wrapping_sub(actual);
             } else if g.emp[e].money.get() >= paid.wrapping_sub(actual) {
-                g.emp[e].money.sub(paid.wrapping_sub(actual));
+                g.emp[e].money -= paid.wrapping_sub(actual);
             }
         } else {
             out!(g, r; " have returned your investment, giving you ", cnum(g), paid, cn(g), " credits in the bank.");
@@ -406,7 +408,7 @@ impl Event {
         } else if self.issuer > -1 && g.emp[self.issuer as usize].exists() {
             g.emp[self.issuer as usize].bonds -= 1;
         }
-        report_set_time(g, r, self.due);
+        report_set_time(g, r, self.due.get());
         if paid <= 0 {
             rep_of(g, r).rep.clear_recipients();
         }
@@ -425,7 +427,7 @@ impl Event {
         match self.kind {
             EvKind::Bank => {
                 self.amount.wr(&mut b[14..]);
-                self.m14.wr(&mut b[18..]);
+                self.amount2.wr(&mut b[18..]);
                 b[22..22 + 0x4e].copy_from_slice(&self.name);
                 self.year.wr(&mut b[100..]);
                 self.issuer.wr(&mut b[102..]);
@@ -442,13 +444,13 @@ impl Event {
 
     fn set_bytes(&mut self, b: &[u8]) {
         self.empire = i16::rd(&b[0..]);
-        self.created = i32::rd(&b[2..]);
-        self.expires = i32::rd(&b[6..]);
-        self.due = i32::rd(&b[10..]);
+        self.created.set(i32::rd(&b[2..]));
+        self.expires.set(i32::rd(&b[6..]));
+        self.due.set(i32::rd(&b[10..]));
         match self.kind {
             EvKind::Bank => {
                 self.amount = Money::rd(&b[14..]);
-                self.m14 = Money::rd(&b[18..]);
+                self.amount2 = Money::rd(&b[18..]);
                 self.name.copy_from_slice(&b[22..22 + 0x4e]);
                 self.year = i16::rd(&b[100..]);
                 self.issuer = i16::rd(&b[102..]);
@@ -488,7 +490,7 @@ impl Streamable for Event {
             // 4c48:2962
             EvKind::Bank => self.amount.get() <= 0 || self.empire == -1,
             // 4c48:01b2
-            _ => g.time.now > self.expires || self.empire == -1,
+            _ => g.time.now.get() > self.expires.get() || self.empire == -1,
         }
     }
 
@@ -604,20 +606,20 @@ pub fn process_events(g: &mut Sre) -> i16 {
     g.m.nextevent = 0x7fffffff;
     while let Some(mut o) = f.read(g) {
         let ev = as_event(&mut o);
-        if ev.due < g.m.nextevent {
-            g.m.nextevent = ev.due;
+        if ev.due.get() < g.m.nextevent {
+            g.m.nextevent = ev.due.get();
         }
         if ev.is_due(g) {
             n += 1;
             if let Some(mut nx) = ev.execute(g) {
-                if nx.due < g.m.nextevent {
-                    g.m.nextevent = nx.due;
+                if nx.due.get() < g.m.nextevent {
+                    g.m.nextevent = nx.due.get();
                 }
                 f.keep(g, &mut nx);
             }
         } else {
-            if ev.due < g.m.nextevent {
-                g.m.nextevent = ev.due;
+            if ev.due.get() < g.m.nextevent {
+                g.m.nextevent = ev.due.get();
             }
             f.keep(g, ev);
         }
@@ -686,8 +688,8 @@ pub fn list_covert_ops(g: &mut Sre, id: i16) -> i16 {
 
 // 4c48:3b34
 pub fn add_event(g: &mut Sre, e: &mut Event) {
-    if e.due < g.m.nextevent {
-        g.m.nextevent = e.due;
+    if e.due.get() < g.m.nextevent {
+        g.m.nextevent = e.due.get();
     }
     append_object(g, EVENT_FILE, e);
 }
@@ -705,62 +707,62 @@ pub fn bond_payoff(g: &mut Sre, issuer: i16, amount: i32) -> i32 {
     if g.emp[e].exists() {
         if g.emp[e].money.get() >= owed.get() {
             let o = owed.get();
-            g.emp[e].money.sub(o);
+            g.emp[e].money -= o;
             owed.set(0);
         } else {
-            owed.sub(g.emp[e].money.get());
+            owed -= g.emp[e].money.get();
             g.emp[e].money.set(0);
         }
         if g.emp[e].bank.get() >= owed.get() {
             let o = owed.get();
-            g.emp[e].bank.sub(o);
+            g.emp[e].bank -= o;
             owed.set(0);
         } else {
-            owed.sub(g.emp[e].bank.get());
+            owed -= g.emp[e].bank.get();
             g.emp[e].bank.set(0);
         }
         while owed.get() > 0 {
             let before = owed.get();
             sold = true;
             if owed.get() > 0 && g.emp[e].soldiers > 100 {
-                owed.sub(100i32.wrapping_mul(price_soldiers(g, e) / 3));
+                owed -= 100i32.wrapping_mul(price_soldiers(g, e) / 3);
                 g.emp[e].soldiers -= 100;
             }
             if owed.get() > 0 && g.emp[e].fighters > 100 {
-                owed.sub(100i32.wrapping_mul(price_fighters(g, e) / 3));
+                owed -= 100i32.wrapping_mul(price_fighters(g, e) / 3);
                 g.emp[e].fighters -= 100;
             }
             if owed.get() > 0 && g.emp[e].stations > 100 {
-                owed.sub(100i32.wrapping_mul(price_stations(g, e) / 3));
+                owed -= 100i32.wrapping_mul(price_stations(g, e) / 3);
                 g.emp[e].stations -= 100;
             }
             if owed.get() > 0 && g.emp[e].generals > 10 {
-                owed.sub(10i32.wrapping_mul(price_generals(g, e) / 3));
+                owed -= 10i32.wrapping_mul(price_generals(g, e) / 3);
                 g.emp[e].generals -= 10;
             }
             if owed.get() > 0 && g.emp[e].heavycruisers > 100 {
-                owed.sub(100i32.wrapping_mul(price_heavy_cruisers(g, e) / 3));
+                owed -= 100i32.wrapping_mul(price_heavy_cruisers(g, e) / 3);
                 g.emp[e].heavycruisers -= 100;
             }
             if owed.get() > 0 && g.emp[e].carriers > 10 {
-                owed.sub(10i32.wrapping_mul(price_carriers(g, e) / 3));
+                owed -= 10i32.wrapping_mul(price_carriers(g, e) / 3);
                 g.emp[e].carriers -= 10;
             }
             if owed.get() > 0 && g.emp[e].agents > 10 {
-                owed.sub(10i32.wrapping_mul(price_agents(g, e) / 3));
+                owed -= 10i32.wrapping_mul(price_agents(g, e) / 3);
                 g.emp[e].agents -= 10;
             }
             if owed.get() > 0 && g.emp[e].food > 100 {
-                owed.sub(200);
+                owed -= 200;
                 g.emp[e].food -= 100;
             }
             if owed.get() > 0 && g.emp[e].population > 100 {
-                owed.sub(100);
+                owed -= 100;
                 g.emp[e].population -= 10;
             }
             for i in 0..10 {
                 if owed.get() > 0 && g.emp[e].planets[i].count > 10 {
-                    owed.sub(price_planet(g, e) / 3);
+                    owed -= price_planet(g, e) / 3;
                     g.emp[e].planets[i].count -= 1;
                 }
             }

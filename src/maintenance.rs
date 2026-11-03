@@ -48,7 +48,7 @@ fn backup(g: &mut Sre, from: &[u8], to: &[u8]) {
 // 5681:0160: one of three newspapers, with random headlines.
 fn newspaper(g: &mut Sre) {
     let paper = g.galaxy.newspaper;
-    let today = g.time.today;
+    let today = g.time.today.get();
     if paper == 2 {
         out!(g, NEWS; b'\\', col(14), "   Farmer Bob's Guide to the Galaxy        ", col(7), "Printed Annually\n");
         let mut bar = vec![0xc4u8; 75];
@@ -169,15 +169,15 @@ pub fn regenerate_planets(g: &mut Sre) {
     if x.marketplanets < 0 {
         x.marketplanets = 0;
     }
-    if now > x.lastregen && x.regenseconds > 0 {
+    if now > x.lastregen.get() && x.regenseconds > 0 {
         if x.marketplanets < 30000 {
-            let n = now.wrapping_sub(x.lastregen) / (x.regenseconds as i32 + 1);
+            let n = now.wrapping_sub(x.lastregen.get()) / (x.regenseconds as i32 + 1);
             if n > 0 {
                 x.marketplanets += n;
-                x.lastregen = x.lastregen.wrapping_add(n.wrapping_mul(x.regenseconds as i32));
+                x.lastregen.set(x.lastregen.get().wrapping_add(n.wrapping_mul(x.regenseconds as i32)));
             }
         } else {
-            x.lastregen = now;
+            x.lastregen.set(now);
         }
     }
 }
@@ -223,26 +223,26 @@ fn daily_empire(g: &mut Sre, e: usize) {
 // 5681:0c52
 pub fn maintenance(g: &mut Sre) {
     galaxy_open(g);
-    if g.time.today > g.galaxy.enddate {
+    if g.time.today.get() > g.galaxy.enddate.get() {
         return;
     }
     regenerate_planets(g);
-    let now = g.time.now;
-    if now.wrapping_sub(g.galaxy.lasthourly) >= 3600 {
+    let now = g.time.now.get();
+    if now.wrapping_sub(g.galaxy.lasthourly.get()) >= 3600 {
         let msg = b"Running hourly maintenance...";
         status(g, msg);
-        if midnight(g.galaxy.lasthourly) < g.galaxy.created {
-            g.galaxy.lasthourly = g.galaxy.created;
+        if midnight(g.galaxy.lasthourly.get()).get() < g.galaxy.created.get() {
+            g.galaxy.lasthourly.set(g.galaxy.created.get());
         }
-        while now.wrapping_sub(g.galaxy.lasthourly) > 3600 {
+        while now.wrapping_sub(g.galaxy.lasthourly.get()) > 3600 {
             for i in 0..MAXPIRATES {
                 crate::pirates::pirate_hourly(g, i);
             }
-            g.galaxy.lasthourly = g.galaxy.lasthourly.wrapping_add(3600);
+            g.galaxy.lasthourly.set(g.galaxy.lasthourly.get().wrapping_add(3600));
         }
         status_end(g, msg);
     }
-    if g.time.today.wrapping_sub(midnight(g.galaxy.created)) < 86400i32.wrapping_mul(g.galaxy.daylength as i32) {
+    if g.time.today.get().wrapping_sub(midnight(g.galaxy.created.get()).get()) < 86400i32.wrapping_mul(g.galaxy.daylength as i32) {
         galaxy_close(g);
         return;
     }
@@ -327,8 +327,8 @@ pub fn maintenance(g: &mut Sre) {
         if !g.emp[i].exists() {
             continue;
         }
-        if g.emp[i].lastplay < g.galaxy.startdate {
-            g.emp[i].lastplay = g.galaxy.startdate;
+        if g.emp[i].lastplay.get() < g.galaxy.startdate.get() {
+            g.emp[i].lastplay.set(g.galaxy.startdate.get());
         }
         daily_empire(g, i);
     }
@@ -341,9 +341,9 @@ pub fn maintenance(g: &mut Sre) {
             g.galaxy.jackpot = crate::lottery::jackpot(g, g.galaxy.lotterytickets as i32);
             let j = g.galaxy.jackpot;
             if g.emp[i].bank.get() < 2000000000 {
-                g.emp[i].bank.add(j);
+                g.emp[i].bank += j;
             } else if g.emp[i].money.get() < 2000000000 {
-                g.emp[i].money.add(j);
+                g.emp[i].money += j;
             }
             g.galaxy.lotterytickets = 0;
             winner = -1;
@@ -392,7 +392,7 @@ pub fn maintenance(g: &mut Sre) {
         out!(g, NEWS; "chosen today's Solar Master, and has received a ");
         let bonus = 10i32.wrapping_mul(g.galaxy.coordfund);
         out!(g, NEWS; cnum(g), bonus, cn(g), " credit bonus!\n");
-        g.emp[e].money.add(bonus);
+        g.emp[e].money += bonus;
         g.galaxy.coordfund -= g.galaxy.coordfund / 100;
     }
     if g.galaxy.planetmaster != -1 {
@@ -455,7 +455,7 @@ pub fn maintenance(g: &mut Sre) {
             out!(g, NEWS; "Bank interest rates rise to ", g.galaxy.interest, "%.\n");
         }
     }
-    g.galaxy.created = g.time.today;
-    g.galaxy.lasthourly = g.time.today;
+    g.galaxy.created.set(g.time.today.get());
+    g.galaxy.lasthourly.set(g.time.today.get());
     galaxy_close(g);
 }

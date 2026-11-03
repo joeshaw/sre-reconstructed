@@ -189,7 +189,7 @@ fn attempt(g: &mut Sre, me: usize, cost: i32, target: &mut i16, op: i16) -> bool
     if op != OP_SPY && op != OP_INFILTRATION && op != OP_BRIBE {
         opmask_set_bit(g, me, op, *target);
     }
-    g.emp[me].money.sub(cost);
+    g.emp[me].money -= cost;
     true
 }
 
@@ -319,7 +319,7 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                     kout!(g; "That makes no sense.\n");
                     break 'case;
                 }
-                g.emp[me].money.sub(cost[3]);
+                g.emp[me].money -= cost[3];
                 let (ea, ed) = (a as usize, d as usize);
                 break_treaties(g, me, ea);
                 break_treaties(g, me, ed);
@@ -471,7 +471,7 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                 let t = id as usize;
                 let tid = g.emp[t].id;
                 if mask_test(opmask(g, me, OP_BRIBE), tid) {
-                    g.emp[me].money.add(cost[9]);
+                    g.emp[me].money += cost[9];
                     kout!(g; "You already have a spy working for you in that empire!\n");
                     break 'case;
                 }
@@ -482,7 +482,7 @@ pub fn covert_ops(g: &mut Sre, p: &mut Player, me: usize) {
                     }
                 }
                 if g.emp[t].agents <= bribed {
-                    g.emp[me].money.add(cost[9]);
+                    g.emp[me].money += cost[9];
                     kout!(g; "That empire has no agents to bribe!\n");
                     break 'case;
                 }

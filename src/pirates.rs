@@ -11,9 +11,9 @@ pub fn pirate_new(g: &mut Sre, p: usize) {
 
 // 4b60:0090
 pub fn pirate_init(g: &mut Sre, p: usize) {
-    let now = g.time.now;
+    let now = g.time.now.get();
     let x = &mut g.pir[p];
-    x.lasthour = now;
+    x.lasthour.set(now);
     x.money = 0;
     x.food = 0;
     x.soldiers = 0;
@@ -61,10 +61,10 @@ pub fn pirate_net_worth(g: &Sre, p: usize) -> i32 {
 // 4b60:034a: pirates rebuild once an hour.
 pub fn pirate_hourly(g: &mut Sre, p: usize) {
     let now = b_time();
-    if now.wrapping_sub(g.pir[p].lasthour) < 3600 {
+    if now.wrapping_sub(g.pir[p].lasthour.get()) < 3600 {
         return;
     }
-    g.pir[p].lasthour = now;
+    g.pir[p].lasthour.set(now);
     let lv = g.pir[p].level as i32;
     let cap = |m: i32| (lv * m) as i16 as i32;
     let planets = |g: &Sre, i: usize| g.pir[p].planets[i] as i32;

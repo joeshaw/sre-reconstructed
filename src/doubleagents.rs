@@ -69,7 +69,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
         }
         match r {
             1 => {
-                g.emp[e].money.sub(cost[1]);
+                g.emp[e].money -= cost[1];
                 n = 0;
                 let mut found: i32 = 0;
                 for i in 0..25usize {
@@ -97,7 +97,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
                 if !yes_no(g, 0, b"Are you sure") {
                     continue;
                 }
-                g.emp[e].money.sub(cost[2]);
+                g.emp[e].money -= cost[2];
                 // The count continues from the agents left after the
                 // double-spies were taken out above.
                 for i in 0..25usize {
@@ -118,7 +118,7 @@ pub fn double_agents(g: &mut Sre, p: &mut Player, e: usize) {
                 return;
             }
             3 => {
-                g.emp[e].money.sub(cost[3]);
+                g.emp[e].money -= cost[3];
                 let mut count: i16 = 0;
                 let mut found: i32 = 0;
                 for i in 0..25usize {

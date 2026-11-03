@@ -109,7 +109,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
             set_defval(g, KIN, if need > 0 { need } else { 0 });
             set_maxval(g, KIN, max);
             let n = in_i32(g, KIN);
-            g.emp[e].money.sub(n.wrapping_mul(price));
+            g.emp[e].money -= n.wrapping_mul(price);
             if g.galaxy.coordfund < 1500000000 {
                 g.galaxy.coordfund += n.wrapping_mul(price) / 1000;
             }
@@ -122,7 +122,7 @@ pub fn food_market(g: &mut Sre, p: &mut Player, e: usize) {
             let f = g.emp[e].food;
             set_maxval(g, KIN, f);
             let n = in_i32(g, KIN);
-            g.emp[e].money.add(n.wrapping_mul(price / 2));
+            g.emp[e].money += n.wrapping_mul(price / 2);
             g.galaxy.coordfund -= n.wrapping_mul(price / 2) / 1000;
             if g.galaxy.coordfund < 0 {
                 g.galaxy.coordfund = 0;

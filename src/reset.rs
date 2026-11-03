@@ -59,7 +59,7 @@ pub fn reset_galaxy(g: &mut Sre) {
         host_remove(&name);
     }
     out!(g, NEWS; col(14), "\\   The Galactic Times                                        ", col(7));
-    let today = g.time.today;
+    let today = g.time.today.get();
     put_time(g, NEWS, today);
     out!(g, NEWS; "\n");
     out!(g, NEWS; col(9), "\\___________________________________________________________________________\n\n", cn(g));

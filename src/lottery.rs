@@ -36,7 +36,7 @@ pub fn buy_tickets(g: &mut Sre, _p: &mut Player, e: usize) {
     if n <= 0 {
         return;
     }
-    g.emp[e].money.sub(10000 * n as i32);
+    g.emp[e].money -= 10000 * n as i32;
     g.emp[e].tickets = g.emp[e].tickets.wrapping_add(n);
     g.galaxy.lotterytickets = g.galaxy.lotterytickets.wrapping_add(n);
     kout!(g; "You have bought ", cnum(g), n, cn(g), " tickets for tomorrow's lottery.\n");
@@ -68,7 +68,7 @@ pub fn lottery(g: &mut Sre, p: &mut Player, e: usize) {
         let mut pick = [0u8; 5];
         let mut matches: i16 = 0;
         let mut prize: i32 = -1;
-        g.emp[e].money.sub(2000);
+        g.emp[e].money -= 2000;
         kout!(g; "Enter the five digits you would like to pick:  ", cin(g));
         let mut i = 0;
         while i < 5 {
@@ -117,12 +117,12 @@ pub fn lottery(g: &mut Sre, p: &mut Player, e: usize) {
             kout!(g; cn(g), "You have won ", cnum(g), prize, cn(g), " credits.\n");
             kout!(g; "The money will be placed in your bank account.\n\n");
             if g.emp[e].bank.get() < 2000000000 {
-                g.emp[e].bank.add(prize);
+                g.emp[e].bank += prize;
             } else {
                 kout!(g; "The bank is full!\n");
                 if g.emp[e].money.get() < 2000000000 {
                     kout!(g; "You receive cash.\n");
-                    g.emp[e].money.add(prize);
+                    g.emp[e].money += prize;
                 }
             }
         } else {

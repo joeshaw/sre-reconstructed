@@ -89,7 +89,7 @@ fn consequences(g: &mut Sre, e: usize, c: &Costs, paid: &mut Costs) {
         if paid.violence >= c.violence - c.violence / 10 && x.insurgency > 0 {
             x.insurgency -= 1;
         }
-        x.bank.add(paid.loan);
+        x.bank += paid.loan;
         if x.bank.get() >= 0 {
             x.loanpayment = 0;
         }
@@ -177,7 +177,7 @@ fn ask_pay(g: &mut Sre, what: &str, amount: i32, avail: &mut Money, mut min: i32
             break;
         }
     }
-    avail.sub(v);
+    *avail -= v;
     v
 }
 
@@ -196,7 +196,7 @@ pub fn pay_upkeep(g: &mut Sre, p: &mut Player, e: usize) {
             }
             if autopay {
                 paid = c;
-                g.emp[e].money.sub(total);
+                g.emp[e].money -= total;
                 break;
             }
         }

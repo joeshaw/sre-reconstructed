@@ -24,7 +24,7 @@ fn treasury_bonds(g: &mut Sre, e: usize) {
     let mut i: i16 = 0;
     while i < 200 && m.get() < 10000000 {
         let v = (g.galaxy.interest as i32).wrapping_mul(m.get() / (100 * g.galaxy.grantturns as i32));
-        m.add(v);
+        m += v;
         i += 1;
     }
     i /= 2;
@@ -51,7 +51,7 @@ fn treasury_bonds(g: &mut Sre, e: usize) {
     let mut ev = Event::bank(g, g.emp[e].id, b"Galactic Treasury Bonds", 10000i32.wrapping_mul(n), year, -1);
     ev.set_due(g, 0, 1, 0);
     add_event(g, &mut ev);
-    g.emp[e].money.sub(8500i32.wrapping_mul(n));
+    g.emp[e].money -= 8500i32.wrapping_mul(n);
     kout!(g; cn(g), "You will be notified when your ", cnum(g), n, cn(g), " bonds mature.  (Sometime after ", "year ",
           year, ".)\n");
 }
@@ -123,23 +123,23 @@ fn make_investment(g: &mut Sre, e: usize) {
     let price = g.emp[b].bondprice;
     let mut cost = n.wrapping_mul(price);
     let oldmoney = g.emp[b].money.get();
-    g.emp[b].money.add(cost);
+    g.emp[b].money += cost;
     if g.emp[b].money.get().wrapping_sub(cost) != oldmoney {
         // The issuer's treasury is full: the rest goes to its bank account.
         let rest = cost.wrapping_sub(g.emp[b].money.get().wrapping_sub(oldmoney));
         let oldbank = g.emp[b].bank.get();
-        g.emp[b].bank.add(rest);
+        g.emp[b].bank += rest;
         if g.emp[b].bank.get().wrapping_sub(rest) != oldbank {
             // (The original measures the overflow against the buyer's bank.)
             let over = rest.wrapping_sub(g.emp[e].bank.get().wrapping_sub(oldbank));
             let back = (over + price - 1) / price;
             n -= back;
             cost -= back * price;
-            g.emp[b].bank.sub(back * price - over);
+            g.emp[b].bank -= back * price - over;
             kout!(g; "Your financial team could only acquire ", n, " bonds at this time.\n");
         }
     }
-    g.emp[e].money.sub(cost);
+    g.emp[e].money -= cost;
     g.emp[b].bonds = (g.emp[b].bonds as i32 + n) as i16;
     let year = (g.emp[e].year as i32 + g.emp[b].bondturns as i32) as i16;
     kout!(g; cn(g), "You will be notified when your ", cnum(g), n, cn(g), " bonds mature.  (Sometime after ", "year ",
@@ -352,8 +352,8 @@ pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
             set_defval(g, KIN, 0);
             set_maxval(g, KIN, max);
             let n = in_i32(g, KIN);
-            g.emp[e].money.sub(n);
-            g.emp[e].bank.add(n);
+            g.emp[e].money -= n;
+            g.emp[e].bank += n;
         }
         if c == b'B' {
             kout!(g; "Bonds", cn(g), b'\n');
@@ -375,18 +375,18 @@ pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
                 kout!(g; "[SRE can only handle numbers up to ", 2000000000i32,
                       ", so some money will have to stay in the bank.]\n");
                 while g.emp[e].money.get() < 1990000000 && n > 10000000 {
-                    g.emp[e].money.add(10000000);
+                    g.emp[e].money += 10000000;
                     n -= 10000000;
-                    g.emp[e].bank.sub(10000000);
+                    g.emp[e].bank -= 10000000;
                 }
                 while g.emp[e].money.get() < 2000000000 && n > 10000 {
-                    g.emp[e].money.add(10000);
+                    g.emp[e].money += 10000;
                     n -= 10000;
-                    g.emp[e].bank.sub(10000);
+                    g.emp[e].bank -= 10000;
                 }
             } else {
-                g.emp[e].bank.sub(n);
-                g.emp[e].money.add(n);
+                g.emp[e].bank -= n;
+                g.emp[e].money += n;
             }
         }
         if c == b'L' && g.emp[e].bank.get() <= 0 {
@@ -397,7 +397,7 @@ pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
             } else {
                 let mut avail = Money { v: 0 };
                 avail.set(credit);
-                avail.add(g.emp[e].bank.get());
+                avail += g.emp[e].bank.get();
                 let x = &g.emp[e];
                 if total_planets(g, e) + 8 * x.planets[P_PETROLEUM].count < 100 * x.planets[P_ANTIPOLLUTION].count {
                     kout!(g; "This bank rewards environmentalists who have set up anti-pollution planets; you have a better credit rating with us.\n");
@@ -422,18 +422,18 @@ pub fn bank(g: &mut Sre, _p: &mut Player, e: usize) {
                 if money_overflow(n, g.emp[e].money.get()) && g.emp[e].money.get() > 0 {
                     kout!(g; "The bank is unable to find the full sum of money for loan.\n");
                     while g.emp[e].money.get() < 1990000000 && n > 10000000 {
-                        g.emp[e].money.add(10000000);
+                        g.emp[e].money += 10000000;
                         n -= 10000000;
-                        g.emp[e].bank.sub(100000 * interest + 10000000);
+                        g.emp[e].bank -= 100000 * interest + 10000000;
                     }
                     while g.emp[e].money.get() < 2000000000 && n > 10000 {
-                        g.emp[e].money.add(10000);
+                        g.emp[e].money += 10000;
                         n -= 10000;
-                        g.emp[e].bank.sub(100 * interest + 10000);
+                        g.emp[e].bank -= 100 * interest + 10000;
                     }
                 } else {
-                    g.emp[e].bank.sub(n.wrapping_add(n.wrapping_mul(interest) / 100));
-                    g.emp[e].money.add(n);
+                    g.emp[e].bank -= n.wrapping_add(n.wrapping_mul(interest) / 100);
+                    g.emp[e].money += n;
                     g.emp[e].loanpayment += payment;
                 }
             }

@@ -187,7 +187,7 @@ pub fn civil_war(g: &mut Sre, _p: &mut Player, e: usize) {
                 v = 100;
             }
             v = v.wrapping_mul(15 * total_planets(g, e));
-            g.emp[e].money.add(v);
+            g.emp[e].money += v;
             kout!(g; "You receive ", cnum(g), v, cn(g), " credits.\n");
         } else {
             kout!(g; "The Galactic Coordinator wishes you luck in rebuilding your empire!\n");

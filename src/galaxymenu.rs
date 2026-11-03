@@ -128,17 +128,17 @@ fn galaxy_info(g: &mut Sre) {
     } else {
         kout!(g; "non-inflationary prices.\n");
     }
-    if g.galaxy.enddate < midnight(0x7fffffff) {
+    if g.galaxy.enddate.get() < midnight(0x7fffffff).get() {
         kout!(g; "This is a tournament game that ");
-        if g.galaxy.startdate <= g.time.today {
+        if g.galaxy.startdate.get() <= g.time.today.get() {
             kout!(g; "started ");
         } else {
             kout!(g; "starts ");
         }
-        let t = g.galaxy.startdate;
+        let t = g.galaxy.startdate.get();
         put_time(g, KOUT, t);
         kout!(g; ", and ends ");
-        let t = g.galaxy.enddate;
+        let t = g.galaxy.enddate.get();
         put_time(g, KOUT, t);
         kout!(g; ".\n");
     }
@@ -151,21 +151,21 @@ fn new_news(g: &mut Sre, id: i16) {
         return;
     }
     kout!(g; "New news since ");
-    let t = g.emp[e].lastnews;
+    let t = g.emp[e].lastnews.get();
     put_time(g, KOUT, t);
     kout!(g; ":\n");
     let mut c = b'9';
     loop {
         let mut name = b"News/NEWS0.MSG".to_vec();
         name[9] = c;
-        let since = g.emp[e].lastnews;
+        let since = g.emp[e].lastnews.get();
         show_news(g, &name, since);
         if c == b'0' {
             break;
         }
         c -= 1;
     }
-    g.emp[e].lastnews = b_time();
+    g.emp[e].lastnews.set(b_time());
 }
 
 // 62b1:0a82
@@ -204,7 +204,7 @@ fn emperor(male: i16) -> &'static [u8] {
 
 // 62b1:0c07
 fn join_game(g: &mut Sre) {
-    if g.time.today >= g.galaxy.joindeadline {
+    if g.time.today.get() >= g.galaxy.joindeadline.get() {
         kout!(g; "No new players can join this game.\n\n");
         return;
     }
@@ -408,12 +408,12 @@ fn tournament_results(g: &mut Sre) {
     kout!(g; col(14), "\nTournament Results\n");
     hline(g, col(4), 0x4b);
     kout!(g; cn(g), "Tournament started:  ", col(12));
-    let t = midnight(g.galaxy.startdate);
-    put_time(g, KOUT, t);
+    let t = midnight(g.galaxy.startdate.get());
+    put_time(g, KOUT, t.get());
     kout!(g; b'\n');
     kout!(g; cn(g), "Tournament ended:    ", col(12));
-    let t = midnight(g.galaxy.enddate);
-    put_time(g, KOUT, t);
+    let t = midnight(g.galaxy.enddate.get());
+    put_time(g, KOUT, t.get());
     kout!(g; b'\n');
     kout!(g; cn(g));
     let mut idx = [0i16; 25];
@@ -486,7 +486,7 @@ pub fn galaxy_menu(g: &mut Sre) {
             m.add(g, b"New News", b'2', 2);
         }
         m.add(g, b"Daily News", b'3', 3);
-        if g.time.today > g.galaxy.enddate {
+        if g.time.today.get() > g.galaxy.enddate.get() {
             m.add(g, b"See Tournament Results", b'4', 11);
         } else if id == -1 {
             m.add(g, b"Join this Game", b'4', 10);
@@ -512,7 +512,7 @@ pub fn galaxy_menu(g: &mut Sre) {
             def = -1;
         }
         m.add(g, b"Scores", b'8', 8);
-        if id != -1 && alive(g) && g.time.today <= g.galaxy.enddate && crate::diplomacy::r_diplomacy(g) {
+        if id != -1 && alive(g) && g.time.today.get() <= g.galaxy.enddate.get() && crate::diplomacy::r_diplomacy(g) {
             m.add(g, b"Diplomacy", b'9', 9);
         }
         let r = m.run(g, true, def);

@@ -81,7 +81,7 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
     if s == 0 && f == 0 && c == 0 {
         return false;
     }
-    g.emp[e].money.sub(credits);
+    g.emp[e].money -= credits;
     let ps = s.wrapping_add(g.pir[pt].soldiers);
     let pf = f.wrapping_add(g.pir[pt].fighters);
     let pc = c.wrapping_add(g.pir[pt].heavycruisers);
@@ -276,7 +276,7 @@ pub fn pirate_raid(g: &mut Sre, _p: &mut Player, e: usize) -> bool {
             y.stations += x.stations / d;
             y.agents += x.agents / d;
             y.food = y.food.wrapping_add(x.food);
-            y.money.add(x.money);
+            y.money += x.money;
         }
         let id = g.emp[e].id as usize;
         let p = &mut g.pir[pt];
