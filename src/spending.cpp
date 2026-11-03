@@ -92,9 +92,9 @@ int32 PriceCarriers(Empire *e)
 // 61a7:010a: buy up to max (-1: as many as affordable) of an item.
 static void Buy(Money *m, int32 price, int32 *have, String name, int32 max)
 {
-    if (price > 0 && (m->get() / price < max || max < 0))
-        max = m->get() / price;
-    if (m->get() < price || m->get() <= 0) {
+    if (price > 0 && (*m / price < max || max < 0))
+        max = *m / price;
+    if (*m < price || *m <= 0) {
         kout << "You can not afford any " << Color(10) << name << c_normal << "!\n";
         return;
     }
@@ -107,7 +107,7 @@ static void Buy(Money *m, int32 price, int32 *have, String name, int32 max)
     int32 n;
     kin >> defval(0) >> maxval(max) >> n;
     *have += n;
-    m->sub(n * price);
+    *m -= n * price;
 }
 
 // 61a7:0384
@@ -117,7 +117,7 @@ static void CmdShip(Empire *e, int32 price)
         kout << "You have already completed work on your command ship!\n";
         return;
     }
-    if (e->money.get() < price) {
+    if (e->money < price) {
         kout << "You can't afford to start your command ship now.\n";
         return;
     }
@@ -135,7 +135,7 @@ static void CmdShip(Empire *e, int32 price)
         e->cmdship = 0;
     if (e->cmdship > 100)
         e->cmdship = 100;
-    e->money.sub(price);
+    e->money -= price;
 }
 
 // 61a7:04d2
@@ -152,10 +152,10 @@ static void Sell(Money *m, int32 price, int32 *have, String name)
     PutMax(*have);
     int32 n;
     kin >> defval(0) >> maxval(*have) >> n;
-    if ((2000000000 - m->get()) / price < n)
-        n = (2000000000 - m->get()) / price;
+    if ((2000000000 - *m) / price < n)
+        n = (2000000000 - *m) / price;
     *have -= n;
-    m->add(n * price);
+    *m += n * price;
 }
 
 // 61a7:0000: a menu of the planet types with the empire's counts.
@@ -224,7 +224,7 @@ static int32 BuyPlanets(Money *m, int32 price, int32 *max, int32 *score)
     kin >> defval(0) >> maxval(*max) >> n;
     *max -= n;
     *score += 3 * n;
-    m->sub(n * price);
+    *m -= n * price;
     return n;
 }
 
@@ -255,7 +255,7 @@ static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
         kout << "There are no planets available to be colonized.\n";
         return;
     }
-    int32 max = e->money.get() / price;
+    int32 max = e->money / price;
     if (max > avail)
         max = avail;
     kout << "There are " << c_number << avail << c_normal << " planets available.\n";
@@ -302,7 +302,7 @@ static void Colonize(Player *p, Empire *e, Galaxy *g, int32 price)
 // 1af6:06ba
 static void SpendingHeader(Money *m, int16 turns)
 {
-    kout << c_normal << "You have " << c_number << m->get() << c_normal << " credits, and "
+    kout << c_normal << "You have " << c_number << *m << c_normal << " credits, and "
          << c_number << turns << c_normal << " turns.\n";
 }
 

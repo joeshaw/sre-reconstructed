@@ -83,11 +83,11 @@ void EndOfTurn(Player *p, Empire *e, Galaxy *g)
     kout << '\n';
     if (e->turnsused == e->turnsperday - 1)
         kout << "This is your last turn today.\n";
-    int32 money = e->money.get();
+    int32 money = e->money;
     int16 donate = HasPref(p->prefs1, PF1_DONATE);
     int32 gift = money;
-    if (1000 * e->income.get() / 100 < gift)
-        gift = 1000 * e->income.get() / 100;
+    if (1000 * e->income / 100 < gift)
+        gift = 1000 * e->income / 100;
     if ((HasPref(p->prefs1, PF1_ASKDONATE)) && money > 0) {
         donate = YesNo(donate, "Donate to the Galactic Coordinator");
         if (donate) {
@@ -102,20 +102,20 @@ void EndOfTurn(Player *p, Empire *e, Galaxy *g)
         if ((HasPref(p->prefs1, PF1_ASKDEPOSIT)) && money > 0)
             deposit = YesNo(deposit, "Deposit the rest of your funds into the bank");
         if (deposit) {
-            int32 old = e->bank.get();
-            e->bank.add(money);
-            money -= e->bank.get() - old;
+            int32 old = e->bank;
+            e->bank += money;
+            money -= e->bank - old;
         }
     }
     if (donate) {
         g->coordfund += gift / 1000;
         // The original divides by zero (and aborts) when there was no income.
-        int32 k = e->income.get() ? gift / e->income.get() / 10 : 0;
+        int32 k = e->income ? gift / e->income / 10 : 0;
         if (k > 10)
             k = 10;
         if (k < 0)
             k = 0;
         e->favor += k;
     }
-    e->money.set(money);
+    e->money = money;
 }

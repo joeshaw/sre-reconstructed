@@ -86,7 +86,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
                 c = 0;
         } while (c == 0);
         if (c == 'B') {
-            int32 max = e->money.get() / price;
+            int32 max = e->money / price;
             if (g->marketfood < max)
                 max = g->marketfood;
             int32 need = people + army - e->food;
@@ -99,7 +99,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
                  << "  ";
             int32 n;
             kin >> defval(need > 0 ? need : 0) >> maxval(max) >> n;
-            e->money.sub(n * price);
+            e->money -= n * price;
             if (g->coordfund < 1500000000)
                 g->coordfund += n * price / 1000;
             e->food += n;
@@ -110,7 +110,7 @@ void FoodMarket(Player *p, Empire *e, Galaxy *g)
                  << c_normal << "  ";
             int32 n;
             kin >> defval(0) >> maxval(e->food) >> n;
-            e->money.add(n * (price / 2));
+            e->money += n * (price / 2);
             g->coordfund -= n * (price / 2) / 1000;
             if (g->coordfund < 0)
                 g->coordfund = 0;

@@ -155,7 +155,7 @@ void CivilWar(Player *p, Empire *e)
             ShowHelpTopic(topic, "loan");
         kout << "\n\nHope this helps!\n\n";
     }
-    if (e->favor >= 25 && pct > 25 && e->money.get() + e->bank.get() < 100000000 &&
+    if (e->favor >= 25 && pct > 25 && e->money + e->bank < 100000000 &&
         (e->soldiers + e->fighters + e->stations + e->heavycruisers + e->agents < 2000 ||
          TotalPlanets(e) < 300)) {
         kout << "The Galactic Coordinator offers to give you some funds to recover from the civil war.  ";
@@ -165,7 +165,7 @@ void CivilWar(Player *p, Empire *e)
             if (x > 100)
                 x = 100;
             x = x * (15 * TotalPlanets(e));
-            e->money.add(x);
+            e->money += x;
             kout << "You receive " << c_number << x << c_normal << " credits.\n";
         } else {
             kout << "The Galactic Coordinator wishes you luck in rebuilding your empire!\n";

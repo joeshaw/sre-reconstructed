@@ -43,7 +43,7 @@ static void Produce(Empire *e, Income *r)
         if (r->ore < 0)
             r->ore = 0;
         total += r->ore / 1000;
-        e->money.add(r->ore);
+        e->money += r->ore;
     }
     if (P(e, P_SUPPLY).count) {
         int32 c = P(e, P_SUPPLY).count * P(e, P_SUPPLY).output;
@@ -69,7 +69,7 @@ static void Produce(Empire *e, Income *r)
         r->carriers = carriers;
         e->carriers += carriers;
         r->credits = credits;
-        e->money.add(credits);
+        e->money += credits;
         total += credits / 1000;
     }
     if (P(e, P_TOURISM).count) {
@@ -79,7 +79,7 @@ static void Produce(Empire *e, Income *r)
                      (P(e, P_TOURISM).output + up - down - 350 * (int32)e->insurgency - e->pollution / 10);
         if (r->tourism < 0)
             r->tourism = 0;
-        e->money.add(r->tourism);
+        e->money += r->tourism;
         total += r->tourism / 1000;
     }
     if (P(e, P_URBAN).count) {
@@ -87,14 +87,14 @@ static void Produce(Empire *e, Income *r)
                    (P(e, P_URBAN).output - (int32)(int16)(e->insurgency * e->insurgency));
         if (r->urban < 0)
             r->urban = 0;
-        e->money.add(r->urban);
+        e->money += r->urban;
         total += r->urban / 1000;
     }
     if (P(e, P_PETROLEUM).count) {
         r->petroleum = P(e, P_PETROLEUM).count * OilPrice();
         if (r->petroleum < 0)
             r->petroleum = 0;
-        e->money.add(r->petroleum);
+        e->money += r->petroleum;
         total += r->petroleum / 1000;
         if (OilPrice() > 10000)
             total += r->petroleum / 3000;
@@ -135,10 +135,10 @@ static void Produce(Empire *e, Income *r)
         }
         if (r->taxes < 0)
             r->taxes = 0;
-        e->money.add(r->taxes);
+        e->money += r->taxes;
         total += r->taxes / 1000;
     }
-    e->income.set(total);
+    e->income = total;
 }
 
 // 462a:0b58: the report of the production.

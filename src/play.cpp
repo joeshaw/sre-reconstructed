@@ -93,7 +93,7 @@ static void Key(char c)
 static void StartTurn(Empire *e)
 {
     e->phase = PH_START;
-    e->income.set(0);
+    e->income = 0;
     e->shortfalls &= ~SF_NEGLECT;
     e->shortfalls &= ~SF_STARVED;
     e->shortfalls &= ~SF_UNUSED;

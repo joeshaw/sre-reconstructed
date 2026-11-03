@@ -57,7 +57,7 @@ int16 PirateRaid(Player *p, Empire *e)
         return 0;
     Pirate *pt = &g_pirates[team - 1];
     kout << Color(3) << "Specify your attack fleet:\n" << c_normal;
-    int32 credits = AskFleet("Credits", e->money.get() / 10, e->money.get());
+    int32 credits = AskFleet("Credits", e->money / 10, e->money);
     int16 chance;
     if (500 * NetWorth(e) < credits)
         chance = 1000;
@@ -73,7 +73,7 @@ int16 PirateRaid(Player *p, Empire *e)
     int32 sentc = c;
     if (s == 0 && f == 0 && c == 0)
         return 0;
-    e->money.sub(credits);
+    e->money -= credits;
     int32 ps = s + pt->soldiers;
     int32 pf = f + pt->fighters;
     int32 pc = c + pt->heavycruisers;
@@ -213,7 +213,7 @@ int16 PirateRaid(Player *p, Empire *e)
         e->stations += pt->stations / div;
         e->agents += pt->agents / div;
         e->food += pt->food;
-        e->money.add(pt->money);
+        e->money += pt->money;
         pt->hatred[e->id]++;
         Shrink(&pt->soldiers, -pt->soldiers / div);
         Shrink(&pt->fighters, -pt->fighters / div);

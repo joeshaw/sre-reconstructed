@@ -11,14 +11,18 @@
 
 #pragma pack(push, 1)
 
-// 28ec: a money amount, kept within +-2,000,000,000.
+// 28ec: a money amount, kept within +-2,000,000,000.  The operators let
+// code use it like a long.  (The original also has a constructor from a
+// long, 28ec:0003, and an operator<< for streams, 28ec:027e, that nothing
+// calls; the reconstruction zeroes v instead of constructing.)
 struct Money {
     int32 v;
-    int32 get() const { return v; }
-    void set(int32 x);              // 28ec:003d
-    void add(int32 x);              // 28ec:00b3
-    void sub(int32 x);              // 28ec:0199
+    Money &operator=(int32 x);      // 28ec:0094
+    Money &operator+=(int32 x);     // 28ec:00b3
+    Money &operator-=(int32 x);     // 28ec:0199
     operator int32() const { return v; }
+private:
+    void clamp(int32 x);            // 28ec:003d
 };
 // 28ec:029a: would a + b leave the money range?
 int16 MoneyOverflow(int32 a, int32 b);

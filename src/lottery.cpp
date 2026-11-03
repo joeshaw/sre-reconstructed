@@ -17,7 +17,7 @@ int32 Jackpot(int32 tickets)
 void BuyTickets(Player *pl, Empire *e, Galaxy *g)
 {
     (void)pl;
-    int32 max = e->money.get() / 10000;
+    int32 max = e->money / 10000;
     if ((int32)(int16)(32000 - g->lotterytickets) < max)
         max = (int32)(int16)(32000 - g->lotterytickets);
     if ((int32)(int16)(2000 - e->tickets) < max)
@@ -33,7 +33,7 @@ void BuyTickets(Player *pl, Empire *e, Galaxy *g)
     kin >> defval(0) >> maxval(max) >> n;
     if (n <= 0)
         return;
-    e->money.sub(10000 * (int32)n);
+    e->money -= 10000 * (int32)n;
     e->tickets += n;
     g->lotterytickets += n;
     kout << "You have bought " << c_number << n << c_normal << " tickets for tomorrow's lottery.\n";
@@ -52,7 +52,7 @@ void Lottery(Player *pl, Empire *e, Galaxy *g)
         kout << " has won the Super Daily Lottery today!\n";
         kout << "(" << c_number << g->jackpot << c_normal << " credits)\n";
     }
-    if (e->money.get() < 2000)
+    if (e->money < 2000)
         return;
     if (g_system.regstate == RS_UNREGISTERED && !r_unregistered.Bool())
         return;
@@ -62,7 +62,7 @@ void Lottery(Player *pl, Empire *e, Galaxy *g)
         char pick[5];
         int16 matches = 0;
         int32 prize = -1;
-        e->money.sub(2000);
+        e->money -= 2000;
         kout << "Enter the five digits you would like to pick:  " << c_input;
         for (int16 i = 0; i < 5;) {
             kin >> pick[i];
@@ -110,13 +110,13 @@ void Lottery(Player *pl, Empire *e, Galaxy *g)
             kout << Color(14) << "\nCongratulations!\n";
             kout << c_normal << "You have won " << c_number << prize << c_normal << " credits.\n";
             kout << "The money will be placed in your bank account.\n\n";
-            if (e->bank.get() < 2000000000) {
-                e->bank.add(prize);
+            if (e->bank < 2000000000) {
+                e->bank += prize;
             } else {
                 kout << "The bank is full!\n";
-                if (e->money.get() < 2000000000) {
+                if (e->money < 2000000000) {
                     kout << "You receive cash.\n";
-                    e->money.add(prize);
+                    e->money += prize;
                 }
             }
         } else {

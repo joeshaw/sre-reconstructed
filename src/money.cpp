@@ -5,7 +5,7 @@ static const int32 MONEY_MAX = 2000000000;
 static const int32 MONEY_MIN = -2000000000;
 
 // 28ec:003d: above the maximum clamps; below the minimum becomes 0.
-void Money::set(int32 x)
+void Money::clamp(int32 x)
 {
     if (x > MONEY_MAX)
         v = MONEY_MAX;
@@ -15,13 +15,18 @@ void Money::set(int32 x)
         v = x;
 }
 
-// 28ec:00b3: saturating add, done in decreasing power-of-two steps.
-void Money::add(int32 x)
+// 28ec:0094
+Money &Money::operator=(int32 x)
 {
-    if (x < 0) {
-        sub(-x);
-        return;
-    }
+    clamp(x);
+    return *this;
+}
+
+// 28ec:00b3: saturating add, done in decreasing power-of-two steps.
+Money &Money::operator+=(int32 x)
+{
+    if (x < 0)
+        return *this -= -x;
     int32 cur = v;
     for (int32 step = 0x10000000; step > 0; step /= 2) {
         while (cur < MONEY_MAX && x >= step && (int32)((uint32)cur + (uint32)step) > cur) {
@@ -29,16 +34,15 @@ void Money::add(int32 x)
             x -= step;
         }
     }
-    set(cur);
+    clamp(cur);
+    return *this;
 }
 
 // 28ec:0199
-void Money::sub(int32 x)
+Money &Money::operator-=(int32 x)
 {
-    if (x < 0) {
-        add(-x);
-        return;
-    }
+    if (x < 0)
+        return *this += -x;
     int32 cur = v;
     for (int32 step = 0x10000000; step > 0; step /= 2) {
         while (cur > MONEY_MIN && x >= step && (int32)((uint32)cur - (uint32)step) < cur) {
@@ -46,7 +50,8 @@ void Money::sub(int32 x)
             x -= step;
         }
     }
-    set(cur);
+    clamp(cur);
+    return *this;
 }
 
 // 28ec:029a

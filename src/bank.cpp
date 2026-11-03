@@ -19,14 +19,14 @@ static void Max1(int32 max)
 // 1719:000a
 static void TreasuryBonds(Empire *e, Galaxy *g)
 {
-    int32 max = e->money.get() / 8500;
+    int32 max = e->money / 8500;
     int16 turns = 5;
     Money m;
     m.v = 0;
-    m.set(8500000);
+    m = 8500000;
     int16 i;
-    for (i = 0; i < 200 && m.get() < 10000000; i++)
-        m.add((int32)g->interest * (m.get() / (100 * (int32)g->grantturns)));
+    for (i = 0; i < 200 && m < 10000000; i++)
+        m += (int32)g->interest * (m / (100 * (int32)g->grantturns));
     i /= 2;
     if (i > turns)
         turns = i;
@@ -46,7 +46,7 @@ static void TreasuryBonds(Empire *e, Galaxy *g)
     EventBank ev(e->id, "Galactic Treasury Bonds", 10000 * n, (int16)(e->year + turns), -1);
     ev.SetDue(0, 1, 0);
     AddEvent(&ev);
-    e->money.sub(8500 * n);
+    e->money -= 8500 * n;
     kout << c_normal << "You will be notified when your " << c_number << n << c_normal
          << " bonds mature.  (Sometime after " << "year " << (int16)(e->year + turns) << ".)\n";
 }
@@ -57,7 +57,7 @@ struct InvestPrompt : MenuHook {
     explicit InvestPrompt(Empire *x) : e(x) {}
     int16 Call()
     {
-        kout << "You have " << c_number << e->money.get() << c_normal << " credits.\n";
+        kout << "You have " << c_number << e->money << c_normal << " credits.\n";
         return 1;
     }
 };
@@ -89,7 +89,7 @@ static void MakeInvestment(Empire *e, Galaxy *g)
         return;
     }
     Empire *b = &g_empires[r];
-    int32 max = e->money.get() / b->bondprice;
+    int32 max = e->money / b->bondprice;
     if ((int32)(int16)(b->maxbonds - b->bonds) < max)
         max = (int16)(b->maxbonds - b->bonds);
     kout << Color(9) << " * " << c_input << b->bondname << c_normal << '\n';
@@ -109,24 +109,24 @@ static void MakeInvestment(Empire *e, Galaxy *g)
     ev.SetDue(0, b->bondhours, 0);
     AddEvent(&ev);
     int32 cost = n * b->bondprice;
-    int32 oldmoney = b->money.get();
-    b->money.add(cost);
-    if (b->money.get() - cost != oldmoney) {
+    int32 oldmoney = b->money;
+    b->money += cost;
+    if (b->money - cost != oldmoney) {
         // The issuer's treasury is full: the rest goes to its bank account.
-        int32 rest = cost - (b->money.get() - oldmoney);
-        int32 oldbank = b->bank.get();
-        b->bank.add(rest);
-        if (b->bank.get() - rest != oldbank) {
+        int32 rest = cost - (b->money - oldmoney);
+        int32 oldbank = b->bank;
+        b->bank += rest;
+        if (b->bank - rest != oldbank) {
             // (The original measures the overflow against the buyer's bank.)
-            int32 over = rest - (e->bank.get() - oldbank);
+            int32 over = rest - (e->bank - oldbank);
             int32 back = (over + b->bondprice - 1) / b->bondprice;
             n -= back;
             cost -= back * b->bondprice;
-            b->bank.sub(back * b->bondprice - over);
+            b->bank -= back * b->bondprice - over;
             kout << "Your financial team could only acquire " << n << " bonds at this time.\n";
         }
     }
-    e->money.sub(cost);
+    e->money -= cost;
     b->bonds = (int16)(b->bonds + n);
     kout << c_normal << "You will be notified when your " << c_number << n << c_normal
          << " bonds mature.  (Sometime after " << "year " << (int16)(e->year + b->bondturns)
@@ -244,12 +244,12 @@ void Bank(Player *p, Empire *e, Galaxy *g)
                        330 * e->planets[P_GOVERNMENT].count + 50 * e->planets[P_RESEARCH].count +
                        230 * e->planets[P_URBAN].count + 1100 * e->planets[P_ANTIPOLLUTION].count +
                        150000;
-        kout << c_normal << "You have " << c_number << e->money.get() << c_normal << " credits, and ";
-        if (e->bank.get() >= 0)
-            kout << c_number << e->bank.get() << c_normal << " credits in the bank.\n";
+        kout << c_normal << "You have " << c_number << e->money << c_normal << " credits, and ";
+        if (e->bank >= 0)
+            kout << c_number << e->bank << c_normal << " credits in the bank.\n";
         else
-            kout << "you have a loan of " << c_number << -e->bank.get() << c_normal << " credits.\n";
-        if (e->bank.get() > 0) {
+            kout << "you have a loan of " << c_number << -e->bank << c_normal << " credits.\n";
+        if (e->bank > 0) {
             Key('W');
             kout << "ithdraw, ";
         } else {
@@ -269,9 +269,9 @@ void Bank(Player *p, Empire *e, Galaxy *g)
         kout << "uit?  " << c_input;
         do {
             c = GetChoice("QDWLBIS", 1);
-            if (c == 'W' && e->bank.get() <= 0)
+            if (c == 'W' && e->bank <= 0)
                 c = 0;
-            if (c == 'L' && e->bank.get() > 0)
+            if (c == 'L' && e->bank > 0)
                 c = 0;
             if (!r_investments.Bool() && (c == 'I' || c == 'B'))
                 c = 0;
@@ -288,64 +288,64 @@ void Bank(Player *p, Empire *e, Galaxy *g)
         }
         if (c == 'D') {
             kout << "Deposit" << c_normal << '\n';
-            int32 max = e->money.get();
-            if (e->bank.get() >= 0 && 2000000000 - e->bank.get() < max)
-                max = 2000000000 - e->bank.get();
-            if (e->bank.get() >= 0) {
+            int32 max = e->money;
+            if (e->bank >= 0 && 2000000000 - e->bank < max)
+                max = 2000000000 - e->bank;
+            if (e->bank >= 0) {
                 kout << "At a " << c_number << g->interest << c_normal;
                 kout << "% daily interest rate,\nhow much do you wish to deposit?  ";
                 Max1(max);
             } else {
-                kout << "You have loaned " << c_number << -e->bank.get() << c_normal << " credits at a ";
+                kout << "You have loaned " << c_number << -e->bank << c_normal << " credits at a ";
                 kout << c_number << g->interest << c_normal << "% annual interest rate.\n";
                 kout << "How much do you wish to pay back?  ";
             }
             int32 n;
             kin >> defval(0) >> maxval(max) >> n;
-            e->money.sub(n);
-            e->bank.add(n);
+            e->money -= n;
+            e->bank += n;
         }
         if (c == 'B') {
             kout << "Bonds" << c_normal << '\n';
             Investments(p, e, g);
         }
-        if (c == 'W' && e->bank.get() > 0) {
+        if (c == 'W' && e->bank > 0) {
             kout << "Withdraw" << c_normal << '\n';
             kout << "How much do you wish to withdraw?  ";
-            Max1(e->bank.get());
-            int32 max = e->bank.get();
-            if (2000000000 - e->money.get() < e->bank.get())
-                max = 2000000000 - e->money.get();
+            Max1(e->bank);
+            int32 max = e->bank;
+            if (2000000000 - e->money < e->bank)
+                max = 2000000000 - e->money;
             int32 n;
             kin >> defval(0) >> maxval(max) >> n;
-            if (e->money.get() > 0 && MoneyOverflow(e->money.get(), n)) {
+            if (e->money > 0 && MoneyOverflow(e->money, n)) {
                 kout << "[SRE can only handle numbers up to " << (int32)2000000000
                      << ", so some money will have to stay in the bank.]\n";
-                while (e->money.get() < 1990000000 && n > 10000000) {
-                    e->money.add(10000000);
+                while (e->money < 1990000000 && n > 10000000) {
+                    e->money += 10000000;
                     n -= 10000000;
-                    e->bank.sub(10000000);
+                    e->bank -= 10000000;
                 }
-                while (e->money.get() < 2000000000 && n > 10000) {
-                    e->money.add(10000);
+                while (e->money < 2000000000 && n > 10000) {
+                    e->money += 10000;
                     n -= 10000;
-                    e->bank.sub(10000);
+                    e->bank -= 10000;
                 }
             } else {
-                e->bank.sub(n);
-                e->money.add(n);
+                e->bank -= n;
+                e->money += n;
             }
         }
-        if (c == 'L' && e->bank.get() <= 0) {
+        if (c == 'L' && e->bank <= 0) {
             int32 payment = 0;
             kout << "Loan" << c_normal << '\n';
-            if (credit + e->bank.get() <= 0) {
+            if (credit + e->bank <= 0) {
                 kout << "Your credit is overdrawn.\n";
             } else {
                 Money avail;
                 avail.v = 0;
-                avail.set(credit);
-                avail.add(e->bank.get());
+                avail = credit;
+                avail += e->bank;
                 if (TotalPlanets(e) + 8 * e->planets[P_PETROLEUM].count <
                     100 * e->planets[P_ANTIPOLLUTION].count) {
                     kout << "This bank rewards environmentalists who have set up anti-pollution planets; you have a better credit rating with us.\n";
@@ -353,9 +353,9 @@ void Bank(Player *p, Empire *e, Galaxy *g)
                 }
                 kout << "At a " << c_number << g->interest << c_normal;
                 kout << "% annual interest rate,\nhow much do you wish to borrow?  ";
-                Max1(avail.get());
+                Max1(avail);
                 int32 n;
-                kin >> defval(0) >> maxval(avail.get()) >> n;
+                kin >> defval(0) >> maxval(avail) >> n;
                 if (n > 0) {
                     kout << "That will require a " << c_number << (int32)g->interest * (n / 100)
                          << c_normal << " finance charge.\n";
@@ -367,21 +367,21 @@ void Bank(Player *p, Empire *e, Galaxy *g)
                         n = 0;
                     }
                 }
-                if (MoneyOverflow(n, e->money.get()) && e->money.get() > 0) {
+                if (MoneyOverflow(n, e->money) && e->money > 0) {
                     kout << "The bank is unable to find the full sum of money for loan.\n";
-                    while (e->money.get() < 1990000000 && n > 10000000) {
-                        e->money.add(10000000);
+                    while (e->money < 1990000000 && n > 10000000) {
+                        e->money += 10000000;
                         n -= 10000000;
-                        e->bank.sub(100000 * (int32)g->interest + 10000000);
+                        e->bank -= 100000 * (int32)g->interest + 10000000;
                     }
-                    while (e->money.get() < 2000000000 && n > 10000) {
-                        e->money.add(10000);
+                    while (e->money < 2000000000 && n > 10000) {
+                        e->money += 10000;
                         n -= 10000;
-                        e->bank.sub(100 * (int32)g->interest + 10000);
+                        e->bank -= 100 * (int32)g->interest + 10000;
                     }
                 } else {
-                    e->bank.sub(n + n * (int32)g->interest / 100);
-                    e->money.add(n);
+                    e->bank -= n + n * (int32)g->interest / 100;
+                    e->money += n;
                     e->loanpayment += payment;
                 }
             }

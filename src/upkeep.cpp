@@ -25,10 +25,10 @@ static void ComputeCosts(Empire *e, Costs *c)
     c->effect = (int32)k * (x / 100);
     c->violence = (int32)((int16)(e->insurgency + 1) / 2) * (TotalPlanets(e) + 2 * e->population);
     c->loan = 0;
-    if (e->bank.get() < 0) {
+    if (e->bank < 0) {
         c->loan = e->loanpayment;
-        if (c->loan + e->bank.get() > 0)
-            c->loan = -e->bank.get();
+        if (c->loan + e->bank > 0)
+            c->loan = -e->bank;
     }
     if (g_galaxy.inflation == 0) {
         // Upkeep per planet grows with the logarithm of the size.
@@ -46,7 +46,7 @@ static void ComputeCosts(Empire *e, Costs *c)
     }
     if (c->planets < 0)
         c->planets = 0;
-    c->donation = e->income.get() * (int32)g_galaxy.coordtax;
+    c->donation = e->income * (int32)g_galaxy.coordtax;
     if (g_galaxy.coordfund > 1500000000)
         c->donation = 0;
 }
@@ -79,8 +79,8 @@ static void Consequences(Empire *e, Costs *c, Costs *paid)
     }
     if (paid->violence >= c->violence - c->violence / 10 && e->insurgency > 0)
         e->insurgency--;
-    e->bank.add(paid->loan);
-    if (e->bank.get() >= 0)
+    e->bank += paid->loan;
+    if (e->bank >= 0)
         e->loanpayment = 0;
     if (paid->planets < c->planets) {
         int32 n = ((c->planets - paid->planets) / (c->planets / 1000 + 1)) *
@@ -104,15 +104,15 @@ static void Consequences(Empire *e, Costs *c, Costs *paid)
         }
     }
     if (paid->donation > c->donation) {
-        int32 x = (paid->donation - c->donation) / (e->income.get() + 1);
+        int32 x = (paid->donation - c->donation) / (e->income + 1);
         if (x > 1000)
             x -= 1000;
         if (x > 0)
             e->favor += (int16)x;
     }
     g_galaxy.coordfund += paid->donation / 1000;
-    if (TotalPlanets(e) > 0 && e->income.get() < 2000000)
-        e->efficiency = (1000 * e->income.get() - c->military - c->effect - c->violence - c->loan -
+    if (TotalPlanets(e) > 0 && e->income < 2000000)
+        e->efficiency = (1000 * e->income - c->military - c->effect - c->violence - c->loan -
                    c->planets - c->donation) /
                   TotalPlanets(e);
 }
@@ -123,21 +123,21 @@ static int32 AskPay(const char *what, int32 amount, Money *avail, int32 min)
     if (amount <= 0)
         return 0;
     int32 def = amount;
-    if (avail->get() < def)
-        def = avail->get();
+    if (*avail < def)
+        def = *avail;
     kout << c_normal;
-    if (avail->get() < min)
-        min = avail->get();
+    if (*avail < min)
+        min = *avail;
     kout << '\n' << what << ' ' << c_number << amount << c_normal << " credits.\n";
     int32 v;
     do {
         kout << "Pay how much?  ";
-        kin >> maxval(avail->get()) >> defval(def) >> v;
+        kin >> maxval(*avail) >> defval(def) >> v;
         kout << c_normal;
         if (v < min)
             kout << "You must pay at least " << c_number << min << c_normal << " credits.\n";
     } while (v < min);
-    avail->sub(v);
+    *avail -= v;
     return v;
 }
 
@@ -149,15 +149,15 @@ void PayUpkeep(Player *p, Empire *e, Galaxy *g)
     for (;;) {
         int32 total = c.planets + c.loan + c.military + c.violence + c.donation;
         kout << "Your empire requires " << c_number << total << c_normal
-             << " credits this year.  You have " << c_number << e->money.get() << c_normal
+             << " credits this year.  You have " << c_number << e->money << c_normal
              << " credits.\n";
-        if (e->money.get() >= total) {
+        if (e->money >= total) {
             int16 autopay = HasPref(p->prefs2, PF2_AUTOPAY);
             if (HasPref(p->prefs2, PF2_ASKPAY))
                 autopay = YesNo(autopay, "Pay everything automatically");
             if (autopay) {
                 paid = c;
-                e->money.sub(total);
+                e->money -= total;
                 break;
             }
         }
@@ -183,7 +183,7 @@ void PayUpkeep(Player *p, Empire *e, Galaxy *g)
             if (YesNo(1, "Do you wish to reconsider"))
                 continue;
         }
-        e->money.set(avail.get());
+        e->money = avail;
         break;
     }
     Consequences(e, &c, &paid);

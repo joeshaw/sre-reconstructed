@@ -97,10 +97,10 @@ static void Fate(Player *pl, Empire *e, Pirate *p)
         return;
 
     if (Random(5) == 0 && TotalPlanets(e) > 60 && e->year > 0) {
-        int32 n = (e->money.get() / 10000) * Random(100);
+        int32 n = (e->money / 10000) * Random(100);
         if (n > 0) {
             AddClamp(p->money, n);
-            e->money.sub(n);
+            e->money -= n;
             MaybeScreen(15, "Thieves");
             Bad();
             kout << c_number << n << c_normal << " credits were stolen by ";
@@ -380,20 +380,20 @@ static int16 ChoosePirate(int16 id)
 static void Offer(Empire *e, int32 price, const char *buyprompt, const char *bought,
                   const char *cannot, int16 weapon)
 {
-    if (e->money.get() >= price || e->money.get() + e->bank.get() >= price) {
+    if (e->money >= price || e->money + e->bank >= price) {
         if (!YesNo(2, buyprompt))
             return;
-        if (e->bank.get() >= price && YesNo(1, "Withdraw funds from the bank for this purchase")) {
-            e->money.add(price);
-            e->bank.sub(price);
+        if (e->bank >= price && YesNo(1, "Withdraw funds from the bank for this purchase")) {
+            e->money += price;
+            e->bank -= price;
         }
         kout << bought;
         e->weapons |= weapon;
-        if (e->money.get() >= price) {
-            e->money.sub(price);
+        if (e->money >= price) {
+            e->money -= price;
         } else {
-            e->bank.sub(price - e->money.get());
-            e->money.set(0);
+            e->bank -= price - e->money;
+            e->money = 0;
         }
     } else {
         kout << cannot;
@@ -489,21 +489,21 @@ void Advisor(Player *pl, Empire *e)
             MaybeScreen(3, "Psionic");
             kout << "A well-known smuggler approaches you and offers to sell a one-pound "
                  << Color(14) << "Psionic Bomb" << c_normal << " to you.\n";
-            if (e->money.get() >= price || e->money.get() + e->bank.get() >= price) {
+            if (e->money >= price || e->money + e->bank >= price) {
                 kout << "Buy a psionic bomb for " << price << " credits";
                 if (YesNo(2, "")) {
-                    if (e->bank.get() >= price &&
+                    if (e->bank >= price &&
                         YesNo(1, "Withdraw funds from the bank for this purchase")) {
-                        e->money.add(price);
-                        e->bank.sub(price);
+                        e->money += price;
+                        e->bank -= price;
                     }
                     kout << "You have bought a psionic bomb from the smuggler.\n";
                     e->weapons |= W_PSIONIC;
-                    if (e->money.get() >= price) {
-                        e->money.sub(price);
+                    if (e->money >= price) {
+                        e->money -= price;
                     } else {
-                        e->bank.sub(price - e->money.get());
-                        e->money.set(0);
+                        e->bank -= price - e->money;
+                        e->money = 0;
                     }
                     g_galaxy.psionicprice += 2 * g_galaxy.psionicprice + 1000000;
                 }

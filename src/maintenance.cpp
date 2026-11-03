@@ -332,10 +332,10 @@ void Maintenance(Galaxy *g)
         if (winner >= 0 && e->tickets > winner) {
             g->lotterywinner = e->id;
             g->jackpot = Jackpot((int32)g->lotterytickets);
-            if (e->bank.get() < 2000000000)
-                e->bank.add(g->jackpot);
-            else if (e->money.get() < 2000000000)
-                e->money.add(g->jackpot);
+            if (e->bank < 2000000000)
+                e->bank += g->jackpot;
+            else if (e->money < 2000000000)
+                e->money += g->jackpot;
             g->lotterytickets = 0;
             winner = -1;
         }
@@ -375,7 +375,7 @@ void Maintenance(Galaxy *g)
             g_log2 << "once again ";
         g_log2 << "chosen today's Solar Master, and has received a ";
         g_log2 << c_number << 10 * g->coordfund << c_normal << " credit bonus!\n";
-        e->money.add(10 * g->coordfund);
+        e->money += 10 * g->coordfund;
         g->coordfund -= g->coordfund / 100;
     }
     if (g->planetmaster != -1) {

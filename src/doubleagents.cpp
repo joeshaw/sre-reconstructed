@@ -9,7 +9,7 @@ struct DoubleAgentPrompt : MenuHook {
     {
         kout << "Your Intelligence Agency has determined that at least one covert agent ";
         kout << "is actually a double-spy, spying for another empire.\n";
-        kout << "You have " << c_number << e->money.get() << c_normal << " credits.\n";
+        kout << "You have " << c_number << e->money << c_normal << " credits.\n";
         return 1;
     }
 };
@@ -55,13 +55,13 @@ void DoubleAgents(Player *p, Empire *e)
         if (g_system.regstate)
             m.Add("", 'V', 0x50);
         int16 r = m.Run(1, -1);
-        if (r >= 1 && r <= 9 && cost[r] > e->money.get()) {
+        if (r >= 1 && r <= 9 && cost[r] > e->money) {
             kout << "You can not afford to do that!\n";
             continue;
         }
         switch (r) {
         case 1: {
-            e->money.sub(cost[1]);
+            e->money -= cost[1];
             n = 0;
             int32 found = 0;
             for (int16 i = 0; i < 25; i++) {
@@ -86,7 +86,7 @@ void DoubleAgents(Player *p, Empire *e)
         case 2:
             if (!YesNo(0, "Are you sure"))
                 continue;
-            e->money.sub(cost[2]);
+            e->money -= cost[2];
             // The count continues from the agents left after the
             // double-spies were taken out above.
             for (int16 i = 0; i < 25; i++) {
@@ -104,7 +104,7 @@ void DoubleAgents(Player *p, Empire *e)
             kout << ".\n";
             return;
         case 3: {
-            e->money.sub(cost[3]);
+            e->money -= cost[3];
             int16 count = 0;
             int32 found = 0;
             for (int16 i = 0; i < 25; i++) {

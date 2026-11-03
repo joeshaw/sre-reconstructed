@@ -213,7 +213,7 @@ static int16 MakeOffer(Empire *e, TradeData *t)
                 continue;
             m.Add(ITEM[i], (char)('0' + i), i);
             int32 sending = *GoodsItem(&t->offer, i);
-            int32 owned = i == 5 ? e->money.get() : *EmpireItem(e, i);
+            int32 owned = i == 5 ? e->money : *EmpireItem(e, i);
             owned -= sending;
             m.Find(i)->AddColumn(sending);
             m.Find(i)->AddColumn(owned);
@@ -221,7 +221,7 @@ static int16 MakeOffer(Empire *e, TradeData *t)
         r = m.Run(1, -1);
         if (r >= 1 && r <= 9 && r != 3) {
             if (r == 5)
-                AskAmount(ITEM[5], &t->offer.credits, e->money.get(), 0);
+                AskAmount(ITEM[5], &t->offer.credits, e->money, 0);
             else
                 AskAmount(ITEM[r], GoodsItem(&t->offer, r), *EmpireItem(e, r), 0);
         }
@@ -290,7 +290,7 @@ static int16 SendTrade(Empire *e)
         if (EmpireItem(e, i))
             *EmpireItem(e, i) -= *GoodsItem(&t.offer, i);
     e->carriers -= t.carriers;
-    e->money.sub(t.offer.credits);
+    e->money -= t.offer.credits;
     e->tradegoods += GoodsValue(&t.offer);
     t.to = to;
     t.from = e->id;
@@ -320,8 +320,8 @@ static int16 CanMeet(TradeData *t, Empire *e)
             return 0;
     }
     Money m = e->money;
-    m.add(e->bank.get());
-    return t->demand.credits - t->offer.credits <= m.get();
+    m += e->bank;
+    return t->demand.credits - t->offer.credits <= m;
 }
 
 static void Key(char c)
@@ -407,10 +407,10 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
                 *EmpireItem(e, i) -= *GoodsItem(&t->demand, i) - *GoodsItem(&t->offer, i);
         o->tradegoods -= GoodsValue(&t->offer);
         e->tradegoods += GoodsValue(&t->demand);
-        e->money.sub(t->demand.credits - t->offer.credits);
-        if (e->money.get() - t->demand.credits + t->offer.credits < 0) {
-            e->bank.add(e->money.get());
-            e->money.set(0);
+        e->money -= t->demand.credits - t->offer.credits;
+        if (e->money - t->demand.credits + t->offer.credits < 0) {
+            e->bank += e->money;
+            e->money = 0;
         }
         t->state = FS_ACCEPTED;
         t->to = t->from;
@@ -427,11 +427,11 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         for (int16 i = 1; i <= 9; i++)
             if (EmpireItem(e, i))
                 *EmpireItem(e, i) += *GoodsItem(&t->demand, i);
-        while (MoneyOverflow(e->money.get(), t->demand.credits)) {
-            e->bank.add(1000000);
+        while (MoneyOverflow(e->money, t->demand.credits)) {
+            e->bank += 1000000;
             t->demand.credits -= 1000000;
         }
-        e->money.add(t->demand.credits);
+        e->money += t->demand.credits;
         e->carriers += t->carriers;
         o->tradegoods -= GoodsValue(&t->demand);
         return 0;
@@ -447,11 +447,11 @@ static int16 ArriveTrade(Empire *e, TradeData *t)
         for (int16 i = 1; i <= 9; i++)
             if (EmpireItem(e, i))
                 *EmpireItem(e, i) += *GoodsItem(&t->offer, i);
-        while (MoneyOverflow(e->money.get(), t->offer.credits)) {
-            e->bank.add(1000000);
+        while (MoneyOverflow(e->money, t->offer.credits)) {
+            e->bank += 1000000;
             t->offer.credits -= 1000000;
         }
-        e->money.add(t->offer.credits);
+        e->money += t->offer.credits;
         e->carriers += t->carriers;
         e->tradegoods -= GoodsValue(&t->offer);
         return 0;

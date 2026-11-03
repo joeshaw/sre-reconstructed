@@ -333,7 +333,7 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
                 total++;
             }
         }
-        credits = t->money.get() / div;
+        credits = t->money / div;
         me->effectiveness = Clamp100(me->effectiveness - 13);
         me->cmdship = Clamp100(me->cmdship - 7);
         t->effectiveness = Clamp100(t->effectiveness - 3);
@@ -343,9 +343,9 @@ static int16 Conventional(Player *p, Empire *me, Empire *t)
             Planets(me, i)->count += take[i];
             Planets(t, i)->count -= take[i];
         }
-        me->money.add(credits);
+        me->money += credits;
         me->score += 17 * total + t->score * score / 10;
-        t->money.sub(credits);
+        t->money -= credits;
         t->score -= 7 * total + t->score * score / 20;
         if (t->score < 0)
             t->score = 0;

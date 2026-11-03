@@ -126,7 +126,7 @@ static int16 ChooseTarget(Player *p, Empire *me, int16 op)
 // 409c:084d: pay for an operation and choose its target.
 static int16 Attempt(Player *p, Empire *me, int32 cost, int16 *target, int16 op)
 {
-    if (me->money.get() < cost) {
+    if (me->money < cost) {
         kout << "You cannot afford that.\n";
         return 0;
     }
@@ -141,7 +141,7 @@ static int16 Attempt(Player *p, Empire *me, int32 cost, int16 *target, int16 op)
     }
     if (op != OP_SPY && op != OP_INFILTRATION && op != OP_BRIBE)
         MaskSet(OpMask(me, op), *target);
-    me->money.sub(cost);
+    me->money -= cost;
     return 1;
 }
 
@@ -151,7 +151,7 @@ struct CovertPrompt : MenuHook {
     explicit CovertPrompt(Empire *x) : e(x) {}
     int16 Call()
     {
-        kout << "You have " << c_number << e->money.get() << c_normal << " credits and "
+        kout << "You have " << c_number << e->money << c_normal << " credits and "
              << c_number << e->agents << c_normal << " covert agent";
         if (e->agents != 1)
             kout << 's';
@@ -251,7 +251,7 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
             break;
         }
         case 3: {
-            if (me->money.get() < cost[3]) {
+            if (me->money < cost[3]) {
                 kout << "You can't afford to set anyone up.\n";
                 break;
             }
@@ -267,7 +267,7 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                 kout << "That makes no sense.\n";
                 break;
             }
-            me->money.sub(cost[3]);
+            me->money -= cost[3];
             Empire *ea = &g_empires[a], *ed = &g_empires[d];
             BreakTreaties(me, ea);
             BreakTreaties(me, ed);
@@ -418,7 +418,7 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                 break;
             t = &g_empires[id];
             if (MaskTest(*OpMask(me, OP_BRIBE), t->id)) {
-                me->money.add(cost[9]);
+                me->money += cost[9];
                 kout << "You already have a spy working for you in that empire!\n";
                 break;
             }
@@ -427,7 +427,7 @@ void CovertOps(Player *p, Empire *me, Galaxy *g)
                 if (MaskTest(*OpMask(&g_empires[i], OP_BRIBE), t->id))
                     bribed += 1;
             if (t->agents <= bribed) {
-                me->money.add(cost[9]);
+                me->money += cost[9];
                 kout << "That empire has no agents to bribe!\n";
                 break;
             }

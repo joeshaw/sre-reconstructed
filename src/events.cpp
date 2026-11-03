@@ -189,8 +189,8 @@ Event *EventCovertHostages::Execute()
     Empire *a = &Emp(d.empire);
     Empire *t = &Emp(d.target);
     if (d.success) {
-        int32 m = t->money.get() / ((int32)(((int32)3 * b_rand()) / 0x8000) + 5);
-        int32 b = t->bank.get() / ((int32)(((int32)5 * b_rand()) / 0x8000) + 7);
+        int32 m = t->money / ((int32)(((int32)3 * b_rand()) / 0x8000) + 5);
+        int32 b = t->bank / ((int32)(((int32)5 * b_rand()) / 0x8000) + 7);
         ReportOut ra(a->id, 0);
         ReportOut rt(t->id, 0);
         if (b < 0)
@@ -202,17 +202,17 @@ Event *EventCovertHostages::Execute()
            << " credits from " << c_empire << Untr(t->name) << c_normal
            << " as ransom for hostages.";
         ra.SetTime(d.due);
-        t->money.sub(m);
-        t->bank.sub(b);
-        if (a->money.get() + b + m > 0) {
-            a->money.add(b + m);
+        t->money -= m;
+        t->bank -= b;
+        if (a->money + b + m > 0) {
+            a->money += b + m;
         } else {
             // Fill the treasury, then the bank, in steps.
             while (m + b > 10000) {
-                if (a->money.get() < 2000000000)
-                    a->money.add(10000);
+                if (a->money < 2000000000)
+                    a->money += 10000;
                 else
-                    a->bank.add(10000);
+                    a->bank += 10000;
                 if (m > 10000)
                     m -= 10000;
                 else if (b > 10000)
@@ -222,7 +222,7 @@ Event *EventCovertHostages::Execute()
                     b = 0;
                 }
             }
-            a->money.add(m + b);
+            a->money += m + b;
         }
         a->agents += 1;
     } else if (Exists(*t)) {
@@ -318,11 +318,11 @@ EventBank::EventBank(int16 id, const char *name, int32 amount, int16 year, int16
     Init(id);
     d.amount.v = 0;
     d.m14.v = 0;
-    d.amount.set(0);
+    d.amount = 0;
     memset(d.name, 0, sizeof d.name);
     strcpy(d.name, name);
     d.year = year;
-    d.amount.set(amount);
+    d.amount = amount;
     d.issuer = issuer;
 }
 
@@ -331,7 +331,7 @@ const char *EventBank::ClassName() { return CLS_BANK; }     // 4c48:28b3
 // 4c48:2962
 int16 EventBank::Expired()
 {
-    return d.amount.get() <= 0 || d.empire == -1;
+    return d.amount <= 0 || d.empire == -1;
 }
 
 // 4c48:284e
@@ -344,7 +344,7 @@ void EventBank::OnEmpireDeleted(int16 id)
     }
     if (d.issuer == id) {
         d.issuer = -1;
-        d.amount.set(0);
+        d.amount = 0;
     }
 }
 
@@ -362,7 +362,7 @@ void EventBank::Display(int16 n)
              << "Turn" << setwr(7) << Color(15) << "Hours" << setw(0) << '\n';
         HLine(Color(3), 0x4b);
     }
-    kout << Color(10) << setw(3) << n << setw(0) << c_number << setw(14) << d.amount.get()
+    kout << Color(10) << setw(3) << n << setw(0) << c_number << setw(14) << d.amount
          << setw(0) << Color(15) << setw(7) << d.year;
     int16 hours = (int16)((d.due - b_time(0) + 1800) / 3600);
     if (hours < 0)
@@ -375,27 +375,27 @@ void EventBank::Display(int16 n)
 Event *EventBank::Execute()
 {
     Empire *e = &Emp(d.empire);
-    int32 original = d.amount.get();
+    int32 original = d.amount;
     int32 paid = 0;
-    if (e->bank.get() < 2000000000 && e->bank.get() + d.amount.get() > 0) {
-        e->bank.add(d.amount.get());
-        paid = d.amount.get();
-        d.amount.set(0);
+    if (e->bank < 2000000000 && e->bank + d.amount > 0) {
+        e->bank += d.amount;
+        paid = d.amount;
+        d.amount = 0;
     } else {
-        while (e->bank.get() < 2000000000 && d.amount.get() > 10000000) {
-            e->bank.add(10000000);
-            d.amount.sub(10000000);
+        while (e->bank < 2000000000 && d.amount > 10000000) {
+            e->bank += 10000000;
+            d.amount -= 10000000;
             paid += 10000000;
         }
-        while (e->bank.get() < 2000000000 && d.amount.get() > 10000) {
-            e->bank.add(10000);
-            d.amount.sub(10000);
+        while (e->bank < 2000000000 && d.amount > 10000) {
+            e->bank += 10000;
+            d.amount -= 10000;
             paid += 10000;
         }
-        if (e->money.get() < 2000000000 && e->money.get() + d.amount.get() > 0) {
-            e->money.add(d.amount.get());
-            paid += d.amount.get();
-            d.amount.set(0);
+        if (e->money < 2000000000 && e->money + d.amount > 0) {
+            e->money += d.amount;
+            paid += d.amount;
+            d.amount = 0;
         }
     }
     Event *next = 0;
@@ -407,18 +407,18 @@ Event *EventBank::Execute()
     } else if (actual < paid) {
         r << " have crashed, giving you only " << c_number << actual << c_normal
           << " credits in the bank.";
-        if (e->bank.get() >= paid)
-            e->bank.sub(paid - actual);
-        else if (e->money.get() >= paid - actual)
-            e->money.sub(paid - actual);
+        if (e->bank >= paid)
+            e->bank -= paid - actual;
+        else if (e->money >= paid - actual)
+            e->money -= paid - actual;
     } else {
         r << " have returned your investment, giving you " << c_number << paid << c_normal
           << " credits in the bank.";
     }
-    if (d.amount.get() > 0) {
-        r << "  " << c_number << d.amount.get() << c_normal
+    if (d.amount > 0) {
+        r << "  " << c_number << d.amount << c_normal
           << " credits have been re-invested because your bank was full.";
-        EventBank *b = new EventBank(d.empire, d.name, d.amount.get(), d.year, d.issuer);
+        EventBank *b = new EventBank(d.empire, d.name, d.amount, d.year, d.issuer);
         b->SetDue(0, 24, 0);
         next = b;
     } else if (d.issuer > -1 && Exists(Emp(d.issuer))) {
@@ -581,66 +581,66 @@ int32 BondPayoff(int16 issuer, int32 amount)
         return amount;
     if (Exists(Emp(issuer))) {
         Empire *e = &Emp(issuer);
-        if (e->money.get() >= owed.get()) {
-            e->money.sub(owed.get());
-            owed.set(0);
+        if (e->money >= owed) {
+            e->money -= owed;
+            owed = 0;
         } else {
-            owed.sub(e->money.get());
-            e->money.set(0);
+            owed -= e->money;
+            e->money = 0;
         }
-        if (e->bank.get() >= owed.get()) {
-            e->bank.sub(owed.get());
-            owed.set(0);
+        if (e->bank >= owed) {
+            e->bank -= owed;
+            owed = 0;
         } else {
-            owed.sub(e->bank.get());
-            e->bank.set(0);
+            owed -= e->bank;
+            e->bank = 0;
         }
-        while (owed.get() > 0) {
-            int32 before = owed.get();
+        while (owed > 0) {
+            int32 before = owed;
             sold = 1;
-            if (owed.get() > 0 && e->soldiers > 100) {
-                owed.sub(100 * (PriceSoldiers(e) / 3));
+            if (owed > 0 && e->soldiers > 100) {
+                owed -= 100 * (PriceSoldiers(e) / 3);
                 e->soldiers -= 100;
             }
-            if (owed.get() > 0 && e->fighters > 100) {
-                owed.sub(100 * (PriceFighters(e) / 3));
+            if (owed > 0 && e->fighters > 100) {
+                owed -= 100 * (PriceFighters(e) / 3);
                 e->fighters -= 100;
             }
-            if (owed.get() > 0 && e->stations > 100) {
-                owed.sub(100 * (PriceStations(e) / 3));
+            if (owed > 0 && e->stations > 100) {
+                owed -= 100 * (PriceStations(e) / 3);
                 e->stations -= 100;
             }
-            if (owed.get() > 0 && e->generals > 10) {
-                owed.sub(10 * (PriceGenerals(e) / 3));
+            if (owed > 0 && e->generals > 10) {
+                owed -= 10 * (PriceGenerals(e) / 3);
                 e->generals -= 10;
             }
-            if (owed.get() > 0 && e->heavycruisers > 100) {
-                owed.sub(100 * (PriceHeavyCruisers(e) / 3));
+            if (owed > 0 && e->heavycruisers > 100) {
+                owed -= 100 * (PriceHeavyCruisers(e) / 3);
                 e->heavycruisers -= 100;
             }
-            if (owed.get() > 0 && e->carriers > 10) {
-                owed.sub(10 * (PriceCarriers(e) / 3));
+            if (owed > 0 && e->carriers > 10) {
+                owed -= 10 * (PriceCarriers(e) / 3);
                 e->carriers -= 10;
             }
-            if (owed.get() > 0 && e->agents > 10) {
-                owed.sub(10 * (PriceAgents(e) / 3));
+            if (owed > 0 && e->agents > 10) {
+                owed -= 10 * (PriceAgents(e) / 3);
                 e->agents -= 10;
             }
-            if (owed.get() > 0 && e->food > 100) {
-                owed.sub(200);
+            if (owed > 0 && e->food > 100) {
+                owed -= 200;
                 e->food -= 100;
             }
-            if (owed.get() > 0 && e->population > 100) {
-                owed.sub(100);
+            if (owed > 0 && e->population > 100) {
+                owed -= 100;
                 e->population -= 10;
             }
             for (int16 i = 0; i < 10; i++) {
-                if (owed.get() > 0 && Planets(e, i)->count > 10) {
-                    owed.sub(PricePlanet(e) / 3);
+                if (owed > 0 && Planets(e, i)->count > 10) {
+                    owed -= PricePlanet(e) / 3;
                     Planets(e, i)->count -= 1;
                 }
             }
-            if (before == owed.get())
+            if (before == owed)
                 break;
         }
         ReportOut r(issuer, 0);
@@ -649,7 +649,7 @@ int32 BondPayoff(int16 issuer, int32 amount)
         if (sold)
             r << "  Some of your assets had to be sold to get cash for this expense.";
     }
-    if (owed.get() > 0)
-        return amount - owed.get();
+    if (owed > 0)
+        return amount - owed;
     return amount;
 }

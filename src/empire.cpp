@@ -63,10 +63,10 @@ int32 NetWorth(Empire *e)
         t += 1;
     }
     int32 planets = TotalPlanets(e);
-    t = t + (10 - (int32)e->insurgency) * planets + e->money.get() / 100000 + 7 * e->agents +
+    t = t + (10 - (int32)e->insurgency) * planets + e->money / 100000 + 7 * e->agents +
         e->soldiers + e->fighters + 3 * e->heavycruisers + 3 * e->lightcruisers +
         (e->stations << 1) + 3 * e->carriers + (e->generals << 1) +
-        e->population / ((int32)e->taxrate + 10) + (int32)e->cmdship + e->bank.get() / 110000 -
+        e->population / ((int32)e->taxrate + 10) + (int32)e->cmdship + e->bank / 110000 -
         e->pollution + e->tradegoods / 2;
     if (t < 0)
         t = 0;
@@ -190,7 +190,7 @@ void EmpireInit(Empire *e)
     e->insurgency = 0;
     e->effectiveness = Clamp100(100);
     e->cmdship = Clamp100(0);
-    e->money.set(10000);
+    e->money = 10000;
     e->score = 0;
     e->points = 0;
     e->population = 40;
@@ -208,7 +208,7 @@ void EmpireInit(Empire *e)
         e->turnsperday = 5;
     }
     e->bonusyear = e->year;
-    e->bank.set(0);
+    e->bank = 0;
     e->loanpayment = 0;
     e->w1a8 = 0;
     e->bonds = 0;
@@ -224,7 +224,7 @@ void EmpireInit(Empire *e)
     e->w1ae = 0;
     e->favor = 0;
     e->phase = PH_START;
-    e->income.set(0);
+    e->income = 0;
     e->shortfalls &= ~(SF_NEGLECT | SF_STARVED | SF_UNUSED | SF_ARMY);
     ClearShortages(e);
     e->effnext = 0;
@@ -328,13 +328,13 @@ void EmpireStatus(Empire *e, int16 full)
         kout << setw(12) << "Turns Left:" << setw(0) << c_number
              << (int16)(e->turnsperday - e->turnsused - 1) << c_normal << '\n';
     }
-    kout << setw(12) << "Money:" << setw(0) << c_number << e->money.get() << c_normal;
+    kout << setw(12) << "Money:" << setw(0) << c_number << e->money << c_normal;
     if (full) {
-        if (e->bank.get() > 0)
-            kout << Color(8) << "   (" << c_normal << "Bank Savings=" << c_number << e->bank.get()
+        if (e->bank > 0)
+            kout << Color(8) << "   (" << c_normal << "Bank Savings=" << c_number << e->bank
                  << Color(8) << ')' << c_normal;
-        else if (e->bank.get() < 0)
-            kout << Color(8) << "   (" << c_normal << "Bank Loan=" << c_number << -e->bank.get()
+        else if (e->bank < 0)
+            kout << Color(8) << "   (" << c_normal << "Bank Loan=" << c_number << -e->bank
                  << Color(8) << ')' << c_normal;
     }
     kout << '\n';
@@ -431,7 +431,7 @@ int32 ProtectionBonus(Empire *e)
     int32 v = g_galaxy.coordfund / div;
     if (v < 0)
         v = 0;
-    e->money.add(1000 * v);
+    e->money += 1000 * v;
     g_galaxy.coordfund -= v;
     e->bonusyear = (int16)(e->year + g_galaxy.grantturns);
     return v;
@@ -489,15 +489,15 @@ void BuildCmdShip(Empire *e)
 // 48cc:2598: bank interest on loans and savings.
 void BankInterest(Empire *e)
 {
-    int32 b = e->bank.get();
+    int32 b = e->bank;
     if (b < 0 && b >= -500000000) {
         int32 v = (int32)g_galaxy.interest * (b / 100);
-        e->bank.add(v);
+        e->bank += v;
     }
-    b = e->bank.get();
+    b = e->bank;
     if (b > 0 && b <= 1000000000) {
         int32 v = (int32)g_galaxy.interest * (b / 500);
-        e->bank.add(v);
+        e->bank += v;
     }
 }
 
